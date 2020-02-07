@@ -7,6 +7,7 @@
 
 Edit configuration (change port!):
 `cp config_default config.txt` and edit `config.txt`
+Edit config before first start of DB (call `dberase` otherwise).
 
 Start database:
 ```make dbstart```

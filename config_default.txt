@@ -3,3 +3,5 @@
 DBPORT=5432
 DBDATADIR=${BASEDIR}/db/data
 DBLOGFILE=${BASEDIR}/db/logs/log.txt
+DBUSER=dbuser
+DBNAME=lcbcdb

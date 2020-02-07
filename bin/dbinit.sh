@@ -23,6 +23,5 @@ default_text_search_config = 'pg_catalog.english'
 port = ${DBPORT}
 EOI
 3rdparty/postgresql/bin/pg_ctl -D ${DBDATADIR} -l ${DBLOGFILE} -w start
-#3rdparty/postgresql/bin/pg_isready -h localhost -p ${DBPORT} -d lcbcdb --timeout=10 || { printf "error: incomplete init. remove data dir\n" >&2; exit 1; }
-3rdparty/postgresql/bin/createuser -s dbuser -h localhost -p ${DBPORT} 2> /dev/null
-3rdparty/postgresql/bin/createdb -O dbuser lcbcdb -h localhost -p ${DBPORT} 2> /dev/null
+3rdparty/postgresql/bin/createuser -s ${DBUSER} -h localhost -p ${DBPORT} 2> /dev/null
+3rdparty/postgresql/bin/createdb -O ${DBUSER} ${DBNAME} -h localhost -p ${DBPORT} 2> /dev/null

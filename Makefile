@@ -6,7 +6,7 @@ all: 3rdparty
 
 .PHONY: dbstart
 dbstart: ${DBDATADIR}/postgresql.conf
-	3rdparty/postgresql/bin/pg_isready -h localhost -p $(DBPORT) -d lcbcdb || 3rdparty/postgresql/bin/pg_ctl -D ${DBDATADIR} -l ${DBLOGFILE} -w start && echo ok
+	3rdparty/postgresql/bin/pg_isready -h localhost -p $(DBPORT) -d ${DBNAME} || 3rdparty/postgresql/bin/pg_ctl -D ${DBDATADIR} -l ${DBLOGFILE} -w start && echo ok
 
 .PHONY: dbstop
 dbstop:
