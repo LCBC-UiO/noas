@@ -1,0 +1,5 @@
+# To change settings: create new file "config.txt" to override variables below
+
+DBPORT=5432
+DBDATADIR=${BASEDIR}/db/data
+DBLOGFILE=${BASEDIR}/db/logs/log.txt

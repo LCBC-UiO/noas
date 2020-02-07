@@ -1,0 +1,6 @@
+3rdparty/*
+!3rdparty/download/*
+!3rdparty/*.mk
+!3rdparty/Makefile
+db/*
+config.txt
