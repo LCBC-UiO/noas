@@ -1,5 +1,4 @@
 # Populate core tables
-# Populate longitudinal tables
 library(tidyverse)
 
 # get helper functions

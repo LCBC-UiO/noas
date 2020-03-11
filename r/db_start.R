@@ -1,3 +1,4 @@
+setwd("/tsd/p23/home/p23-athanasm/moasdb")
 
 # get helper functions
 source('r/helpers.R')
