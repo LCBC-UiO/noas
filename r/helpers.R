@@ -28,6 +28,7 @@ insert_table <- function(x, con,
                          table_name, 
                          template_path,
                          ...){
+  stopifnot(is.data.frame(x))
   
   tryCatch({
     k <- DBI::dbWriteTable(
@@ -70,7 +71,7 @@ insert_table_long <- function(x, con,
                               table_name){
   
   insert_table(x, con, table_name,
-               template = "sql/insert_table.sql",
+               template = "sql/insert_long_table.sql",
                #append = TRUE,
                temporary = TRUE,
                overwrite = TRUE
@@ -96,4 +97,9 @@ moasdb_connect <- function(){
                  user="dbuser", 
                  dbname="lcbcdb", 
                  host="localhost")
+}
+
+read_dbtable <- function(file){
+  read.table(file, header = TRUE, sep = "\t", 
+                   stringsAsFactors = FALSE)
 }

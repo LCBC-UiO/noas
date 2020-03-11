@@ -1,4 +1,3 @@
-setwd("/tsd/p23/home/p23-athanasm/moasdb")
 
 # get helper functions
 source('r/helpers.R')
@@ -7,8 +6,6 @@ source('r/helpers.R')
 con <- moasdb_connect()
 
 
-k <- read_sql("sql/init_db.sql")
-
-
-j <- DBI::dbExecute(con, k)
+j <- DBI::dbExecute(con, 
+                    read_sql("sql/init_db.sql"))
 
