@@ -7,27 +7,14 @@ DECLARE
    _tbl text;
 BEGIN
 FOR _tbl  IN
-    SELECT quote_ident(category) || '_'
-        || quote_ident(id)      -- escape identifier and schema-qualify!
-    FROM   metatables
- --   WHERE  category = 'long'  -- your table name prefix
+  SELECT table_name
+  FROM information_schema.tables
+  WHERE table_schema = 'public'
 LOOP
-  -- RAISE NOTICE '%',
-   EXECUTE
-  'DROP TABLE ' || _tbl;  -- see below
+  EXECUTE 'DROP TABLE IF EXISTS ' || _tbl || ' CASCADE';
 END LOOP;
 END
 $do$;
-
--- DROP TABLE IF EXISTS long_ehi CASCADE;
--- DROP TABLE IF EXISTS long_cvlt CASCADE;
-
-DROP TABLE IF EXISTS projects CASCADE;
-DROP TABLE IF EXISTS waves CASCADE;
-DROP TABLE IF EXISTS subjects CASCADE;
-DROP TABLE IF EXISTS visits CASCADE;
-DROP TABLE IF EXISTS metatables CASCADE;
-DROP TABLE IF EXISTS metacolumns CASCADE;
 
 -- Create project table
 
