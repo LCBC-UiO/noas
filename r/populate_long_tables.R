@@ -1,5 +1,5 @@
 # Populate longitudinal tables
-library(tidyverse)
+library(dplyr)
 
 # get helper functions
 source('r/helpers.R')
@@ -7,63 +7,38 @@ source('r/helpers.R')
 # establish connection
 con <- moasdb_connect()
 
-db_dir <- "/tsd/p23/data/durable/tmp/db_clean_data_tmp/long/ehi/"
+args <- commandArgs(trailingOnly = TRUE)
 
-ffiles <- list.files(db_dir, "tsv$", full.names = TRUE)
+stopifnot(length(args) == 1)
 
-ft <- lapply(ffiles, read_dbtable)
-ft <- lapply(ft, dplyr::rename_all, .funs = function(x) gsub("ehi", "", x))
-ft <- lapply(ft, dplyr::mutate_at, 
-             .vars = dplyr::vars(starts_with("_")), 
-             .funs = as.character)
+db_dir <- args[1]
 
-# lapply(ft[[5]], insert_table_long, con = con, table_name = "ehi")
-insert_table_long(ft[[1]], con = con, table_name = "ehi")
-insert_table_long(ft[[5]], con = con, table_name = "ehi")
 
-# 
-# load("/tsd/p23/data/durable/MOAS/data/MOAS.RData")
-# # Get legacy data
-# MOAS <- MOAS %>% 
-#   rename(subject_id = CrossProject_ID,
-#          project_id = Project_Name,
-#          wave_code = Project_Wave) %>% 
-#   mutate(subject_id = as.integer(as.character(subject_id)))
-# 
-# 
-# # BDI ----
-# submit_long_table(MOAS, 
-#                   dplyr::starts_with("BDI"), 
-#                   !is.na(BDI), 
-#                   "q_bdi")
-# 
-# 
-#   dplyr::select(MOAS, 
-#                      subject_id,
-#                      project_id,
-#                      wave_code,
-#                      dplyr::starts_with("BDI")) %>% 
-#     plyr::filter(x, !is.na(BDI)) %>% 
-#     dplyr::rename_all(x, tolower) %>% 
-#     
-# 
-# # PSQI ----
-# submit_long_table(MOAS, 
-#                   dplyr::starts_with("PSQI"), 
-#                   !is.na(PSQI_01), 
-#                   "q_psqi")
-# 
-# 
-# # GDS ----
-# submit_long_table(MOAS, 
-#                   starts_with("GDS"), 
-#                   !is.na(GDS), 
-#                   "q_gds")
-# 
-# 
-# # EHI ----
-# submit_long_table(MOAS, 
-#                   starts_with("EHI"), 
-#                     !is.na(EHI_01), 
-#                   "q_ehi")
-# 
+add_long_table <- function(table_name, con, 
+                           db_dir){
+
+  dir <- file.path(db_dir, table_name)
+  
+  ffiles <- list.files(dir, "tsv$", full.names = TRUE)
+
+  ft <- lapply(ffiles, read_dbtable)
+  
+  # take away table name from column headers
+  ft <- lapply(ft, dplyr::rename_all, .funs = function(x) gsub(table_name, "", x))
+  
+  # Turn all in to character
+  ft <- lapply(ft, dplyr::mutate_at, 
+               .vars = dplyr::vars(dplyr::starts_with("_")), 
+               .funs = as.character)
+  
+  lapply(ft, insert_table_long, con = con, table_name = table_name)
+}
+
+
+# list all directoried in the long db directory, except first, which is parent dir
+long_tables <- list.dirs(db_dir, full.names = FALSE)[-1]
+
+# loop through all and add
+sapply(long_tables, add_long_table, con = con, db_dir = db_dir)
+
+

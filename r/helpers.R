@@ -24,7 +24,8 @@ read_sql <- function(path, ...){
 #' @param table_name name to give the table
 #' @param template_path path to the SQL template to apply
 #' @param ... additional arguments to \code{\link{DBI::dbWriteTable}}
-insert_table <- function(x, con, 
+insert_table <- function(x, 
+                         con, 
                          table_name, 
                          template_path,
                          ...){
