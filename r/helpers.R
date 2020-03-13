@@ -117,8 +117,9 @@ read_config <- function() {
       if (line == "") { # skip empy lines
         next()
       }
-      key   <- gsub("=.*$", "",  line)
-      value <- gsub("^[^=]*=", "", line)
+      key <- gsub("=.*$", "",  line)
+      value_quoted <- gsub("^[^=]*=", "", line)
+      value <- as.character(parse(text=value_quoted))
       cfg[key] <- value
     }
     return(cfg)

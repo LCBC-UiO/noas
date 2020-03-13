@@ -2,15 +2,15 @@
 # Create a new file "config.txt" and override any of the variables below
 
 # tables
-TABDIR_CORE=test_data/core/
-TABDIR_LONG=test_data/long/ # longitudinal
+TABDIR_CORE="test_data/core/"
+TABDIR_LONG="test_data/long/" # longitudinal
 
 # DB connection info
-DBHOST=localhost
-DBPORT=5433
-DBUSER=dbuser
-DBNAME=lcbcdb
+DBHOST="localhost"
+DBPORT="3832"
+DBUSER="dbuser"
+DBNAME="lcbcdb"
 
 # DBMS
-DBDATADIR=db/data
-DBLOGFILE=db/logs/log.txt
+DBDATADIR="db/data"
+DBLOGFILE="db/logs/log.txt"
