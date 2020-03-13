@@ -104,3 +104,27 @@ read_dbtable <- function(file){
   read.table(file, header = TRUE, sep = "\t", 
                    stringsAsFactors = FALSE)
 }
+
+
+read_config <- function() {
+  cfg <- list()
+  .add_configs <- function(cfg, fn) {
+    for (line in readLines(fn)) {
+      # remove comments
+      line  <- gsub("#.*$", "" , line) # remove comments
+      line  <- gsub("\ *$", "" , line) # remove trailing spaces
+      if (line == "") { # skip empy lines
+        next()
+      }
+      key   <- gsub("=.*$", "",  line)
+      value <- gsub("^[^=]*=", "", line)
+      cfg[key] <- value
+    }
+    return(cfg)
+  }
+  cfg <- .add_configs(cfg, "config_default.txt")
+  if (file.exists("config.txt")) { 
+    cfg <- .add_configs(cfg, "config.txt")
+  }
+  return(cfg)
+}
