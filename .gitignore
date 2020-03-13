@@ -4,3 +4,4 @@
 !3rdparty/Makefile
 db/*
 config.txt
+.Rhistory
