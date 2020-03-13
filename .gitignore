@@ -5,3 +5,4 @@
 db/*
 config.txt
 .Rhistory
+singularity/*.simg

@@ -1,6 +1,12 @@
 BASEDIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+
 include config_default.txt
 -include config.txt
+
+simg_modules := \
+	moas-r \
+	moas-flask
+include singularity/make_simg.mk
 
 all: 3rdparty
 
