@@ -1,4 +1,5 @@
-# To change settings: create new file "config.txt" to override variables below
+# To change settings: 
+# Create a new file "config.txt" and override any of the variables below
 
 # tables
 TABDIR_CORE=test_data/core/

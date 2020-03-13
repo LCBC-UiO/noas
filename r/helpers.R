@@ -112,7 +112,6 @@ read_config <- function() {
   cfg <- list()
   .add_configs <- function(cfg, fn) {
     for (line in readLines(fn)) {
-      # remove comments
       line  <- gsub("#.*$", "" , line) # remove comments
       line  <- gsub("\ *$", "" , line) # remove trailing spaces
       if (line == "") { # skip empy lines
