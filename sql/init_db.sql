@@ -68,8 +68,8 @@ CREATE TABLE visits (
 CREATE TABLE metatables (
   id text,
   category text,
-  rank integer DEFAULT 1,
-  name text,
+  idx      integer DEFAULT 1,
+  title    text,
   CONSTRAINT metatables_pk PRIMARY KEY(id)
 );
 
@@ -77,9 +77,9 @@ CREATE TABLE metatables (
 
 CREATE TABLE metacolumns (
   metatable_id text,
-  id text,
-  rank integer DEFAULT 1,
-  name text,
+  id    text,
+  idx   integer DEFAULT 1,
+  title text,
   CONSTRAINT metacolumns_pk PRIMARY KEY (metatable_id, id),
   CONSTRAINT metacolumns_fk FOREIGN KEY (metatable_id) REFERENCES metatables(id)
 );
@@ -113,6 +113,6 @@ CREATE VIEW core AS
 
 -- Add metadata for core table
 
-INSERT INTO metatables (id, category, name) VALUES ('core', 'core', 'Core data');
-INSERT INTO metacolumns (metatable_id, id, rank, name) VALUES ('core', 'subject_id',         0, 'Subject ID');
-INSERT INTO metacolumns (metatable_id, id, rank, name) VALUES ('core', 'subject_birthdate',  1, 'Day of birth');
+INSERT INTO metatables (id, category, idx, title) VALUES ('core', 'core', 0, 'Core data');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_id',         0, 'Subject ID');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_birthdate',  1, 'Day of birth');
