@@ -23,9 +23,49 @@ if os.path.isfile(os.environ['FLASKR_SETTINGS_OVERRIDE']):
 
 # routes
 
+sql_getmeta = """\
+select
+  array_to_json(array_agg(row_to_json(t))) as meta_json
+from
+  (
+  select
+    mt.id,
+    mt.category,
+    mt.title,
+    mt.idx,
+    (
+    select
+      array_to_json(array_agg(row_to_json(d)))
+    from
+      (
+      select
+        mc.id,
+        mc.title,
+        mc.idx
+      from
+        metacolumns mc
+      where
+        mt.id = mc.metatable_id
+      order by
+        mc.idx ) d ) as cols
+  from
+    metatables mt
+  order by
+    mt.idx,
+    mt.title ) t
+    """
+
 @app.route('/', methods=['GET'])
 def web_query():
-  return flask.render_template('test.html')
+  from db import Db
+
+  with Db().get().cursor() as cur:
+    cur.execute(sql_getmeta);
+    import json
+    meta_json = cur.fetchall()[0].meta_json
+    print(json.dumps(meta_json, indent=2, sort_keys=True, default=str))
+
+  return flask.render_template('dbquery.html', dbmeta=meta_json)
 
 #-------------------------------------------------------------------------------
 

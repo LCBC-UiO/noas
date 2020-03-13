@@ -1,0 +1,130 @@
+{% extends "layout.html" %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/optbox.css') }}" type="text/css"/>
+{% endblock %}
+
+{% block title %}
+{{ get_brand_str() }} - Query
+{% endblock %}
+
+{% block content %}
+  <h4 class="mb-4">
+    Database Query
+    <a href="#" data-toggle="popover" data-trigger="focus"
+    title="Help"
+    data-content="Select the data you are interested in and press 'Submit'.
+    The core data is 'Visits' - If you want additional data sets,
+    make sure to use the 'include this data' checkbox."
+  ><i class="bluehover fas fa-question-circle" aria-hidden="true"></i></a>
+  </h4>
+  <form action="url_for('web_results')" method="post"> <!-- todo -->
+  {% for ti in dbmeta %}
+  <div id="{{ ti.id }}" class="optbox">
+    <div class="opthead">
+      <table><tr>
+      <td class="optopener">
+        <i class="ddarrow"></i>{{ ti.title }} (n={{ti.n}})
+      </td>
+      {% if ti.idx > 0 %}
+        
+        <td>
+          <span data-toggle="tooltip" title="show table info">
+            <a href="#"><i class="optaction fas fa-fw fa-question-circle fa-inverse" aria-hidden="true" data-toggle="modal" data-target="#modal-tabdescr-{{ ti.id }}"></i></a>
+            <div class="modal" id="modal-tabdescr-{{ ti.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Description for <em>{{ ti.title }}</em></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <span style="white-space: pre-line">
+                        {{ ti.description }}
+                    </span>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </span>
+        </td>
+      {% else %}
+        <td style="opacity: 0.0;">.<td>
+      {% endif %}
+      </tr></table>
+    </div>
+    <div class="optbody">
+      <div class="optcontent container mx-1">
+        <!-- skip the include checkbox on the first table (list of participants) -->
+        {% if ti.idx > 0 %}
+          <div class="optinclude form-group form-check">
+            <input type="checkbox" class="form-check-input" id="include_{{ti.id}}" name="include_{{ti.id}}" value="1">
+            <label class="form-check-label ml-4 pl-2" for="include_{{ti.id}}">Include this data</label>
+          </div>
+        {% endif %}
+        <!-- only hide if its not participants box -->
+        <div {% if ti.idx > 0 %} class="hidable" {% endif %}>
+          <div class="row p-0">
+          {% for fi in ti.cols %}
+            <div class="col-sm-3 mb-0">
+              {{ fi.title }}
+            </div>
+            {% if fi.idx is divisibleby(4) %}</div><div class="row p-0">{% endif %}
+          {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  <div id="options" class="optbox">
+    <div class="opthead">
+      <table><tr><td class="optopener"><i class="ddarrow"></i>Query Options</td><td style="opacity: 0.0;">.<td></tr></table>
+    </div>
+    <div class="optbody"><div class="optcontent">
+      <input type="radio" name="options_join" value="all">
+      <label>all participants (all n and many missing values)</label><br>
+      <input type="radio" name="options_join" value="union">
+      <label>union of datasets</label><br>
+      <input type="radio" name="options_join" value="intersect" checked="checked">
+      <label>intersection of datasets (few n and few missing values)</label><br>
+    </div></div>
+  </div>
+  <div>
+    <div id="submit" class="button">Submit</div>
+  </div>
+</form>
+{% endblock %}
+
+{% block includebody %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/optbox.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/dbq.js') }}"></script>
+<script>
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip();
+
+  // hide all non-part inputs at start
+  $('.optcontent').each(function() {
+    $(this).find('.hidable :input').each(function(){
+    $(this).css('opacity', 0.0);
+  })})
+
+  // toggle visibility by master checkbox
+  $('[id^="include_"]').each(function() {
+    $(this).click(function () {
+      var op = 0.0
+      if (this.checked) {
+        op = 1.0
+      }
+      $(this).closest('.optcontent').find('.hidable :input').each(function(){
+        $(this).css('opacity', op);
+      })
+    })
+  });
+});
+</script>
+{% endblock %}
