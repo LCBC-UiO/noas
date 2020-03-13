@@ -1,7 +1,15 @@
 # To change settings: create new file "config.txt" to override variables below
 
-DBPORT=5432
-DBDATADIR=${BASEDIR}/db/data
-DBLOGFILE=${BASEDIR}/db/logs/log.txt
+# tables
+TABDIR_CORE=test_data/core/
+TABDIR_LONG=test_data/long/ # longitudinal
+
+# DB connection info
+DBHOST=localhost
+DBPORT=5433
 DBUSER=dbuser
 DBNAME=lcbcdb
+
+# DBMS
+DBDATADIR=db/data
+DBLOGFILE=db/logs/log.txt

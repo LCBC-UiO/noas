@@ -94,10 +94,12 @@ submit_long_table <- function(x, cols, predicate, table_name){
 
 
 moasdb_connect <- function(){
+  cfg <- read_config()
   DBI::dbConnect(RPostgreSQL::'PostgreSQL'(), #":memory:",
-                 user="dbuser", 
-                 dbname="lcbcdb", 
-                 host="localhost")
+                 user=cfg$DBUSER, 
+                 port=cfg$DBPORT,
+                 dbname=cfg$DBNAME, 
+                 host=cfg$DBHOST)
 }
 
 read_dbtable <- function(file){
