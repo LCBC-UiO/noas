@@ -7,12 +7,7 @@ source('r/helpers.R')
 # establish connection
 con <- moasdb_connect()
 
-
-args <- commandArgs(trailingOnly = TRUE)
-
-stopifnot(length(args) == 1)
-
-db_dir <- args[1]
+db_dir <- read_config()$TABDIR_CORE
 
 add_core_tab <- function(tab, db_dir, con){
   filenm <- list.files(db_dir, paste0(tab,".tsv"), full.names = TRUE)

@@ -7,12 +7,7 @@ source('r/helpers.R')
 # establish connection
 con <- moasdb_connect()
 
-args <- commandArgs(trailingOnly = TRUE)
-
-stopifnot(length(args) == 1)
-
-db_dir <- args[1]
-
+db_dir <- read_config()$TABDIR_LONG
 
 add_long_table <- function(table_name, con, 
                            db_dir){
