@@ -68,6 +68,7 @@ CREATE TABLE visits (
 CREATE TABLE metatables (
   id text,
   category text,
+  rank integer DEFAULT 1,
   name text,
   CONSTRAINT metatables_pk PRIMARY KEY(id)
 );
@@ -77,7 +78,7 @@ CREATE TABLE metatables (
 CREATE TABLE metacolumns (
   metatable_id text,
   id text,
-  rank integer DEFAULT 0,
+  rank integer DEFAULT 1,
   name text,
   CONSTRAINT metacolumns_pk PRIMARY KEY (metatable_id, id),
   CONSTRAINT metacolumns_fk FOREIGN KEY (metatable_id) REFERENCES metatables(id)
@@ -108,3 +109,10 @@ CREATE VIEW core AS
     visits.subject_id = subjects.id
   LEFT OUTER JOIN projects ON
     visits.project_id = projects.id
+;
+
+-- Add metadata for core table
+
+INSERT INTO metatables (id, category, name) VALUES ('core', 'core', 'Core data');
+INSERT INTO metacolumns (metatable_id, id, rank, name) VALUES ('core', 'subject_id',         0, 'Subject ID');
+INSERT INTO metacolumns (metatable_id, id, rank, name) VALUES ('core', 'subject_birthdate',  1, 'Day of birth');
