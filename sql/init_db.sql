@@ -18,6 +18,16 @@ LOOP
 END LOOP;
 END
 $do$;
+DROP TYPE  IF EXISTS e_sex CASCADE;
+
+--------------------------------------------------------------------------------
+
+-- Define Types
+
+CREATE TYPE e_sex AS enum (
+  'Female'
+  ,'Male'
+);
 
 --------------------------------------------------------------------------------
 
@@ -48,7 +58,7 @@ CREATE TABLE waves (
 CREATE TABLE subjects (
   id int NOT NULL,
   birthdate date NULL,
-  sex text NULL,
+  sex e_sex NULL,
   shareable int NULL,
   CONSTRAINT subject_pk PRIMARY KEY (id)
 );
