@@ -1,5 +1,5 @@
 
-DROP VIEW IF EXISTS core;
+DROP VIEW IF EXISTS core_core;
 -- drop tables if they exist
 -- creates a script to delete all long_* tables
 DO
@@ -86,7 +86,7 @@ CREATE TABLE metacolumns (
 
 -- Combine core tables
 
-CREATE VIEW core AS
+CREATE VIEW core_core AS
   SELECT
     subjects.id        AS subject_id,
     subjects.birthdate AS subject_birthdate,
