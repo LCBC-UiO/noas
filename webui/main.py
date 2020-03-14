@@ -59,16 +59,20 @@ from
     """
 
 @app.route('/', methods=['GET'])
-def web_query():
+def web_buildquery():
   from db import Db
-
   with Db().get().cursor() as cur:
     cur.execute(sql_getmeta);
     import json
     meta_json = cur.fetchall()[0].meta_json
-    print(json.dumps(meta_json, indent=2, sort_keys=True, default=str))
+    Db().get().close();
+    return flask.render_template('dbquery.html', dbmeta=meta_json)
 
-  return flask.render_template('dbquery.html', dbmeta=meta_json)
+@app.route('/query', methods=['GET', 'POST'])
+def web_query():
+  return flask.redirect(flask.url_for('web_buildquery'))
+  #return flask.render_template('dbquery.html', dbmeta=meta_json)
+  #return render_template('dbres.html')
 
 #-------------------------------------------------------------------------------
 
