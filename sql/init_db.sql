@@ -1,4 +1,6 @@
 
+-- Delete everything in the database
+
 DROP VIEW IF EXISTS core_core;
 -- drop tables if they exist
 -- creates a script to delete all long_* tables
@@ -16,6 +18,8 @@ LOOP
 END LOOP;
 END
 $do$;
+
+--------------------------------------------------------------------------------
 
 -- Create project table
 
@@ -62,6 +66,7 @@ CREATE TABLE visits (
   CONSTRAINT visit_wave_fk FOREIGN KEY (wave_code, project_id) REFERENCES waves(code, project_id)
 );
 
+--------------------------------------------------------------------------------
 
 -- Create table of tables
 
@@ -74,7 +79,7 @@ CREATE TABLE metatables (
 );
 
 
--- Create table of tables
+-- Create table of table comlumns
 
 CREATE TABLE metacolumns (
   metatable_id text,
@@ -85,6 +90,7 @@ CREATE TABLE metacolumns (
   CONSTRAINT metacolumns_fk FOREIGN KEY (metatable_id) REFERENCES metatables(id)
 );
 
+--------------------------------------------------------------------------------
 
 -- Combine core tables
 
@@ -120,6 +126,7 @@ INSERT INTO metatables (id, category, idx, title) VALUES ('core', 'core', 0, 'Co
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_id',         0, 'Subject ID');
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_birthdate',  1, 'Day of birth');
 
+--------------------------------------------------------------------------------
 
 -- Define functions
 
