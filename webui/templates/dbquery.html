@@ -26,7 +26,6 @@
         <i class="ddarrow"></i>{{ ti.title }} (n={{ti.n}})
       </td>
       {% if ti.idx > 0 %}
-        
         <td>
           <span data-toggle="tooltip" title="show table info">
             <a href="#"><i class="optaction fas fa-fw fa-question-circle fa-inverse" aria-hidden="true" data-toggle="modal" data-target="#modal-tabdescr-{{ ti.id }}"></i></a>
@@ -71,7 +70,14 @@
           <div class="row p-0">
           {% for fi in ti.cols %}
             <div class="col-sm-3 mb-0">
-              {{ fi.title }}
+              <div class='form-group form-check mb-2'>
+                <!-- <span data-toggle="tooltip" title="{{ ti.title }}" data-placement="right"> -->
+                <input type='checkbox' class="form-check-input" id="{{ti.id}}{{fi.id}}" name='{{ti.id}}{{fi.id}}' value="1">
+                <label class="form-check-label ml-4 pl-2 font-weight-normal" for="{{ti.id}}{{fi.id}}">
+                  {{ fi.title }}
+                </label>
+                <!-- </span> -->
+              </div>
             </div>
             {% if fi.idx is divisibleby(4) %}</div><div class="row p-0">{% endif %}
           {% endfor %}
@@ -87,14 +93,14 @@
     </div>
     <div class="optbody"><div class="optcontent">
       <input type="radio" name="options_join" value="all">
-      <label>all participants (all n and many missing values)</label><br>
+      <label>all visits (all n and many missing values)</label><br>
       <input type="radio" name="options_join" value="union">
       <label>union of datasets</label><br>
       <input type="radio" name="options_join" value="intersect" checked="checked">
       <label>intersection of datasets (few n and few missing values)</label><br>
     </div></div>
   </div>
-  <div>
+  <div class="mb-5">
     <div id="submit" class="button">Submit</div>
   </div>
 </form>
