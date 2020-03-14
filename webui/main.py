@@ -83,12 +83,6 @@ def utility_processor():
 # start
 
 if __name__ == "__main__":
-  import configdict
-  import gconfig
-  import auth, bp_part, bp_oth
-  app.register_blueprint(auth.bp)
-  app.register_blueprint(bp_part.bp)
-  app.register_blueprint(bp_oth.bp)
   with app.app_context():
     from config import Config
     app.run(host=Config()['WEBSERVERHOST'], port=Config()['WEBSERVERPORT'], threaded=True)
