@@ -34,6 +34,9 @@ from
     mt.title,
     mt.idx,
     (
+			select row_count(mt.category || '_' || mt.id)
+		) as n,
+    (
     select
       array_to_json(array_agg(row_to_json(d)))
     from

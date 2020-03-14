@@ -73,6 +73,7 @@ CREATE TABLE metatables (
   CONSTRAINT metatables_pk PRIMARY KEY(id)
 );
 
+
 -- Create table of tables
 
 CREATE TABLE metacolumns (
@@ -83,6 +84,7 @@ CREATE TABLE metacolumns (
   CONSTRAINT metacolumns_pk PRIMARY KEY (metatable_id, id),
   CONSTRAINT metacolumns_fk FOREIGN KEY (metatable_id) REFERENCES metatables(id)
 );
+
 
 -- Combine core tables
 
@@ -111,8 +113,24 @@ CREATE VIEW core_core AS
     visits.project_id = projects.id
 ;
 
+
 -- Add metadata for core table
 
 INSERT INTO metatables (id, category, idx, title) VALUES ('core', 'core', 0, 'Core data');
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_id',         0, 'Subject ID');
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_birthdate',  1, 'Day of birth');
+
+
+-- Define functions
+
+-- Count number of rows for a table 
+-- (this is similart to "count(*)"" but works with a parameter of type "text")
+CREATE OR REPLACE FUNCTION row_count (metatable_category text, metatable_id text)
+RETURNS integer AS $total$
+DECLARE
+	total integer;
+BEGIN
+   EXECUTE format('select count(*) from %I_%I', metatable_category, metatable_id) INTO total;
+   RETURN total;
+END;
+$total$ LANGUAGE plpgsql;

@@ -23,7 +23,8 @@ on conflict (id) do nothing;
 
 -- add meta data (columns)
 
--- TODO: This will have to come from some meta-data files
+-- TODO: Replace the code below.
+--       This data in meatacolumns will have to come from some meta-data files
 --       For now is just some auto-generated stuff.
 DO
 $do$
