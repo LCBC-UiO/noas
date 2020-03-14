@@ -1,6 +1,7 @@
 
 import os
 import flask
+import textwrap
 
 app = flask.Flask(__name__)
 
@@ -71,14 +72,47 @@ def web_buildquery():
 
 
 sql_getdata_main = """\
-  SELECT {col_selection}
-  FROM core_core as core
-  {joins}
-  WHERE TRUE
-  {where}
-  ORDER BY core.subject_id, core.project_id, core.wave_code
-  LIMIT 10
+SELECT {col_selection}
+FROM core_core as core
+{joins}
+WHERE TRUE AND 
+{where}
+ORDER BY core.subject_id, core.project_id, core.wave_code
+-- LIMIT 10
 """
+
+sql_getdata_where_main= """\
+(
+{bool}
+{conjunction_conditions})
+"""
+
+sql_getdata_where_condition_long = """\
+  {conjunction} core.subject_id IN (SELECT DISTINCT(subject_id) FROM long_{table_id} t WHERE t.project_id=core.project_id AND t.project_id=core.project_id AND t.wave_code=core.wave_code)
+"""
+
+
+def get_sql_where(meta_json, rvalues):
+  def _get_where_long(tabmeta, rvalues, sqlconj):
+    # skip non-included tables and core table
+    if rvalues.get('include_{}'.format(tabmeta['id'])) != "1" or tabmeta['idx'] == 0:
+      return ""
+    return sql_getdata_where_condition_long.format(conjunction=sqlconj, table_id=tabmeta['id'])
+    #return textwrap.indent(sql_getdata_where_long.format(conjunction=sqlconj, table_id=tabmeta['id']), ' ' * 6)
+  if rvalues.get("options_join") == "all":
+    return "TRUE"
+  b    = "TRUE" if rvalues.get("options_join") == "intersect" else "FALSE"
+  conj = "AND"  if rvalues.get("options_join") == "intersect" else "OR"
+  cc = ""
+  for tabmeta in meta_json:
+    cc += _get_where_long(tabmeta, rvalues, conj)
+  # skip empty WHERE (no data sets selected)
+  if cc == "":
+    return "TRUE"
+  return sql_getdata_where_main.format(
+    bool=textwrap.indent(b, ' ' * 2), 
+    conjunction_conditions=textwrap.indent(cc, ' ' * 2)
+  )
 
 @app.route('/query', methods=['GET', 'POST'])
 def web_query():
@@ -89,10 +123,11 @@ def web_query():
     meta_json = cur.fetchall()[0].meta_json
     Db().get().close()
   #print(json.dumps(meta_json, indent=2, sort_keys=True, default=str))
+  sql_where = get_sql_where(meta_json, flask.request.values)
   sql = sql_getdata_main.format(
     col_selection="*",
     joins="",
-    where="",
+    where=textwrap.indent(sql_where, ' ' * 2),
   )
   print(sql)
   with Db().get().cursor() as cur:
