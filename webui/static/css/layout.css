@@ -43,7 +43,7 @@ body {
   border: 2px solid var(--colborder1);
   border-radius: 8px;
   margin: 4px;
-  box-shadow: 2px 2px 4px 4px #888;
+  box-shadow: 2px 2px 4px 4px #AAA;
   font-weight: bold;
   font-size: 105%;
   background: var(--colnorm2);

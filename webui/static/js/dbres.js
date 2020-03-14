@@ -17,10 +17,10 @@ function getColumnId(i, coldefs) {
 }
 
 function getColumnTypeisNumber(i, coldefs) {
-  if (coldefs[i].hasOwnProperty('type_code')) {
-    return coldefs[i].type_code == 23 || coldefs[i].type_code == 701;
-  }
-  return coldefs[i][1] == 23 || coldefs[i][1] == 701;
+  r = false;
+  r = r || coldefs[i].typname.startsWith("_int");
+  r = r || coldefs[i].typname.startsWith("_float");
+  return r
 }
 
 /*----------------------------------------------------------------------------*/
@@ -56,13 +56,13 @@ function getColDef(coldefs) {
     var field = {};
     field["title"] = getColumnName(i, coldefs);
     field["field"] = getColumnId(i, coldefs);
-    if (getColumnTypeisNumber(i, coldefs)) {
-      field["bottomCalc"] = avgCalc;
-      field["topCalc"] = avgCalc;
-    } else if (i == 0) {
+    if (i == 0) {
       field["bottomCalc"] = nCalc;
       field["topCalc"] = nCalc;
       frozen=true;
+    } else if (getColumnTypeisNumber(i, coldefs)) {
+      field["bottomCalc"] = avgCalc;
+      field["topCalc"] = avgCalc;
     }
     res.push(field);
   }

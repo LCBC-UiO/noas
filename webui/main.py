@@ -61,18 +61,53 @@ from
 @app.route('/', methods=['GET'])
 def web_buildquery():
   from db import Db
+  import json
   with Db().get().cursor() as cur:
     cur.execute(sql_getmeta);
-    import json
     meta_json = cur.fetchall()[0].meta_json
-    Db().get().close();
+    #print(json.dumps(meta_json, indent=2, sort_keys=True, default=str))
+    Db().get().close()
     return flask.render_template('dbquery.html', dbmeta=meta_json)
+
+
+sql_getdata_main = """\
+  SELECT {col_selection}
+  FROM core_core as core
+  {joins}
+  WHERE TRUE
+  {where}
+  ORDER BY core.subject_id, core.project_id, core.wave_code
+  LIMIT 10
+"""
 
 @app.route('/query', methods=['GET', 'POST'])
 def web_query():
-  return flask.redirect(flask.url_for('web_buildquery'))
-  #return flask.render_template('dbquery.html', dbmeta=meta_json)
-  #return render_template('dbres.html')
+  from db import Db
+  import json
+  with Db().get().cursor() as cur:
+    cur.execute(sql_getmeta);
+    meta_json = cur.fetchall()[0].meta_json
+    Db().get().close()
+  #print(json.dumps(meta_json, indent=2, sort_keys=True, default=str))
+  sql = sql_getdata_main.format(
+    col_selection="*",
+    joins="",
+    where="",
+  )
+  print(sql)
+  with Db().get().cursor() as cur:
+    cur.execute(sql);
+    rows = cur.fetchall()
+    # header
+    coldescr =  [ dict(name=x.name, typname=Db().typecode2str(x.type_code)) for x in cur.description ]
+    columns = [col['name'] for col in coldescr]
+    # data
+    row_dicts = []
+    for row in rows:
+        row_dicts.append(dict(zip(columns, row)))
+    Db().get().close()
+  return flask.render_template('dbres.html', colnames=coldescr, qrows=row_dicts, gnu_r_str="", dlinfo="")
+
 
 #-------------------------------------------------------------------------------
 
