@@ -17,7 +17,7 @@ where (t.subject_id, t.project_id, t.wave_code) in (select subject_id, project_i
 -- add meta data (table)
 
 insert into metatables (id, category, title)
-values ('{table_name}', 'long', '{table_name}') --TODO: use name from meta-data files
+values ('{table_name}', 'long', INITCAP('{table_name}')) --TODO: use name from meta-data files
 on conflict (id) do nothing;
 
 
@@ -39,7 +39,7 @@ FOR _tbl IN
       AND column_name  like '\_%'
 LOOP
   EXECUTE 
-  'INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES (''{table_name}'', ''' || _tbl || ''',  1, ''' || SUBSTRING(_tbl, 2) || ''') ON CONFLICT DO NOTHING';
+  'INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES (''{table_name}'', ''' || _tbl || ''',  1, ''' || INITCAP(REPLACE(SUBSTRING(_tbl, 2), '_', ' ')) || ''') ON CONFLICT DO NOTHING';
 END LOOP;
 END
 $do$;
