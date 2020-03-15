@@ -134,15 +134,15 @@ CREATE VIEW core_core AS
 
 INSERT INTO metatables (id, category, idx, title) VALUES ('core', 'core', 0, 'Core data');
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_id',          0, 'Subject ID');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_sex',         1, 'Sex');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_birthdate',   2, 'Birth date');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_shareable',   3, 'Sharable');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'visit_visitdate',     4, 'Visit date');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_id',          5, 'Project ID');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_name',        6, 'Project name');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_code',        7, 'Project code');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_description', 8, 'Project description');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_code',           9, 'Wave code');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_id',          1, 'Project ID');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_code',           2, 'Wave code');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_sex',         3, 'Sex');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_birthdate',   4, 'Birth date');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_shareable',   5, 'Sharable');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'visit_visitdate',     6, 'Visit date');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_name',        7, 'Project name');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_code',        8, 'Project code');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_description', 9, 'Project description');
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_description',   10, 'Wave description');
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_reknr',         11, 'Wave REK Nr.');
 
