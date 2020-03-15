@@ -117,7 +117,7 @@ CREATE VIEW core_core AS
     projects.id          AS project_id,
     projects.name        AS project_name,
     projects.code        AS project_code,
-    projects.description AS project_desciption
+    projects.description AS project_description
   FROM
     visits
   LEFT OUTER JOIN waves ON
@@ -133,8 +133,19 @@ CREATE VIEW core_core AS
 -- Add metadata for core table
 
 INSERT INTO metatables (id, category, idx, title) VALUES ('core', 'core', 0, 'Core data');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_id',         0, 'Subject ID');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_birthdate',  1, 'Day of birth');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_id',          0, 'Subject ID');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_sex',         1, 'Sex');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_birthdate',   2, 'Birth date');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_shareable',   3, 'Sharable');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'visit_visitdate',     4, 'Visit date');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_id',          5, 'Project ID');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_name',        6, 'Project name');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_code',        7, 'Project code');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_description', 8, 'Project description');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_code',           9, 'Wave code');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_description',   10, 'Wave description');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_reknr',         11, 'Wave REK Nr.');
+
 
 --------------------------------------------------------------------------------
 

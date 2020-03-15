@@ -79,7 +79,7 @@
                 <!-- </span> -->
               </div>
             </div>
-            {% if fi.idx is divisibleby(4) %}</div><div class="row p-0">{% endif %}
+            {% if (fi.idx + 1) is divisibleby(4) %}</div><div class="row p-0">{% endif %}
           {% endfor %}
           </div>
         </div>
