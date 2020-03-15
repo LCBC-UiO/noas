@@ -79,7 +79,6 @@ FROM core_core as core
 WHERE TRUE AND 
 {where}
 ORDER BY core.subject_id, core.project_id, core.wave_code
--- LIMIT 10
 """
 
 def get_sql_selection(meta_json, rvalues):
@@ -88,12 +87,11 @@ def get_sql_selection(meta_json, rvalues):
       return
     as_pfx = tabmeta['id'] if tabmeta['idx'] != 0 else ''
     for ci in tabmeta['cols']:
-      if rvalues.get('{}{}'.format(tabmeta['id'], ci['id'])) == "1":
+      if rvalues.get('{}{}{}'.format(tabmeta['id'], '_' if tabmeta['idx'] == 0 else '', ci['id'])) == "1":
         sqls.append("{}.{} AS {}".format(tabmeta['id'], ci['id'], as_pfx+ci['id']))
   sqls = []
   for tabmeta in meta_json:
     _get_sql_selection(tabmeta, rvalues, sqls)
-  print(sqls)
   return "\n,".join(sqls)
 
 
@@ -157,7 +155,7 @@ def web_query():
   )
   print(sql)
   with Db().get().cursor() as cur:
-    cur.execute(sql);
+    cur.execute(sql)
     rows = cur.fetchall()
     # header
     coldescr =  [ dict(name=x.name, typname=Db().typecode2str(x.type_code)) for x in cur.description ]

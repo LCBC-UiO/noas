@@ -72,8 +72,8 @@
             <div class="col-sm-3 mb-0">
               <div class='form-group form-check mb-2'>
                 <!-- <span data-toggle="tooltip" title="{{ ti.title }}" data-placement="right"> -->
-                <input type='checkbox' class="form-check-input" id="{{ti.id}}{{fi.id}}" name='{{ti.id}}{{fi.id}}' value="1">
-                <label class="form-check-label ml-4 pl-2 font-weight-normal" for="{{ti.id}}{{fi.id}}">
+                <input type='checkbox' class="form-check-input" id="{{ti.id}}{{ '_' if ti.idx==0 else '' }}{{fi.id}}" name="{{ti.id}}{{ '_' if ti.idx==0 else '' }}{{fi.id}}" value="1">
+                <label class="form-check-label ml-4 pl-2 font-weight-normal" for="{{ti.id}}{{ '_' if ti.idx==0 else '' }}{{fi.id}}">
                   {{ fi.title }}
                 </label>
                 <!-- </span> -->
@@ -132,5 +132,21 @@ $(document).ready(function(){
     })
   });
 });
+</script>
+<script>
+  // preselect checkboxes
+  // TODO: replace the code below. Define checkbox status with meta data in DB
+  // workaround: disabled checkboxes are not submitted with form -> put subjid value in hidden input
+  cb_subjid = document.querySelector("#core_subject_id");
+  cb_subjid.checked = true
+  el = document.createElement("input");
+  el.type = "hidden";
+  el.name = cb_subjid.id;
+  el.value = cb_subjid.value;
+  cb_subjid.parentNode.insertBefore(el, cb_subjid);
+  cb_subjid.disabled = true;
+  document.querySelector("#core_project_id").checked = true;
+  document.querySelector("#core_wave_code").checked  = true;
+  document.querySelector("#core_subject_sex").checked  = true;
 </script>
 {% endblock %}
