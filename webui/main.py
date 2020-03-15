@@ -96,6 +96,17 @@ def get_sql_selection(meta_json, rvalues):
   print(sqls)
   return "\n,".join(sqls)
 
+
+def get_sql_join(meta_json, rvalues):
+  def _get_sql_join_long(tabmeta, rvalues, sqls):
+    if rvalues.get('include_' + tabmeta['id']) != "1" or tabmeta['idx'] == 0:
+      return
+    sqls.append("LEFT OUTER JOIN long_{table_id} {table_id} ON core.subject_id={table_id}.subject_id AND core.project_id={table_id}.project_id AND core.wave_code={table_id}.wave_code".format(table_id=tabmeta['id']))
+  sqls = []
+  for tabmeta in meta_json:
+    _get_sql_join_long(tabmeta, rvalues, sqls)
+  return "\n".join(sqls)
+
 sql_getdata_where_main= """\
 (
 {bool}
@@ -109,7 +120,7 @@ sql_getdata_where_condition_long = """\
 def get_sql_where(meta_json, rvalues):
   def _get_where_long(tabmeta, rvalues, sqlconj):
     # skip non-included tables and core table
-    if rvalues.get('include_{}'.format(tabmeta['id'])) != "1" or tabmeta['idx'] != 0:
+    if rvalues.get('include_{}'.format(tabmeta['id'])) != "1" or tabmeta['idx'] == 0:
       return ""
     return sql_getdata_where_condition_long.format(conjunction=sqlconj, table_id=tabmeta['id'])
   if rvalues.get("options_join") == "all":
@@ -137,10 +148,11 @@ def web_query():
     Db().get().close()
   #print(json.dumps(meta_json, indent=2, sort_keys=True, default=str))
   sql_selection = get_sql_selection(meta_json, flask.request.values)
+  sql_join = get_sql_join(meta_json, flask.request.values)
   sql_where = get_sql_where(meta_json, flask.request.values)
   sql = sql_getdata_main.format(
     col_selection=textwrap.indent(sql_selection, ' ' * 2),
-    joins="",
+    joins=textwrap.indent(sql_join, ' ' * 2),
     where=textwrap.indent(sql_where, ' ' * 2),
   )
   print(sql)

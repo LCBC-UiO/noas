@@ -122,7 +122,7 @@ CREATE VIEW core_core AS
     visits
   LEFT OUTER JOIN waves ON
     visits.wave_code = waves.code
-    and visits.project_id = waves.project_id
+    AND visits.project_id = waves.project_id
   LEFT OUTER JOIN subjects ON
     visits.subject_id = subjects.id
   LEFT OUTER JOIN projects ON
