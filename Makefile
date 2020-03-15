@@ -35,3 +35,8 @@ distclean:
 	$(MAKE) -C 3rdparty clean
 
 
+run_dbimport:
+	singularity exec singularity/moas-r.simg bash bin/dbpopulate.sh
+
+run_webui:
+	singularity exec singularity/moas-flask.simg bash webui/start.sh
