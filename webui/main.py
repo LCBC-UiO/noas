@@ -165,7 +165,7 @@ def web_query():
     for row in rows:
         row_dicts.append(dict(zip(columns, row)))
     Db().get().close()
-  return flask.render_template('dbres.html', colnames=coldescr, qrows=row_dicts, gnu_r_str="", dlinfo="")
+  return flask.render_template('dbres.html', colnames=coldescr, qrows=row_dicts, gnu_r_str="", sql_str=sql, dlinfo="")
 
 
 #-------------------------------------------------------------------------------
