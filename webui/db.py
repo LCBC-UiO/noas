@@ -37,14 +37,12 @@ class Db(metaclass=singleton.Singleton):
 
   # map postgresql type_code to string 
   # (see https://www.postgresql.org/docs/current/static/catalog-pg-type.html)
-  def typecode2str(self, type_code):
-    # only fetch dict once
-    if self._typecode2str is None:
-      with self.get().cursor() as cur:
-        sql = "select json_object_agg(typelem, typname) as tc2str_json from pg_type where typelem > 0 and typarray = 0"
-        cur.execute(sql)
-        self._typecode2str = cur.fetchall()[0].tc2str_json
-        self.get().close()
-    return self._typecode2str[str(type_code)]
+  def get_typecode2str(self):
+    with self.get().cursor() as cur:
+      sql = "select json_object_agg(typelem, typname) as tc2str_json from pg_type where typelem > 0 and typarray = 0"
+      cur.execute(sql)
+      typecode2str = cur.fetchall()[0].tc2str_json
+      self.get().close()
+    return typecode2str
   
 

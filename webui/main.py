@@ -154,11 +154,12 @@ def web_query():
     where=textwrap.indent(sql_where, ' ' * 2),
   )
   print(sql)
+  typecode2str = Db().get_typecode2str()
   with Db().get().cursor() as cur:
     cur.execute(sql)
     rows = cur.fetchall()
     # header
-    coldescr =  [ dict(name=x.name, typname=Db().typecode2str(x.type_code)) for x in cur.description ]
+    coldescr =  [ dict(name=x.name, typname=typecode2str[str(x.type_code)]) for x in cur.description ]
     columns = [col['name'] for col in coldescr]
     # data
     row_dicts = []
