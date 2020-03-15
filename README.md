@@ -12,16 +12,17 @@
       `make prepare_offline_simg`
     * Without internet connection (TSD):  
       Copy `moas-flask.simg` and `moas-r.simg` into `./singularity/`
-  * Edit configuration (set DBPORT and WEBSERVERPORT to a port that is not in use!)  
+  * Edit configuration 
+  (set `DBPORT` and `WEBSERVERPORT` to a port that is not in use!)  
      `cp config_default config.txt` and edit `config.txt`
   * Start database  
     `make dbstart` (use `make dberase` to reset the DB)
   * Import data  
     `make run_dbimport`  
-    (Note: if R deps are installed, you can call `bin/dbpopulate.sh` directly)
+    (Note: If all  R deps are installed, you can call `bin/dbpopulate.sh` directly)
   * Start web UI  
     `make run_webui`  
-    (Note: if Python3 deps are installed, you can call `webui/start.sh` directly)
+    (Note: If all Python3 deps are installed, you can call `webui/start.sh` directly)
 
 ## Requirements
   * make
