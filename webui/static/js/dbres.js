@@ -90,12 +90,12 @@ table.setData(tdata);
 
 /* download buttons */
 document.querySelector("#dlcsv").addEventListener('click', function() {
-  dlfilename = "noda_query_" + dlinfo["date"] + "_" + dlinfo["time"] + "_" + dlinfo["md5"]
+  dlfilename = "noas_query_" + dlinfo["date"] + "_" + dlinfo["time"] + "_" + dlinfo["md5"]
   table.download("csv", dlfilename + ".csv", {delimiter:";"});
 });
 document.querySelector("#dlxlsx").addEventListener('click', function() {
-  dlfilename = "noda_query_" + dlinfo["date"] + "_" + dlinfo["time"] + "_" + dlinfo["md5"]
-  table.download("xlsx", dlfilename + ".xlsx", {sheetName:"NoDa download " + dlinfo["md5"] });
+  dlfilename = "noas_query_" + dlinfo["date"] + "_" + dlinfo["time"] + "_" + dlinfo["md5"]
+  table.download("xlsx", dlfilename + ".xlsx", {sheetName:"NOAS download " + dlinfo["md5"] });
 });
 
 /* table filter */

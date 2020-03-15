@@ -154,6 +154,7 @@ def web_query():
     where=textwrap.indent(sql_where, ' ' * 2),
   )
   print(sql)
+  # get results
   typecode2str = Db().get_typecode2str()
   with Db().get().cursor() as cur:
     cur.execute(sql)
@@ -166,7 +167,21 @@ def web_query():
     for row in rows:
         row_dicts.append(dict(zip(columns, row)))
     Db().get().close()
-  return flask.render_template('dbres.html', colnames=coldescr, qrows=row_dicts, gnu_r_str="", sql_str=sql, dlinfo="")
+  # generate download info
+  dlinfo = dict()
+  def _get_query_md5(rqvals):
+    from hashlib import md5
+    m = md5()
+    qstr=""
+    for k,v in rqvals.items():
+      qstr += "{} = \"{}\"\n".format(k,v)
+    m.update(qstr.encode('utf-8'))
+    return m.hexdigest()[0:7]
+  dlinfo['md5'] = _get_query_md5(flask.request.values) # todo: print belonging query?
+  import datetime
+  dlinfo['date'] = datetime.datetime.now().strftime("%Y-%m-%d")
+  dlinfo['time'] = datetime.datetime.now().strftime("%H.%M")
+  return flask.render_template('dbres.html', colnames=coldescr, qrows=row_dicts, gnu_r_str="", sql_str=sql, dlinfo=dlinfo)
 
 
 #-------------------------------------------------------------------------------
