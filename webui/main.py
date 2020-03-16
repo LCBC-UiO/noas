@@ -35,7 +35,7 @@ from
     mt.title,
     mt.idx,
     (
-			select row_count(mt.category || '_' || mt.id)
+			select row_count(mt.category, mt.id)
 		) as n,
     (
     select
