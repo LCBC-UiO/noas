@@ -1,6 +1,6 @@
 # TODO
 
-  * get metadata from files, for all non-core tables
+  * r/sql/webui: get metadata from files, for all non-core tables
     * general info:
       * long name
       * description?
@@ -11,6 +11,8 @@
         * idea: start with "float" in addition
       * long name
       * description?
-  * support MRI tables (long_* with one additional columns for primary key)
-  * fix date format in query results (currently datetime even for dates)
+  * r/sql/webui: support MRI tables (long_* with one additional columns for primary key)
+  * webui: fix date format in query results (currently datetime even for dates)
+  * webui: support option_output format in /dbquery POST (tsv)
+  * webui: add "import to R" button to results page
   
