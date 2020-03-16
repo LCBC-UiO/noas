@@ -12,4 +12,5 @@
       * long name
       * description?
   * support MRI tables (long_* with one additional columns for primary key)
+  * fix date format in query results (currently datetime even for dates)
   
