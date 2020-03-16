@@ -22,7 +22,7 @@ if os.path.isfile(os.environ['FLASKR_SETTINGS_OVERRIDE']):
 
 #-------------------------------------------------------------------------------
 
-# routes
+# route query builder
 
 sql_getmeta = """\
 select
@@ -70,6 +70,9 @@ def web_buildquery():
     Db().get().close()
     return flask.render_template('dbquery.html', dbmeta=meta_json)
 
+#-------------------------------------------------------------------------------
+
+# route query results
 
 sql_getdata_main = """\
 SELECT 
@@ -167,6 +170,16 @@ def web_query():
     for row in rows:
         row_dicts.append(dict(zip(columns, row)))
     Db().get().close()
+  # TSV output?
+  if flask.request.values.get('options_format', None) == "tsv":
+      # convert to Tsv
+      q_tsv = '\t'.join(str(x.name) for x in cur.description)
+      q_tsv += '\n'
+      for row in row_dicts:
+        print(row)
+        q_tsv += '\t'.join(str(v) for k,v in row.items())
+        q_tsv += '\n'
+      return flask.Response(q_tsv, mimetype="text/plain")
   # generate download info
   dlinfo = dict()
   def _get_query_md5(rqvals):
