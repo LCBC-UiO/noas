@@ -12,6 +12,6 @@
       * long name
       * description?
   * r/sql/webui: support MRI tables (long_* with one additional columns for primary key)
-  * webui: fix date format in query results (currently datetime even for dates)
+
 
   

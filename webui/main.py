@@ -169,6 +169,7 @@ def generate_gnu_r_str(request_values):
 @app.route('/query', methods=['GET', 'POST'])
 def web_query():
   from db import Db
+  import datetime
   import json
   # fetch metadata and build query
   with Db().get().cursor() as cur:
@@ -196,7 +197,13 @@ def web_query():
     # data
     row_dicts = []
     for row in rows:
-        row_dicts.append(dict(zip(columns, row)))
+        row_dict = dict(zip(columns, row))
+        # convert to str
+        # (fixes date format being "Tue, 15 Jun 1954 00:00:00 GMT" instead of 1954-06-15)
+        for k,v in row_dict.items():
+          if type(v) is datetime.date:
+            row_dict[k] = str(v)
+        row_dicts.append(row_dict)
     Db().get().close()
   # TSV output?
   if flask.request.values.get('options_format', None) == "tsv":
