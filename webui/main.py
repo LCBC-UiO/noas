@@ -22,7 +22,7 @@ if os.path.isfile(os.environ['FLASKR_SETTINGS_OVERRIDE']):
 
 #-------------------------------------------------------------------------------
 
-# routes
+# route query builder
 
 sql_getmeta = """\
 select
@@ -70,6 +70,9 @@ def web_buildquery():
     Db().get().close()
     return flask.render_template('dbquery.html', dbmeta=meta_json)
 
+#-------------------------------------------------------------------------------
+
+# route query results
 
 sql_getdata_main = """\
 SELECT 
@@ -136,10 +139,39 @@ def get_sql_where(meta_json, rvalues):
     conjunction_conditions=textwrap.indent(cc, ' ' * 2)
   )
 
+def generate_gnu_r_str(request_values):
+  # generate R code to import query data
+  from config import Config
+  port = Config()['WEBSERVERPORT']
+  host = Config()['WEBSERVERHOSTNAME']
+  gnu_r_str =  '# requires the "httr" library!\n'
+  gnu_r_str += 'if (! "httr" %in% rownames(installed.packages())) {\n'
+  gnu_r_str += '  write("please install the \\"httr\\" library", "")\n'
+  gnu_r_str += '} else {\n'
+  gnu_r_str += "  # define query parameters\n"
+  gnu_r_str += "  body <- list(NULL\n"
+  for k,v in request_values.items():
+    gnu_r_str += "    ,{} = \"{}\"\n".format(k,v)
+  gnu_r_str += "    ,{} = \"{}\"\n".format("options_format", "tsv")
+  gnu_r_str +=  "  )\n"
+  gnu_r_str += "  # download\n"
+  gnu_r_str += '  rx <- httr::POST("http://{}:{}/query",body=body)\n'.format(host, port)
+  gnu_r_str += '  # convert to table\n'
+  gnu_r_str += '  con <- textConnection(httr::content(rx, "text"))\n'
+  gnu_r_str += '  d_noas <- read.table(con, header=T, sep="\\t", na.strings="None")\n'
+  gnu_r_str += '  write("your data is available in \\"d_noas\\"", "")\n'
+  gnu_r_str += '  close(con)\n'
+  gnu_r_str += '}\n'
+  gnu_r_str += "\n"
+  gnu_r_str += "\n"
+  return gnu_r_str
+
 @app.route('/query', methods=['GET', 'POST'])
 def web_query():
   from db import Db
+  import datetime
   import json
+  # fetch metadata and build query
   with Db().get().cursor() as cur:
     cur.execute(sql_getmeta);
     meta_json = cur.fetchall()[0].meta_json
@@ -165,8 +197,24 @@ def web_query():
     # data
     row_dicts = []
     for row in rows:
-        row_dicts.append(dict(zip(columns, row)))
+        row_dict = dict(zip(columns, row))
+        # convert to str
+        # (fixes date format being "Tue, 15 Jun 1954 00:00:00 GMT" instead of 1954-06-15)
+        for k,v in row_dict.items():
+          if type(v) is datetime.date:
+            row_dict[k] = str(v)
+        row_dicts.append(row_dict)
     Db().get().close()
+  # TSV output?
+  if flask.request.values.get('options_format', None) == "tsv":
+      # convert to Tsv
+      q_tsv = '\t'.join(str(x.name) for x in cur.description)
+      q_tsv += '\n'
+      for row in row_dicts:
+        print(row)
+        q_tsv += '\t'.join(str(v) for k,v in row.items())
+        q_tsv += '\n'
+      return flask.Response(q_tsv, mimetype="text/plain")
   # generate download info
   dlinfo = dict()
   def _get_query_md5(rqvals):
@@ -181,7 +229,8 @@ def web_query():
   import datetime
   dlinfo['date'] = datetime.datetime.now().strftime("%Y-%m-%d")
   dlinfo['time'] = datetime.datetime.now().strftime("%H.%M")
-  return flask.render_template('dbres.html', colnames=coldescr, qrows=row_dicts, gnu_r_str="", sql_str=sql, dlinfo=dlinfo)
+  gnu_r_str = generate_gnu_r_str(flask.request.values)
+  return flask.render_template('dbres.html', colnames=coldescr, qrows=row_dicts, gnu_r_str=gnu_r_str, sql_str=sql, dlinfo=dlinfo)
 
 
 #-------------------------------------------------------------------------------
