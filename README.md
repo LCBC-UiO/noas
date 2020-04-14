@@ -14,7 +14,7 @@
       Copy `moas-flask.simg` and `moas-r.simg` into `./singularity/`
   * Edit configuration 
     (set `DBPORT` and `WEBSERVERPORT` to a port that is not in use!)  
-     `cp config_default config.txt` and edit `config.txt`
+     `cp config_default.txt config.txt` and edit `config.txt`
   * Start database  
     `make dbstart` (use `make dberase` to reset the DB)
   * Import data  
