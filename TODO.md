@@ -1,5 +1,11 @@
 # TODO
 
+  * r/sql/webui: support a category for each table
+    * to get a better overvew in webui
+    * can be done by 
+      * sub-folder
+      * info in metadata file
+      * prefix for folder
   * r/sql/webui: get metadata from files, for all non-core tables
     * general info:
       * long name
