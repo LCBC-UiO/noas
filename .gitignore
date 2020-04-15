@@ -6,3 +6,4 @@ db/*
 config.txt
 .Rhistory
 singularity/*.simg
+webui/__pycache__/*
