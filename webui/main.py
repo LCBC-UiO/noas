@@ -103,9 +103,16 @@ def get_sql_join(meta_json, rvalues):
     if rvalues.get('include_' + tabmeta['id']) != "1" or tabmeta['idx'] == 0:
       return
     sqls.append("LEFT OUTER JOIN long_{table_id} {table_id} ON core.subject_id={table_id}.subject_id AND core.project_id={table_id}.project_id AND core.wave_code={table_id}.wave_code".format(table_id=tabmeta['id']))
+  def _get_sql_join_repeated(tabmeta, rvalues, sqls):
+    if rvalues.get('include_' + tabmeta['id']) != "1" or tabmeta['idx'] == 0:
+      return
+    sqls.append("LEFT OUTER JOIN repeated_{table_id} {table_id} ON core.subject_id={table_id}.subject_id AND core.project_id={table_id}.project_id AND core.wave_code={table_id}.wave_code".format(table_id=tabmeta['id']))
   sqls = []
   for tabmeta in meta_json:
-    _get_sql_join_long(tabmeta, rvalues, sqls)
+    if (tabmeta['category'] == "long"):
+      _get_sql_join_long(tabmeta, rvalues, sqls)
+    elif (tabmeta['category'] == "repeated"):
+      _get_sql_join_repeated(tabmeta, rvalues, sqls)
   return "\n".join(sqls)
 
 sql_getdata_where_main= """\
@@ -117,13 +124,19 @@ sql_getdata_where_main= """\
 sql_getdata_where_condition_long = """\
   {conjunction} core.subject_id IN (SELECT DISTINCT(subject_id) FROM long_{table_id} t WHERE t.project_id=core.project_id AND t.project_id=core.project_id AND t.wave_code=core.wave_code)
 """
+sql_getdata_where_condition_repeated = """\
+  {conjunction} core.subject_id IN (SELECT DISTINCT(subject_id) FROM repeated_{table_id} t WHERE t.project_id=core.project_id AND t.project_id=core.project_id AND t.wave_code=core.wave_code)
+"""
 
 def get_sql_where(meta_json, rvalues):
   def _get_where_long(tabmeta, rvalues, sqlconj):
     # skip non-included tables and core table
     if rvalues.get('include_{}'.format(tabmeta['id'])) != "1" or tabmeta['idx'] == 0:
       return ""
-    return sql_getdata_where_condition_long.format(conjunction=sqlconj, table_id=tabmeta['id'])
+    if tabmeta['category'] == "long":
+      return sql_getdata_where_condition_long.format(conjunction=sqlconj, table_id=tabmeta['id'])
+    if tabmeta['category'] == "repeated":
+      return sql_getdata_where_condition_repeated.format(conjunction=sqlconj, table_id=tabmeta['id'])
   if rvalues.get("options_join") == "all":
     return "TRUE"
   b    = "TRUE" if rvalues.get("options_join") == "intersect" else "FALSE"
