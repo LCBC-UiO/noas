@@ -8,12 +8,18 @@ ALTER TABLE tmp_{table_name}
   ALTER column project_id TYPE text,
   ALTER column wave_code TYPE numeric(2,1);
 
+-- to suppress the notice that the table might already exist
+SET client_min_messages = error;
+
 -- define the table
 CREATE TABLE IF NOT EXISTS long_{table_name} (
   LIKE tmp_{table_name} including ALL,
   constraint {table_name}_pk PRIMARY KEY (subject_id, project_id, wave_code),
   constraint {table_name}_visit_fk FOREIGN KEY (subject_id, project_id, wave_code) REFERENCES visits(subject_id, project_id, wave_code)
 );
+
+-- reset the notice suppression, so it will not contaminate other later messages
+SELECT set_config('client_min_messages', 'error', true);
 
 -- copy temporary data to defined table
 INSERT INTO long_{table_name} 
