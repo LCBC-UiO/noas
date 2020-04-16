@@ -165,7 +165,81 @@ add_long_table <- function(table_name,
                                 table_name = table_name,
                                 orig_name = ffiles[i])
   }
+  
+  invisible(j)
+}
 
+# repeated tables ----
+#' Insert repeated data to DB
+#' 
+#' Calls insert_table with some presets
+#' to add repeated data in an
+#' easy way to the DB.
+#'
+#' @param x data.frame table to add
+#' @param con database connection
+#' @param table_name name to give the table
+#' @param orig_name file name of originating file
+insert_table_repeated <- function(x, 
+                              con, 
+                              table_name, 
+                              orig_name = table_name){
+  
+  j <- insert_table(x, con, table_name,
+                    template = "sql/insert_repeated_table.sql",
+                    #append = TRUE,
+                    temporary = TRUE,
+                    overwrite = TRUE
+  )
+  
+  cat_table_success(j, orig_name)
+  invisible(j)
+}
+
+
+#' Add long table to database
+#' 
+#' will add a repeated table to the 
+#' databse using \code{\link{insert_table_repeated}}, 
+#' also removing the table name from the 
+#' headers for cleaner representation in the 
+#' data base.
+#'
+#' @param table_name name of the table 
+#' @param con database connection
+#' @param db_dir directory for the databse
+#'
+#' @return success of adding, invisible
+#' @export
+add_repeated_table <- function(table_name, 
+                           con, 
+                           db_dir){
+  cat(crayon::bold("---", table_name, "---\n")) 
+  
+  dir <- file.path(db_dir, table_name)
+  
+  ffiles <- list.files(dir, "tsv$", full.names = TRUE)
+  
+  ft <- lapply(ffiles, read_dbtable)
+  
+  # take away table name from column headers
+  ft <- lapply(ft, dplyr::rename_all, .funs = function(x) gsub(table_name, "", x))
+  
+  # Turn all in to character
+  ft <- lapply(ft, dplyr::mutate_at, 
+               .vars = dplyr::vars(dplyr::starts_with("_")), 
+               .funs = as.character)
+  
+  ffiles <- basename(ffiles)
+  
+  j <- list()
+  for(i in 1:length(ft)){
+    j[[i]] <- insert_table_repeated(x = ft[[i]], 
+                                con = con, 
+                                table_name = table_name,
+                                orig_name = ffiles[i])
+  }
+  
   invisible(j)
 }
 
