@@ -9,3 +9,4 @@ singularity/*.simg
 webui/__pycache__/*
 .Rproj.user$
 ^.Rproj$
+.Rproj.user
