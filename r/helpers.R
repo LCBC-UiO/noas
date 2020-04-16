@@ -58,8 +58,38 @@ insert_table <- function(x,
            table_name,";")
   )
   )
+}
+
+#' Print out table adding success
+#'
+#' @param success logical vector for successes
+#' @param names charatcer vector of equal length as \code{success}
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' log_vect <- c(TRUE, TRUE, FALSE)
+#' log_name <- c("tab1", "tab2", "tab3")
+#' cat_table_success("tables added", log_vect, log_name)
+cat_table_success <- function(success, names){
   
-  cat("\nTable added sucessfully\t")
+  if(length(success) != length(names))
+    stop("success and names are not of equal length", call. = FALSE)
+  
+  if(length(success) == 0){
+    cat(crayon::yellow("\U0021"), "no tables added")
+  }else{
+    
+    j <- lapply(success, function(x) ifelse(x, 
+                                            crayon::green("\U2713"), 
+                                            crayon::red("\U10102")))
+    j <- unlist(j)
+    
+    j <- paste(j, names, sep=" ")
+    cat(j)
+  }
+  cat("\n")
 }
 
 # long tables ----
@@ -72,16 +102,21 @@ insert_table <- function(x,
 #' @param x data.frame table to add
 #' @param con database connection
 #' @param table_name name to give the table
+#' @param orig_name file name of originating file
 insert_table_long <- function(x, 
                               con, 
-                              table_name){
+                              table_name, 
+                              orig_name = table_name){
   
   j <- insert_table(x, con, table_name,
-               template = "sql/insert_long_table.sql",
-               #append = TRUE,
-               temporary = TRUE,
-               overwrite = TRUE
+                    template = "sql/insert_long_table.sql",
+                    #append = TRUE,
+                    temporary = TRUE,
+                    overwrite = TRUE
   )
+  
+  cat(j)
+  cat_table_success(j, orig_name)
   invisible(j)
 }
 
@@ -126,6 +161,8 @@ submit_long_table <- function(x, cols, predicate, table_name){
 add_long_table <- function(table_name, 
                            con, 
                            db_dir){
+  
+  cat(crayon::bold("---", table_name, "---\n")) 
   
   dir <- file.path(db_dir, table_name)
   
