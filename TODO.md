@@ -21,5 +21,7 @@
   * r/sql: how to handle undefined visits for long/repeated?
     * currently, rows are silently discarded if (subj_id, project_id, wave_code) is not defined in core
   * r/sql: how to connect multiple repeated tables?
+    * problem: without referencing each others visit_id, the query will split their data into separate rows
     * cbind before importing?
+  * data/test_data: rm NA-only rows? 
 
