@@ -1,36 +1,36 @@
 -- create temporary table in order to check against existing data
-select * from tmp_{table_name} t
-where (t.subject_id, t.project_id, t.wave_code) in (select subject_id, project_id, wave_code from visits);
+SELECT * FROM tmp_{table_name} t
+  WHERE (t.subject_id, t.project_id, t.wave_code) IN (SELECT subject_id, project_id, wave_code FROM visits);
 
 -- make keys into specific types
-alter table tmp_{table_name} 
-    alter column subject_id type int,
-    alter column project_id type text,
-    alter column wave_code type numeric(2,1);
+ALTER TABLE tmp_{table_name} 
+  ALTER column subject_id TYPE int,
+  ALTER column project_id TYPE text,
+  ALTER column wave_code TYPE numeric(2,1);
 
 -- define the table
-create table if not exists long_{table_name} (
-like tmp_{table_name} including all,
-constraint {table_name}_pk primary key (subject_id, project_id, wave_code),
-constraint {table_name}_visit_fk FOREIGN KEY (subject_id, project_id, wave_code) REFERENCES visits(subject_id, project_id, wave_code)
+CREATE TABLE IF NOT EXISTS long_{table_name} (
+  LIKE tmp_{table_name} including ALL,
+  constraint {table_name}_pk PRIMARY KEY (subject_id, project_id, wave_code),
+  constraint {table_name}_visit_fk FOREIGN KEY (subject_id, project_id, wave_code) REFERENCES visits(subject_id, project_id, wave_code)
 );
 
 -- copy temporary data to defined table
-insert into long_{table_name} 
-select * from tmp_{table_name} t
-where (t.subject_id, t.project_id, t.wave_code) in (select subject_id, project_id, wave_code from visits);
+INSERT INTO long_{table_name} 
+  SELECT * FROM tmp_{table_name} t
+  WHERE (t.subject_id, t.project_id, t.wave_code) IN (SELECT subject_id, project_id, wave_code FROM visits);
 
 -- add meta data (table)
 
-insert into metatables (id, category, title)
-values ('{table_name}', 'long', INITCAP('{table_name}')) --TODO: use name from meta-data files
-on conflict (id) do nothing;
+INSERT INTO metatables (id, category, title)
+  VALUES ('{table_name}', 'long', INITCAP('{table_name}')) --TODO: use name FROM meta-data files
+  ON conflict (id) do nothing;
 
 
 -- add meta data (columns)
 
 -- TODO: Replace the code below.
---       This data in meatacolumns will have to come from some meta-data files
+--       This data in meatacolumns will have to come FROM some meta-data files
 --       For now is just some auto-generated stuff.
 DO
 $do$
