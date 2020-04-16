@@ -178,8 +178,17 @@ add_long_table <- function(table_name,
                .vars = dplyr::vars(dplyr::starts_with("_")), 
                .funs = as.character)
   
-  j <- lapply(ft, insert_table_long, con = con, table_name = table_name)
-  invisible(j)
+  ffiles <- basename(ffiles)
+  
+  j <- list()
+  for(i in 1:length(ft)){
+    j[[i]] <- insert_table_long(x = ft[[i]], 
+                                con = con, 
+                                table_name = table_name,
+                                orig_name = ffiles[i])
+  }
+
+    invisible(j)
 }
 
 
