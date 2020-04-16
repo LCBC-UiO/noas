@@ -1,15 +1,17 @@
-# Helper functions
+# Helper functions ----
 
-#' Read in sql file
+#' Connect to the DB through R
 #'
-#' @param path path to sql file
-#'
-#' @return character
+#' @return PostgreSQL connection
 #' @export
-read_sql <- function(path, ...){
-  readChar(path, file.info(path)$size, ...)
+moasdb_connect <- function(){
+  cfg <- read_config()
+  DBI::dbConnect(RPostgreSQL::'PostgreSQL'(), #":memory:",
+                 user=cfg$DBUSER, 
+                 port=cfg$DBPORT,
+                 dbname=cfg$DBNAME, 
+                 host=cfg$DBHOST)
 }
-
 
 
 #' Insert table into DB
@@ -23,7 +25,7 @@ read_sql <- function(path, ...){
 #' @param con database connection
 #' @param table_name name to give the table
 #' @param template_path path to the SQL template to apply
-#' @param ... additional arguments to \code{\link{DBI::dbWriteTable}}
+#' @param ... additional arguments to \code{\link[DBI]{dbWriteTable}}
 insert_table <- function(x, 
                          con, 
                          table_name, 
@@ -60,15 +62,18 @@ insert_table <- function(x,
   cat("\nTable added sucessfully\t")
 }
 
-
+# long tables ----
 #' Insert lognitudinal data to DB
 #' 
 #' Calls insert_table with some presets
 #' to add longitudinal data in an
 #' easy way to the DB.
 #'
-#' @inheritParams insert_table
-insert_table_long <- function(x, con, 
+#' @param x data.frame table to add
+#' @param con database connection
+#' @param table_name name to give the table
+insert_table_long <- function(x, 
+                              con, 
                               table_name){
   
   j <- insert_table(x, con, table_name,
@@ -84,7 +89,8 @@ insert_table_long <- function(x, con,
 #' 
 #' calls \code{\link{insert_table_long}}
 #' to add more data to the data-base
-#'
+#' Where do we use this??
+#' 
 #' @param x data.frame containing data to add
 #' @param cols selection of columns to add
 #' @param predicate any logic to apply to reduce rows of data
@@ -165,3 +171,15 @@ read_config <- function() {
   }
   return(cfg)
 }
+
+
+#' Read in sql file
+#'
+#' @param path path to sql file
+#'
+#' @return character
+#' @export
+read_sql <- function(path, ...){
+  readChar(path, file.info(path)$size, ...)
+}
+
