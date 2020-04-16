@@ -163,7 +163,6 @@ insert_table_long <- function(x,
 add_long_table <- function(table_name, 
                            con, 
                            db_dir){
-  
   cat(crayon::bold("---", table_name, "---\n")) 
   
   dir <- file.path(db_dir, table_name)
@@ -189,7 +188,7 @@ add_long_table <- function(table_name,
                                 table_name = table_name,
                                 orig_name = ffiles[i])
   }
-  
+  cat("\n")
   invisible(j)
 }
 
