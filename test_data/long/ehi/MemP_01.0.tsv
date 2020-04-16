@@ -1,4 +1,4 @@
-subject_id	project_id	wave_code	ehi_le	ehi_nominal	ehi_coded	ehi_date	ehi_01	ehi_02	ehi_03	ehi_04	ehi_05	ehi_06	ehi_07	ehi_08	ehi_09	ehi_10
+subject_id	project_id	wave_code	ehi	ehi_nominal	ehi_coded	ehi_date	ehi_01	ehi_02	ehi_03	ehi_04	ehi_05	ehi_06	ehi_07	ehi_08	ehi_09	ehi_10
 9901718	MemP	1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
 9900683	MemP	1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
 9901922	MemP	1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
