@@ -18,4 +18,8 @@
       * long name
       * description?
   * r/sql/webui: support MRI tables (long_* with one additional columns for primary key)
+  * r/sql: how to handle undefined visits for long/repeated?
+    * currently, rows are silently discarded if (subj_id, project_id, wave_code) is not defined in core
+  * r/sql: how to connect multiple repeated tables?
+    * cbind before importing?
 
