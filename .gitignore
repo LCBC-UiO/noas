@@ -7,3 +7,5 @@ config.txt
 .Rhistory
 singularity/*.simg
 webui/__pycache__/*
+.Rproj.user$
+^.Rproj$
