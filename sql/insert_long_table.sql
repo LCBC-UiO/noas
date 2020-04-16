@@ -2,6 +2,12 @@
 select * from tmp_{table_name} t
 where (t.subject_id, t.project_id, t.wave_code) in (select subject_id, project_id, wave_code from visits);
 
+-- make keys into specific types
+alter table tmp_{table_name} 
+    alter column subject_id type int,
+    alter column project_id type text,
+    alter column wave_code type numeric(2,1);
+
 -- define the table
 create table if not exists long_{table_name} (
 like tmp_{table_name} including all,

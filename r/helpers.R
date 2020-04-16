@@ -40,7 +40,7 @@ insert_table <- function(x,
       ...
     )
     
-    if(k == FALSE) stop("tmp table not initiated",
+    if(k == FALSE) stop("\ntmp table not initiated\n",
                         call. = FALSE)
     
     template <- read_sql(template_path)
@@ -57,7 +57,7 @@ insert_table <- function(x,
   )
   )
   
-  cat("Table added sucessfully")
+  cat("\nTable added sucessfully\t")
 }
 
 
@@ -71,15 +71,26 @@ insert_table <- function(x,
 insert_table_long <- function(x, con, 
                               table_name){
   
-  insert_table(x, con, table_name,
+  j <- insert_table(x, con, table_name,
                template = "sql/insert_long_table.sql",
                #append = TRUE,
                temporary = TRUE,
                overwrite = TRUE
   )
-  
+  invisible(j)
 }
 
+#' Add long data to a table
+#' 
+#' calls \code{\link{insert_table_long}}
+#' to add more data to the data-base
+#'
+#' @param x data.frame containing data to add
+#' @param cols selection of columns to add
+#' @param predicate any logic to apply to reduce rows of data
+#' @param table_name name to give the table
+#'
+#' @export
 submit_long_table <- function(x, cols, predicate, table_name){
   x <- dplyr::select(x, 
                      subject_id,
@@ -93,6 +104,10 @@ submit_long_table <- function(x, cols, predicate, table_name){
 }
 
 
+#' Connect to the DB through R
+#'
+#' @return PostgreSQL connection
+#' @export
 moasdb_connect <- function(){
   cfg <- read_config()
   DBI::dbConnect(RPostgreSQL::'PostgreSQL'(), #":memory:",
@@ -102,12 +117,32 @@ moasdb_connect <- function(){
                  host=cfg$DBHOST)
 }
 
-read_dbtable <- function(file){
-  read.table(file, header = TRUE, sep = "\t", 
+#' Read database table
+#' 
+#' Convenience function to easily read 
+#' db tables without needing to set
+#' extra arguments
+#'
+#' @param path path to table
+#'
+#' @return data.frame
+#' @export
+read_dbtable <- function(path){
+  read.table(path, header = TRUE, sep = "\t", 
                    stringsAsFactors = FALSE)
 }
 
 
+#' Read config file
+#' 
+#' The data base has a config.txt
+#' file where some settings for the
+#' data base is set. This function
+#' reads in that file and makes
+#' available these settings for use.
+#'
+#' @return list
+#' @export
 read_config <- function() {
   cfg <- list()
   .add_configs <- function(cfg, fn) {
