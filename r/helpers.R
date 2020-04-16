@@ -94,6 +94,30 @@ cat_table_success <- function(success, names){
   cat("\n")
 }
 
+rename_table_headers <- function(ft, table_name){
+
+  # if a column has the same name as the table_name
+  # do a small renaming to allow it to happen
+  if(table_name %in% names(ft[[1]])){
+    idx <- which(names(ft[[1]]) %in% table_name)
+    new <- paste(table_name, table_name, sep="_")
+    
+    cat(crayon::yellow("!"), "column name same as table name.",
+        crayon::yellow("\n!"), "Renaming column", crayon::italic(table_name), "to", 
+        crayon::italic(paste(table_name, table_name, sep = "_")),
+        "\n")
+    
+    ft <- lapply(ft, dplyr::rename_all, 
+                 .funs = function(x) gsub(paste0("^", table_name, "$"), new, x))
+  }
+  
+  # take away table name from column headers
+  ft <- lapply(ft, dplyr::rename_all, 
+               .funs = function(x) gsub(paste0("^", table_name), "", x))
+  
+  ft
+}
+
 # long tables ----
 #' Insert lognitudinal data to DB
 #' 
