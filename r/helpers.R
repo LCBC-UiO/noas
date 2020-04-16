@@ -171,12 +171,13 @@ add_long_table <- function(table_name,
   
   ft <- lapply(ffiles, read_dbtable)
   
-  # take away table name from column headers
-  ft <- lapply(ft, dplyr::rename_all, .funs = function(x) gsub(table_name, "", x))
   
-  # Turn all in to character
+  # remove table name from headers
+  ft <- rename_table_headers(ft, table_name)
+  
+  # Turn all in to character, except first three key variables
   ft <- lapply(ft, dplyr::mutate_at, 
-               .vars = dplyr::vars(dplyr::starts_with("_")), 
+               .vars = dplyr::vars(-1:-3), 
                .funs = as.character)
   
   ffiles <- basename(ffiles)
