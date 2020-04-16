@@ -1,5 +1,4 @@
 # Populate longitudinal tables
-library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 
 # get helper functions
 source('r/helpers.R')

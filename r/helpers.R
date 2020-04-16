@@ -76,12 +76,14 @@ cat_table_success <- function(success, names){
   
   if(length(success) != length(names))
     stop("success and names are not of equal length", call. = FALSE)
-  
+
   if(length(success) == 0){
     cat(crayon::yellow("\U0021"), "no tables added")
   }else{
     
-    j <- lapply(success, function(x) ifelse(x, 
+    # if success is TRUE or 0 (adding to existing tables),
+    # return green checkmark, else return red x
+    j <- lapply(success, function(x) ifelse(x | x == 0, 
                                             crayon::green("\U2713"), 
                                             crayon::red("\U10102")))
     j <- unlist(j)
@@ -115,7 +117,6 @@ insert_table_long <- function(x,
                     overwrite = TRUE
   )
   
-  cat(j)
   cat_table_success(j, orig_name)
   invisible(j)
 }
@@ -188,7 +189,7 @@ add_long_table <- function(table_name,
                                 orig_name = ffiles[i])
   }
 
-    invisible(j)
+  invisible(j)
 }
 
 
