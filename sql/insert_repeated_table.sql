@@ -6,7 +6,7 @@ SELECT * FROM tmp_{table_name} t
 ALTER TABLE tmp_{table_name} 
   ALTER column subject_id TYPE int,
   ALTER column project_id TYPE text,
-  ALTER column wave_code TYPE numeric(2,1);
+  ALTER column wave_code TYPE numeric(3,1);
 
 -- define the table
 CREATE TABLE IF NOT EXISTS repeated_{table_name} (
