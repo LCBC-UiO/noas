@@ -254,12 +254,11 @@ add_repeated_table <- function(table_name,
   forth <- names(ft[[1]])[4]
   if(forth != "visit_id"){
     cat(crayon::yellow("!"), "Forth column is not", crayon::italic("visit_id"),
-        crayon::yellow("\n!"), "Copying column", crayon::italic(forth), "to", 
+        crayon::yellow("\n!"), "Renaming column", crayon::italic(forth), "to", 
         crayon::italic("visit_id"),
         "\n")
-    ft <- lapply(ft, function(x) dplyr::mutate(x, visit_id = get(forth)))
-    ft <- lapply(ft, function(x) dplyr::select(x, subject_id, project_id,
-                                         wave_code, visit_id, dplyr::everything()))  
+    ft <- lapply(ft, function(x) dplyr::rename(x, 
+                                               visit_id = tidyselect::all_of(forth)))
   }
   
   # Turn all in to character
