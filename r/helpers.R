@@ -121,29 +121,6 @@ insert_table_long <- function(x,
   invisible(j)
 }
 
-#' Add long data to a table
-#' 
-#' calls \code{\link{insert_table_long}}
-#' to add more data to the data-base
-#' Where do we use this??
-#' 
-#' @param x data.frame containing data to add
-#' @param cols selection of columns to add
-#' @param predicate any logic to apply to reduce rows of data
-#' @param table_name name to give the table
-#'
-#' @export
-submit_long_table <- function(x, cols, predicate, table_name){
-  x <- dplyr::select(x, 
-                     subject_id,
-                     project_id,
-                     wave_code,
-                     {{cols}})
-  x <-  dplyr::filter(x, {{predicate}})
-  x <-  dplyr::rename_all(x, tolower)
-  x <-  dplyr::distinct(x)
-  insert_table_long(x, con, table_name)
-}
 
 #' Add long table to database
 #' 
