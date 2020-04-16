@@ -102,7 +102,7 @@ rename_table_headers <- function(ft, table_name){
     idx <- which(names(ft[[1]]) %in% table_name)
     new <- paste(table_name, table_name, sep="_")
     
-    cat(crayon::yellow("!"), "column name same as table name.",
+    cat(crayon::yellow("!"), "Column name same as table name.",
         crayon::yellow("\n!"), "Renaming column", crayon::italic(table_name), "to", 
         crayon::italic(paste(table_name, table_name, sep = "_")),
         "\n")
@@ -117,6 +117,7 @@ rename_table_headers <- function(ft, table_name){
   
   ft
 }
+
 
 # long tables ----
 #' Insert lognitudinal data to DB
