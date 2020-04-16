@@ -109,20 +109,44 @@ submit_long_table <- function(x, cols, predicate, table_name){
   insert_table_long(x, con, table_name)
 }
 
-
-#' Connect to the DB through R
+#' Add long table to database
+#' 
+#' will add a long table to the 
+#' databse using \code{\link{insert_table_long}}, 
+#' also removing the table name from the 
+#' headers for cleaner representation in the 
+#' data base.
 #'
-#' @return PostgreSQL connection
+#' @param table_name name of the table 
+#' @param con database connection
+#' @param db_dir directory for the databse
+#'
+#' @return success of adding, invisible
 #' @export
-moasdb_connect <- function(){
-  cfg <- read_config()
-  DBI::dbConnect(RPostgreSQL::'PostgreSQL'(), #":memory:",
-                 user=cfg$DBUSER, 
-                 port=cfg$DBPORT,
-                 dbname=cfg$DBNAME, 
-                 host=cfg$DBHOST)
+add_long_table <- function(table_name, 
+                           con, 
+                           db_dir){
+  
+  dir <- file.path(db_dir, table_name)
+  
+  ffiles <- list.files(dir, "tsv$", full.names = TRUE)
+  
+  ft <- lapply(ffiles, read_dbtable)
+  
+  # take away table name from column headers
+  ft <- lapply(ft, dplyr::rename_all, .funs = function(x) gsub(table_name, "", x))
+  
+  # Turn all in to character
+  ft <- lapply(ft, dplyr::mutate_at, 
+               .vars = dplyr::vars(dplyr::starts_with("_")), 
+               .funs = as.character)
+  
+  j <- lapply(ft, insert_table_long, con = con, table_name = table_name)
+  invisible(j)
 }
 
+
+# read functions ----
 #' Read database table
 #' 
 #' Convenience function to easily read 
