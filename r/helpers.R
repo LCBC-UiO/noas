@@ -249,10 +249,22 @@ add_repeated_table <- function(table_name,
   
   # take away table name from column headers
   ft <- lapply(ft, dplyr::rename_all, .funs = function(x) gsub(table_name, "", x))
+
+  # forth column should be column making row unique
+  forth <- names(ft[[1]])[4]
+  if(forth != "visit_id"){
+    cat(crayon::yellow("!"), "Forth column is not", crayon::italic("visit_id"),
+        crayon::yellow("\n!"), "Copying column", crayon::italic(forth), "to", 
+        crayon::italic("visit_id"),
+        "\n")
+    ft <- lapply(ft, function(x) dplyr::mutate(x, visit_id = get(forth)))
+    ft <- lapply(ft, function(x) dplyr::select(x, subject_id, project_id,
+                                         wave_code, visit_id, dplyr::everything()))  
+  }
   
   # Turn all in to character
   ft <- lapply(ft, dplyr::mutate_at, 
-               .vars = dplyr::vars(dplyr::starts_with("_")), 
+               .vars = dplyr::vars(-1:-4), 
                .funs = as.character)
   
   ffiles <- basename(ffiles)
