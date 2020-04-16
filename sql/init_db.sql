@@ -1,3 +1,5 @@
+-- suppress NOTICE messages
+SET client_min_messages = warning;
 
 -- Delete everything in the database
 
