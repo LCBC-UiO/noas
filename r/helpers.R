@@ -205,7 +205,7 @@ add_long_table <- function(table_name,
 #' @export
 read_dbtable <- function(path){
   read.table(path, header = TRUE, sep = "\t", 
-                   stringsAsFactors = FALSE)
+             stringsAsFactors = FALSE)
 }
 
 
