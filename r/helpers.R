@@ -261,7 +261,9 @@ add_long_table <- function(table_name,
   
   # Turn all in to character, except first three key variables
   ft <- lapply(ft, dplyr::mutate_at, 
-               .vars = dplyr::vars(-1:-3), 
+               .vars = dplyr::vars(-subject_id,
+                                   -project_id,
+                                   -wave_code), 
                .funs = as.character)
   
   ffiles <- basename(ffiles)
@@ -344,9 +346,11 @@ add_repeated_table <- function(table_name,
   ft <- lapply(ft, dplyr::rename_all, 
                .funs = function(x) gsub(visit_id_column_old, visit_id_column_new, x))
 
-  # Turn all in to character
+  # Turn all in to character, except first three key variables
   ft <- lapply(ft, dplyr::mutate_at, 
-               .vars = dplyr::vars(-1:-4), 
+               .vars = dplyr::vars(-subject_id,
+                                   -project_id,
+                                   -wave_code), 
                .funs = as.character)
   
   ffiles <- basename(ffiles)

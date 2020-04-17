@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS {table_name} (
 );
 
 INSERT INTO {table_name} 
-  SELECT * FROM tmp_{table_name} {table_name}
+  SELECT * FROM tmp_{table_name} {table_name} 
   WHERE ({table_name}.subject_id, {table_name}.project_id, {table_name}.wave_code) IN (SELECT subject_id, project_id, wave_code FROM visit);
