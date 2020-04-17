@@ -7,7 +7,7 @@ source('r/helpers.R')
 # establish connection
 con <- moasdb_connect()
 
-db_dir <- read_config()$TABDIR_CORE
+db_dir <- file.path(read_config()$TABDIR, "core")
 
 cat(crayon::bold("\nAdding core tables\n"))
 

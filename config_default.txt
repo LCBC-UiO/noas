@@ -2,9 +2,7 @@
 # Create a new file "config.txt" and override any of the variables below
 
 # tables
-TABDIR_CORE="test_data/core/"
-TABDIR_LONG="test_data/long/" # longitudinal
-TABDIR_REPEATED="test_data/repeated/" # longitudinal with 2+ sessions per visit
+TABDIR="test_data/"
 
 # DB connection info
 DBHOST="localhost"

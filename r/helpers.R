@@ -394,7 +394,14 @@ read_dbtable <- function(path){
 read_config <- function() {
   cfg <- list()
   .add_configs <- function(cfg, fn) {
-    for (line in readLines(fn)) {
+    lines <- readLines(fn)
+    
+    # remove comments
+    lines <- lines[!grepl("^#", lines)]
+    # remove empty lines
+    lines <- lines[lines != ""]
+    
+    for (line in lines) {
       line  <- gsub("#.*$", "" , line) # remove comments
       line  <- gsub("\ *$", "" , line) # remove trailing spaces
       if (line == "") { # skip empy lines

@@ -6,7 +6,7 @@ source('r/helpers.R')
 # establish connection
 con <- moasdb_connect()
 
-db_dir <- read_config()$TABDIR_LONG
+db_dir <- file.path(read_config()$TABDIR, "long")
 
 # list all directoried in the long db directory, except first, which is parent dir
 tables <- list.dirs(db_dir, full.names = FALSE)[-1]
