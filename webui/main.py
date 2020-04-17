@@ -122,10 +122,11 @@ sql_getdata_where_main= """\
 """
 
 sql_getdata_where_condition_long = """\
-  {conjunction} core.subject_id IN (SELECT DISTINCT(subject_id) FROM long_{table_id} t WHERE t.project_id=core.project_id AND t.project_id=core.project_id AND t.wave_code=core.wave_code)
+  {conjunction} core.subject_id IN (SELECT DISTINCT(subject_id) FROM long_{table_id} t WHERE t.subject_id=core.subject_id AND t.project_id=core.project_id AND t.wave_code=core.wave_code)
 """
 sql_getdata_where_condition_repeated = """\
-  {conjunction} core.subject_id IN (SELECT DISTINCT(subject_id) FROM repeated_{table_id} t WHERE t.project_id=core.project_id AND t.project_id=core.project_id AND t.wave_code=core.wave_code)
+  {conjunction} core.subject_id IN (SELECT DISTINCT(subject_id) FROM repeated_{table_id} t WHERE t.subject_id=core.subject_id AND t.project_id=core.project_id AND t.wave_code=core.wave_code)
+"""
 """
 
 def get_sql_where(meta_json, rvalues):
