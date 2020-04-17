@@ -126,6 +126,81 @@ rename_table_headers <- function(ft, table_name){
   ft
 }
 
+# cross tables ----
+#' Insert cross data to DB
+#' 
+#' Calls insert_table with some presets
+#' to add longitudinal data in an
+#' easy way to the DB.
+#'
+#' @param x data.frame table to add
+#' @param con database connection
+#' @param table_name name to give the table
+#' @param orig_name file name of originating file
+insert_table_cross <- function(x, 
+                              con, 
+                              table_name, 
+                              orig_name = table_name){
+  
+  j <- insert_table(x, con, table_name,
+                    template = "sql/insert_cross_table.sql",
+                    #append = TRUE,
+                    temporary = TRUE,
+                    overwrite = TRUE
+  )
+  
+  cat_table_success(j, orig_name)
+  invisible(j)
+}
+
+
+#' Add long table to database
+#' 
+#' will add a long table to the 
+#' databse using \code{\link{insert_table_cross}}, 
+#' also removing the table name from the 
+#' headers for cleaner representation in the 
+#' data base.
+#'
+#' @param table_name name of the table 
+#' @param con database connection
+#' @param db_dir directory for the databse
+#'
+#' @return success of adding, invisible
+#' @export
+add_cross_table <- function(table_name, 
+                           con, 
+                           db_dir){
+  cat(crayon::bold("---", table_name, "---\n")) 
+  
+  dir <- file.path(db_dir, table_name)
+  
+  ffiles <- list.files(dir, "tsv$", full.names = TRUE)
+  
+  ft <- lapply(ffiles, read_dbtable)
+  
+  
+  # remove table name from headers
+  ft <- rename_table_headers(ft, table_name)
+
+  # Turn all in to character, except first three key variables
+  ft <- lapply(ft, dplyr::mutate_at, 
+               .vars = dplyr::vars(-subject_id), 
+               .funs = as.character)
+  
+  ffiles <- basename(ffiles)
+  
+  j <- list()
+  for(i in 1:length(ft)){
+    j[[i]] <- insert_table_cross(x = ft[[i]], 
+                                con = con, 
+                                table_name = table_name,
+                                orig_name = ffiles[i])
+  }
+  cat("\n")
+  invisible(j)
+}
+
 
 # long tables ----
 #' Insert lognitudinal data to DB
