@@ -160,7 +160,7 @@ RETURNS integer AS $total$
 DECLARE
 	total integer;
 BEGIN
-   EXECUTE format('select count(*) from %I_%I', metatable_category, metatable_id) INTO total;
+   EXECUTE format('select count(*) from %I', metatable_category || '_' || metatable_id) INTO total;
    RETURN total;
 END;
 $total$ LANGUAGE plpgsql;
