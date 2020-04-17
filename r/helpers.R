@@ -29,6 +29,7 @@ moasdb_connect <- function(){
 insert_table <- function(x, 
                          con, 
                          table_name, 
+                         visit_id_column = NULL,
                          template_path,
                          ...){
   stopifnot(is.data.frame(x))
@@ -46,10 +47,17 @@ insert_table <- function(x,
                         call. = FALSE)
     
     template <- read_sql(template_path)
+    
+    # replace {table_name} with content of table_name
     tmp_template <- gsub("\\{table_name\\}", 
                          table_name, template)
     
-    
+    # replace {visit_id_column} with content of visit_id_column
+    if(!is.null(visit_id_column)){
+      tmp_template <- gsub("\\{visit_id_column\\}", 
+                           visit_id_column, tmp_template)
+    }
+
     DBI::dbExecute(con, tmp_template)
   },  
   finally = DBI::dbExecute(
@@ -208,9 +216,12 @@ add_long_table <- function(table_name,
 insert_table_repeated <- function(x, 
                               con, 
                               table_name, 
+                              visit_id_column,
                               orig_name = table_name){
   
-  j <- insert_table(x, con, table_name,
+  j <- insert_table(x, con, 
+                    table_name,
+                    visit_id_column,
                     template = "sql/insert_repeated_table.sql",
                     #append = TRUE,
                     temporary = TRUE,
@@ -251,16 +262,13 @@ add_repeated_table <- function(table_name,
   ft <- lapply(ft, dplyr::rename_all, .funs = function(x) gsub(table_name, "", x))
 
   # forth column should be column making row unique
-  forth <- names(ft[[1]])[4]
-  if(forth != "visit_id"){
-    cat(crayon::yellow("!"), "Forth column is not", crayon::italic("visit_id"),
-        crayon::yellow("\n!"), "Renaming column", crayon::italic(forth), "to", 
-        crayon::italic("visit_id"),
-        "\n")
-    ft <- lapply(ft, function(x) dplyr::rename(x, 
-                                               visit_id = tidyselect::all_of(forth)))
-  }
-  
+  # might want to change this later
+  visit_id_column_old <- names(ft[[1]])[4]
+  visit_id_column_new <- paste0("_", visit_id_column_old)
+  cat(crayon::yellow("!"), "Forth column is ", crayon::italic(visit_id_column_old), "\n")
+  ft <- lapply(ft, dplyr::rename_all, 
+               .funs = function(x) gsub(visit_id_column_old, visit_id_column_new, x))
+
   # Turn all in to character
   ft <- lapply(ft, dplyr::mutate_at, 
                .vars = dplyr::vars(-1:-4), 
@@ -273,6 +281,7 @@ add_repeated_table <- function(table_name,
     j[[i]] <- insert_table_repeated(x = ft[[i]], 
                                 con = con, 
                                 table_name = table_name,
+                                visit_id_column = visit_id_column_new,
                                 orig_name = ffiles[i])
   }
   

@@ -11,7 +11,7 @@ ALTER TABLE tmp_{table_name}
 -- define the table
 CREATE TABLE IF NOT EXISTS repeated_{table_name} (
   like tmp_{table_name} including ALL,
-  constraint {table_name}_pk PRIMARY KEY (subject_id, project_id, wave_code, visit_id),
+  constraint {table_name}_pk PRIMARY KEY (subject_id, project_id, wave_code, {visit_id_column}),
   constraint {table_name}_visit_fk FOREIGN KEY (subject_id, project_id, wave_code) REFERENCES visits(subject_id, project_id, wave_code)
 );
 
