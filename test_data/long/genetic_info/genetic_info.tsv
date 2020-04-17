@@ -1,0 +1,9 @@
+subject_id	project_id	wave_code	FID	IID	genetic_info_batch	genetic_info_trusted	genetic_info_gwas_qc_pass	genetic_info_ewas_qc_pass	genetic_info_duplicated	genetic_info_genetic_duplicate	genetic_info_european	genetic_info_sample_type	genetic_info_content	genetic_info_date	genetic_info_comment
+9901137	MemP	3	QQ1137	QQ1137	1	1	1	1			1	Extcd PREPIT-LP2	DNA	06/02/2015	
+9900775	MemP	3	QQ775	QQ775	1	1	1	1			1	Extcd PREPIT-LP2	DNA	27/08/2014	
+9901439	MemP	3	QQ1439	QQ1439	1	1	1	1			1	Extcd PREPIT-LP2	DNA	06/09/2015	
+9901349	MemP	3	QQ1349	QQ1349	1	1	1	1			1	Extcd PREPIT-LP2	DNA	13/10/2015	
+9900165	MemP	3	QQ165	QQ165	1	1	1	1			1	Extcd PREPIT-LP2	DNA	13/06/2014	
+9901291	MemP	3	QQ1291	QQ1291	1	1	1	1			0	Extcd PREPIT-LP2	DNA	13/03/2015	
+9900864	MemP	3	QQ864	QQ864	1	0	1	1			1	Extcd PREPIT-LP2	DNA	22/09/2015	
+9900864	MemP	4	QQ864	QQ864	1	1	1	1			1	Extcd PREPIT-LP2	DNA	22/09/2017	
