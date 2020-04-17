@@ -61,7 +61,7 @@ table td:first-child {
 }
 
 .openoptbody {
-  max-height: 700px;
+  max-height: 2000px;
   transition: max-height 0.5s ease-in;
   transition-delay: 0.3s;
 }
