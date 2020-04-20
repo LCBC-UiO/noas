@@ -8,5 +8,5 @@ config.txt
 singularity/*.simg
 webui/__pycache__/*
 .Rproj.user$
-*.Rproj$
+NOAS.Rproj
 .Rproj.user
