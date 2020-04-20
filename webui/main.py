@@ -35,7 +35,7 @@ from
     mt.title,
     mt.idx,
     (
-			select row_count(mt.category, mt.id)
+			select row_count(mt.sampletype, mt.id)
 		) as n,
     (
     select
@@ -56,6 +56,7 @@ from
     metatables mt
   order by
     mt.idx,
+    mt.category,
     mt.title ) t
     """
 
@@ -64,7 +65,7 @@ def web_buildquery():
   from db import Db
   import json
   with Db().get().cursor() as cur:
-    cur.execute(sql_getmeta);
+    cur.execute(sql_getmeta)
     meta_json = cur.fetchall()[0].meta_json
     #print(json.dumps(meta_json, indent=2, sort_keys=True, default=str))
     Db().get().close()
