@@ -173,11 +173,95 @@ insert_table <- function(x,
 }
 
 # meta ----
-insert_metadata <- function(con, 
-                            table_name, 
-                            meta_info = NULL,
-                            ...){
+#' Command for inserting meta-infor to DB
+#' 
+#' Utility function to aid inserting 
+#' meta-information to the metatables and
+#' metacolumns tables
+#'
+#' @param meta_data list data to insert
+#' @param type character of either "metatables"
+#' or "metacolumns"
+meta_cmd <- function(meta_data, type){
   
+  type <- match.arg(type,
+                    c("metatables", "metacolumns"))
+  
+  colnms <- paste0(names(meta_data), collapse = ", ")
+  vals <- lapply(meta_data, paste0, collapse=";")
+  vals <- unlist(lapply(vals, wrap_string))
+  vals <- paste0(vals, collapse=",")
+  
+  conflict <- switch(type,
+                     "metatables" = " ON CONFLICT (id) DO NOTHING;",
+                     "metacolumns" = " ON CONFLICT DO NOTHING;")
+  
+  insert_cmd <- paste0(
+    "INSERT INTO ", type, " (", colnms, ")",
+    " VALUES (",vals, ")",
+    conflict
+    )
+  
+  DBI::dbExecute(con, insert_cmd)
+}
+
+#' Inserts meta-information to the DB
+#' 
+#' Inserte meta-information provided
+#' into the meta-information tables
+#' in the database.
+#' 
+#' @param con database connection
+#' @param meta_info information from \code{\link{get_metadata}}
+insert_metadata <- function(con, 
+                            meta_info){
+  # meta tables --
+  # add only columns already initiated in the metatables table
+  exists_cols <- names(meta_info) %in% DBI::dbListFields(con, "metatables")
+  meta_info_tab <- meta_info[exists_cols]
+  
+  k <- meta_cmd(meta_info_tab, "metatables")
+
+  # meta columns --
+  # add only columns already initiated in the metacolumn table
+  exists_cols <- names(meta_info$columns[[1]]) %in% DBI::dbListFields(con, "metacolumns")
+  meta_info_col <- lapply(meta_info$columns, function(x) x[exists_cols])
+  meta_info_col <- lapply(meta_info_col, function(x) c(x, metatable_id = meta_info$id))
+  
+  l <- lapply(meta_info_col, meta_cmd, type="metacolumns")
+
+  cat_table_success(k, "Metadata successfully added")
+}
+
+#' Read in _metadata.json
+#'
+#' @param dirpath dir where _metadata.json lives
+read_metadata <- function(dirpath){
+  
+  ffile <- file.path(dirpath, "_metadata.json")
+  if(file.exists(ffile)){
+    meta <- jsonlite::read_json(ffile, 
+                                simplifyVector = TRUE)
+    return(meta)
+  }else(
+    return(NULL)
+  )
+}
+
+#' Get meta-data information
+#' 
+#' Based both on file location, and
+#' any information in the _metadata.json
+#' file, will generate a list for adding
+#' meta-information to the data-base.
+#'
+#' @param data data to base missing information on
+#' @param table_name name of the table
+#' @param dirpath directory containing raw data
+get_metadata <- function(data, table_name, dirpath){
+  meta_info <- read_metadata(dirpath)
+  
+  # if there is no meta-data, make
   if(is.null(meta_info)){
     cat(crayon::yellow("!"), "No meta-data to add, using default\n")
     title <- strsplit(table_name, "")[[1]]
@@ -185,53 +269,39 @@ insert_metadata <- function(con,
     
     meta_info <- list(
       title = paste0(title, collapse=""),
-      category = "unknown", 
-      table_type = "unknown"
+      category = "uncategorised"
     )
   }
   
-  template <- read_sql("./sql/insert_metadata.sql")
+  dir_split <- strsplit(dirpath, "/")[[1]]
   
-  # replace {table_name} with content of table_name
-  tmp_template <- gsub("\\{table_name\\}", 
-                       table_name, template)
+  # Generate som information based on file location
+  meta_info$id <- dir_split[length(dir_split)]
+  meta_info$raw_data <- dirpath
   
-  # add meta_info
-  if(!is.null(meta_info)){
-    tmp_template <- gsub("\\{category\\}", 
-                         paste(meta_info$category, collapse=";"),
-                         tmp_template)
+  type <- table_types()[table_types() %in% dir_split]
+  meta_info$table_type <- switch(type,
+                            "long" = "longitudinal",
+                            "cross" = "cross-sectional", 
+                            "core" = "core",
+                            "repeated" = "repeated within visit")
+  
+
+  
+  # If no column specification in meta-data
+  if(is.null(meta_info$columns)){
     
-    tmp_template <- gsub("\\{title\\}", 
-                         meta_info$title,
-                         tmp_template)
-    
-    # tmp_template <- gsub("\\{table_type\\}", 
-    #                      meta_info$table_type,
-    #                      tmp_template)
+    meta_info$columns <- lapply(4:ncol(data), 
+                                function(x) 
+                                  list(class = "text",
+                                       title = camel_case(paste0(table_name, names(data)[x])),
+                                       id = names(data)[x],
+                                       idx = x-3)
+    )
+    names(meta_info$columns) <- paste0(table_name, names(data[-1:-3]))
   }
   
-  k <- DBI::dbExecute(con, tmp_template)
-  cat_table_success(k, "Metadata successfully added")
-}
-
-read_metadata <- function(dirpath){
-  
-  ffile <- file.path(dirpath, "_metadata.json")
-  if(file.exists(ffile)){
-    meta <- jsonlite::read_json(ffile, 
-                                simplifyVector = TRUE)
-    type <- table_types()[table_types() %in% strsplit(dirpath, "/")[[1]]]
-    meta$table_type <- switch(type,
-                              "long" = "longitudinal",
-                              "cross" = "cross-sectional", 
-                              "core" = "core",
-                              "repeated" = "repeated within visit")
-    
-    return(meta)
-  }else(
-    return(NULL)
-  )
+  return(meta_info)
 }
 
 # cross tables ----
@@ -367,8 +437,8 @@ add_long_table <- function(table_name,
   ft <- rename_table_headers(ft, table_name)
   
   # get meta-data
-  meta_info <- read_metadata(dir)
-  insert_metadata(con, table_name, meta_info)
+  meta_info <- get_metadata(ft[[1]], table_name, dir)
+  j <- insert_metadata(con, meta_info)
   
   
   # Turn all in to character, except first three key variables
