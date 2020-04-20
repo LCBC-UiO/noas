@@ -172,38 +172,6 @@ insert_table <- function(x,
   )
 }
 
-# meta ----
-#' Command for inserting meta-infor to DB
-#' 
-#' Utility function to aid inserting 
-#' meta-information to the metatables and
-#' metacolumns tables
-#'
-#' @param meta_data list data to insert
-#' @param type character of either "metatables"
-#' or "metacolumns"
-meta_cmd <- function(meta_data, type){
-  
-  type <- match.arg(type,
-                    c("metatables", "metacolumns"))
-  
-  colnms <- paste0(names(meta_data), collapse = ", ")
-  vals <- lapply(meta_data, paste0, collapse=";")
-  vals <- unlist(lapply(vals, wrap_string))
-  vals <- paste0(vals, collapse=",")
-  
-  conflict <- switch(type,
-                     "metatables" = " ON CONFLICT (id) DO NOTHING;",
-                     "metacolumns" = " ON CONFLICT DO NOTHING;")
-  
-  insert_cmd <- paste0(
-    "INSERT INTO ", type, " (", colnms, ")",
-    " VALUES (",vals, ")",
-    conflict
-    )
-  
-  DBI::dbExecute(con, insert_cmd)
-}
 
 #' Inserts meta-information to the DB
 #' 
@@ -215,22 +183,23 @@ meta_cmd <- function(meta_data, type){
 #' @param meta_info information from \code{\link{get_metadata}}
 insert_metadata <- function(con, 
                             meta_info){
-  # meta tables --
-  # add only columns already initiated in the metatables table
-  exists_cols <- names(meta_info) %in% DBI::dbListFields(con, "metatables")
-  meta_info_tab <- meta_info[exists_cols]
-  
-  k <- meta_cmd(meta_info_tab, "metatables")
-
-  # meta columns --
-  # add only columns already initiated in the metacolumn table
-  exists_cols <- names(meta_info$columns[[1]]) %in% DBI::dbListFields(con, "metacolumns")
-  meta_info_col <- lapply(meta_info$columns, function(x) x[exists_cols])
-  meta_info_col <- lapply(meta_info_col, function(x) c(x, metatable_id = meta_info$id))
-  
-  l <- lapply(meta_info_col, meta_cmd, type="metacolumns")
-
-  cat_table_success(k, "Metadata successfully added")
+  sql = paste0(
+    "UPDATE metatables ",
+    "SET title = $1 ",
+    # workaround for 'NULL' (text) being inserted
+    #   force NULL when input is 'NULL'
+    #   https://github.com/r-dbi/RPostgres/issues/95
+    ", category = NULLIF($2, 'NULL')::text ", 
+    "WHERE id = $3",
+    sep=""
+  )
+  params <- list(
+    meta_info$title,
+    meta_info$category,
+    meta_info$id
+  )
+  DBI::dbExecute(con, sql, params=params)
+  return(TRUE)
 }
 
 #' Read in _metadata.json
@@ -261,16 +230,9 @@ read_metadata <- function(dirpath){
 get_metadata <- function(data, table_name, dirpath){
   meta_info <- read_metadata(dirpath)
   
-  # if there is no meta-data, make
+  # if there is no meta-data, do nothing
   if(is.null(meta_info)){
-    cat(crayon::yellow("!"), "No meta-data to add, using default\n")
-    title <- strsplit(table_name, "")[[1]]
-    title[1] <- toupper(title[1])
-    
-    meta_info <- list(
-      title = paste0(title, collapse=""),
-      category = "uncategorised"
-    )
+    return(NULL)
   }
   
   dir_split <- strsplit(dirpath, "/")[[1]]
@@ -375,6 +337,13 @@ add_cross_table <- function(table_name,
                                  table_name = table_name,
                                  orig_name = ffiles[i])
   }
+  # get meta-data
+  meta_info <- get_metadata(ft[[1]], table_name, dir)
+  # add meta-data
+  if (!is.null(meta_info)) {
+    j <- insert_metadata(con, meta_info)
+    cat_table_success(j, sprintf("%s metadata added", table_name))
+  }
   cat("\n")
   invisible(j)
 }
@@ -436,9 +405,6 @@ add_long_table <- function(table_name,
   # remove table name from headers
   ft <- rename_table_headers(ft, table_name)
   
-  # get meta-data
-  meta_info <- get_metadata(ft[[1]], table_name, dir)
-  j <- insert_metadata(con, meta_info)
   
   
   # Turn all in to character, except first three key variables
@@ -457,8 +423,15 @@ add_long_table <- function(table_name,
                                 table_name = table_name,
                                 orig_name = ffiles[i])
   }
-  cat("\n")
   
+  # get meta-data
+  meta_info <- get_metadata(ft[[1]], table_name, dir)
+  # add meta-data
+  if (!is.null(meta_info)) {
+    j <- insert_metadata(con, meta_info)
+    cat_table_success(j, sprintf("%s metadata added", table_name))
+  }
+  cat("\n")
   invisible(j)
 }
 
@@ -547,7 +520,13 @@ add_repeated_table <- function(table_name,
                                     visit_id_column = visit_id_column_new,
                                     orig_name = ffiles[i])
   }
-  
+  # get meta-data
+  meta_info <- get_metadata(ft[[1]], table_name, dir)
+  # add meta-data
+  if (!is.null(meta_info)) {
+    j <- insert_metadata(con, meta_info)
+    cat_table_success(j, sprintf("%s metadata added", table_name))
+  }
   invisible(j)
 }
 

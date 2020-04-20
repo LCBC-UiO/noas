@@ -26,7 +26,7 @@ INSERT INTO cross_{table_name}
 
 -- add meta data (table)
 
-INSERT INTO metatables (id, category, title)
+INSERT INTO metatables (id, sampletype, title)
   VALUES ('{table_name}', 'cross', INITCAP('{table_name}')) --TODO: use name FROM meta-data files
   ON conflict (id) do nothing;
 
