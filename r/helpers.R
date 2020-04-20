@@ -272,6 +272,7 @@ get_metadata <- function(data, table_name, dirpath){
       category = "uncategorised"
     )
   }
+  meta_info$sampletype <- "long"
   
   dir_split <- strsplit(dirpath, "/")[[1]]
   
