@@ -335,6 +335,13 @@ add_cross_table <- function(table_name,
                                  table_name = table_name,
                                  orig_name = ffiles[i])
   }
+  # get meta-data
+  meta_info <- get_metadata(ft[[1]], table_name, dir)
+  # add meta-data
+  if (!is.null(meta_info)) {
+    j <- insert_metadata(con, meta_info)
+    cat_table_success(j, sprintf("%s metadata added", table_name))
+  }
   cat("\n")
   invisible(j)
 }
@@ -511,7 +518,13 @@ add_repeated_table <- function(table_name,
                                     visit_id_column = visit_id_column_new,
                                     orig_name = ffiles[i])
   }
-  
+  # get meta-data
+  meta_info <- get_metadata(ft[[1]], table_name, dir)
+  # add meta-data
+  if (!is.null(meta_info)) {
+    j <- insert_metadata(con, meta_info)
+    cat_table_success(j, sprintf("%s metadata added", table_name))
+  }
   invisible(j)
 }
 
