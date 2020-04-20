@@ -13,6 +13,110 @@ moasdb_connect <- function(){
                  host=cfg$DBHOST)
 }
 
+#' wrap string in character
+#' 
+#' particularly made to wrap strings in
+#' single quotation marks for input to sql
+#'
+#' @param string caracter
+#' @param wrap wrapping character
+#'
+#' @export
+wrap_string <- function(string, wrap = "'"){
+  paste0(wrap, string, wrap, collapse = "")
+}
+
+#' Camel case a string
+#' 
+#' make a character separated string
+#' to camel case
+#'
+#' @param string character
+#' @param sep separator
+camel_case <- function(string, sep = "_"){
+  tmp <- strsplit(string, "_")[[1]]
+  tmp <- strsplit(tmp, "")
+  tmp <- lapply(tmp, function(x) {
+    x[1] <- toupper(x[1]); paste0(x, collapse="")
+  })
+  
+  paste0(unlist(tmp), collapse=" ")
+}
+
+#' Data base table types
+#' 
+#' convenience lookup for 
+#' types of tables in the data base
+table_types <- function(){
+  c("core", "cross", "long", "repeated")
+}
+
+#' Print out table adding success
+#'
+#' @param success logical vector for successes
+#' @param names charatcer vector of equal length as \code{success}
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' log_vect <- c(TRUE, TRUE, FALSE)
+#' log_name <- c("tab1", "tab2", "tab3")
+#' cat_table_success("tables added", log_vect, log_name)
+cat_table_success <- function(success, names){
+  
+  if(length(success) != length(names))
+    stop("success and names are not of equal length", call. = FALSE)
+  
+  if(length(success) == 0){
+    cat(crayon::yellow("\U0021"), "no tables added")
+  }else{
+    
+    # if success is TRUE or 0 (adding to existing tables),
+    # return green checkmark, else return red x
+    j <- lapply(success, function(x) ifelse(x | x == 0, 
+                                            crayon::green("\U2713"), 
+                                            crayon::red("\U10102")))
+    j <- unlist(j)
+    
+    j <- paste(j, names, sep=" ")
+    cat(j)
+  }
+  cat("\n")
+}
+
+#' Rename headers
+#'
+#' checks and renames a table header
+#' if it has the exact same name as the 
+#' table it self. 
+#' 
+#' @param ft data
+#' @param table_name tale name
+rename_table_headers <- function(ft, table_name){
+  
+  # if a column has the same name as the table_name
+  # do a small renaming to allow it to happen
+  if(table_name %in% names(ft[[1]])){
+    idx <- which(names(ft[[1]]) %in% table_name)
+    new <- paste(table_name, table_name, sep="_")
+    
+    cat(crayon::yellow("!"), "Column name same as table name.",
+        crayon::yellow("\n!"), "Renaming column", crayon::italic(table_name), "to", 
+        crayon::italic(paste(table_name, table_name, sep = "_")),
+        "\n")
+    
+    ft <- lapply(ft, dplyr::rename_all, 
+                 .funs = function(x) gsub(paste0("^", table_name, "$"), new, x))
+  }
+  
+  # take away table name from column headers
+  ft <- lapply(ft, dplyr::rename_all, 
+               .funs = function(x) gsub(paste0("^", table_name), "", x))
+  
+  ft
+}
+
 
 #' Insert table into DB
 #' 
@@ -57,7 +161,7 @@ insert_table <- function(x,
       tmp_template <- gsub("\\{visit_id_column\\}", 
                            visit_id_column, tmp_template)
     }
-
+    
     DBI::dbExecute(con, tmp_template)
   },  
   finally = DBI::dbExecute(
@@ -68,62 +172,66 @@ insert_table <- function(x,
   )
 }
 
-#' Print out table adding success
-#'
-#' @param success logical vector for successes
-#' @param names charatcer vector of equal length as \code{success}
-#'
-#' @return
-#' @export
-#'
-#' @examples
-#' log_vect <- c(TRUE, TRUE, FALSE)
-#' log_name <- c("tab1", "tab2", "tab3")
-#' cat_table_success("tables added", log_vect, log_name)
-cat_table_success <- function(success, names){
+# meta ----
+insert_metadata <- function(con, 
+                            table_name, 
+                            meta_info = NULL,
+                            ...){
   
-  if(length(success) != length(names))
-    stop("success and names are not of equal length", call. = FALSE)
-
-  if(length(success) == 0){
-    cat(crayon::yellow("\U0021"), "no tables added")
-  }else{
+  if(is.null(meta_info)){
+    cat(crayon::yellow("!"), "No meta-data to add, using default\n")
+    title <- strsplit(table_name, "")[[1]]
+    title[1] <- toupper(title[1])
     
-    # if success is TRUE or 0 (adding to existing tables),
-    # return green checkmark, else return red x
-    j <- lapply(success, function(x) ifelse(x | x == 0, 
-                                            crayon::green("\U2713"), 
-                                            crayon::red("\U10102")))
-    j <- unlist(j)
-    
-    j <- paste(j, names, sep=" ")
-    cat(j)
+    meta_info <- list(
+      title = paste0(title, collapse=""),
+      category = "unknown", 
+      table_type = "unknown"
+    )
   }
-  cat("\n")
+  
+  template <- read_sql("./sql/insert_metadata.sql")
+  
+  # replace {table_name} with content of table_name
+  tmp_template <- gsub("\\{table_name\\}", 
+                       table_name, template)
+  
+  # add meta_info
+  if(!is.null(meta_info)){
+    tmp_template <- gsub("\\{category\\}", 
+                         paste(meta_info$category, collapse=";"),
+                         tmp_template)
+    
+    tmp_template <- gsub("\\{title\\}", 
+                         meta_info$title,
+                         tmp_template)
+    
+    # tmp_template <- gsub("\\{table_type\\}", 
+    #                      meta_info$table_type,
+    #                      tmp_template)
+  }
+  
+  k <- DBI::dbExecute(con, tmp_template)
+  cat_table_success(k, "Metadata successfully added")
 }
 
-rename_table_headers <- function(ft, table_name){
-
-  # if a column has the same name as the table_name
-  # do a small renaming to allow it to happen
-  if(table_name %in% names(ft[[1]])){
-    idx <- which(names(ft[[1]]) %in% table_name)
-    new <- paste(table_name, table_name, sep="_")
-    
-    cat(crayon::yellow("!"), "Column name same as table name.",
-        crayon::yellow("\n!"), "Renaming column", crayon::italic(table_name), "to", 
-        crayon::italic(paste(table_name, table_name, sep = "_")),
-        "\n")
-    
-    ft <- lapply(ft, dplyr::rename_all, 
-                 .funs = function(x) gsub(paste0("^", table_name, "$"), new, x))
-  }
+read_metadata <- function(dirpath){
   
-  # take away table name from column headers
-  ft <- lapply(ft, dplyr::rename_all, 
-               .funs = function(x) gsub(paste0("^", table_name), "", x))
-  
-  ft
+  ffile <- file.path(dirpath, "_metadata.json")
+  if(file.exists(ffile)){
+    meta <- jsonlite::read_json(ffile, 
+                                simplifyVector = TRUE)
+    type <- table_types()[table_types() %in% strsplit(dirpath, "/")[[1]]]
+    meta$table_type <- switch(type,
+                              "long" = "longitudinal",
+                              "cross" = "cross-sectional", 
+                              "core" = "core",
+                              "repeated" = "repeated within visit")
+    
+    return(meta)
+  }else(
+    return(NULL)
+  )
 }
 
 # cross tables ----
@@ -138,9 +246,9 @@ rename_table_headers <- function(ft, table_name){
 #' @param table_name name to give the table
 #' @param orig_name file name of originating file
 insert_table_cross <- function(x, 
-                              con, 
-                              table_name, 
-                              orig_name = table_name){
+                               con, 
+                               table_name, 
+                               orig_name = table_name){
   
   j <- insert_table(x, con, table_name,
                     template = "sql/insert_cross_table.sql",
@@ -169,8 +277,8 @@ insert_table_cross <- function(x,
 #' @return success of adding, invisible
 #' @export
 add_cross_table <- function(table_name, 
-                           con, 
-                           db_dir){
+                            con, 
+                            db_dir){
   cat(crayon::bold("---", table_name, "---\n")) 
   
   dir <- file.path(db_dir, table_name)
@@ -182,7 +290,7 @@ add_cross_table <- function(table_name,
   
   # remove table name from headers
   ft <- rename_table_headers(ft, table_name)
-
+  
   # Turn all in to character, except first three key variables
   ft <- lapply(ft, dplyr::mutate_at, 
                .vars = dplyr::vars(-subject_id), 
@@ -193,9 +301,9 @@ add_cross_table <- function(table_name,
   j <- list()
   for(i in 1:length(ft)){
     j[[i]] <- insert_table_cross(x = ft[[i]], 
-                                con = con, 
-                                table_name = table_name,
-                                orig_name = ffiles[i])
+                                 con = con, 
+                                 table_name = table_name,
+                                 orig_name = ffiles[i])
   }
   cat("\n")
   invisible(j)
@@ -255,9 +363,13 @@ add_long_table <- function(table_name,
   
   ft <- lapply(ffiles, read_dbtable)
   
-  
   # remove table name from headers
   ft <- rename_table_headers(ft, table_name)
+  
+  # get meta-data
+  meta_info <- read_metadata(dir)
+  insert_metadata(con, table_name, meta_info)
+  
   
   # Turn all in to character, except first three key variables
   ft <- lapply(ft, dplyr::mutate_at, 
@@ -276,8 +388,10 @@ add_long_table <- function(table_name,
                                 orig_name = ffiles[i])
   }
   cat("\n")
+  
   invisible(j)
 }
+
 
 # repeated tables ----
 #' Insert repeated data to DB
@@ -291,10 +405,10 @@ add_long_table <- function(table_name,
 #' @param table_name name to give the table
 #' @param orig_name file name of originating file
 insert_table_repeated <- function(x, 
-                              con, 
-                              table_name, 
-                              visit_id_column,
-                              orig_name = table_name){
+                                  con, 
+                                  table_name, 
+                                  visit_id_column,
+                                  orig_name = table_name){
   
   j <- insert_table(x, con, 
                     table_name,
@@ -325,8 +439,8 @@ insert_table_repeated <- function(x,
 #' @return success of adding, invisible
 #' @export
 add_repeated_table <- function(table_name, 
-                           con, 
-                           db_dir){
+                               con, 
+                               db_dir){
   cat(crayon::bold("---", table_name, "---\n")) 
   
   dir <- file.path(db_dir, table_name)
@@ -337,7 +451,7 @@ add_repeated_table <- function(table_name,
   
   # take away table name from column headers
   ft <- lapply(ft, dplyr::rename_all, .funs = function(x) gsub(table_name, "", x))
-
+  
   # forth column should be column making row unique
   # might want to change this later
   visit_id_column_old <- names(ft[[1]])[4]
@@ -345,7 +459,7 @@ add_repeated_table <- function(table_name,
   cat(crayon::yellow("!"), "Forth column is ", crayon::italic(visit_id_column_old), "\n")
   ft <- lapply(ft, dplyr::rename_all, 
                .funs = function(x) gsub(visit_id_column_old, visit_id_column_new, x))
-
+  
   # Turn all in to character, except first three key variables
   ft <- lapply(ft, dplyr::mutate_at, 
                .vars = dplyr::vars(-subject_id,
@@ -358,10 +472,10 @@ add_repeated_table <- function(table_name,
   j <- list()
   for(i in 1:length(ft)){
     j[[i]] <- insert_table_repeated(x = ft[[i]], 
-                                con = con, 
-                                table_name = table_name,
-                                visit_id_column = visit_id_column_new,
-                                orig_name = ffiles[i])
+                                    con = con, 
+                                    table_name = table_name,
+                                    visit_id_column = visit_id_column_new,
+                                    orig_name = ffiles[i])
   }
   
   invisible(j)
