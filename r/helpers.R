@@ -183,20 +183,22 @@ insert_table <- function(x,
 #' @param meta_info information from \code{\link{get_metadata}}
 insert_metadata <- function(con, 
                             meta_info){
-
-  sql = sprintf(paste(
-      "UPDATE metatables ",
-      "SET category='%s' ",
-      ", title='%s' ",
-      "WHERE id='%s'",
-      sep=""
-    ),
-    meta_info$category,
+  sql = paste0(
+    "UPDATE metatables ",
+    "SET title = $1 ",
+    # workaround for 'NULL' (text) being inserted
+    #   force NULL when input is 'NULL'
+    #   https://github.com/r-dbi/RPostgres/issues/95
+    ", category = NULLIF($2, 'NULL')::text ", 
+    "WHERE id = $3",
+    sep=""
+  )
+  params <- list(
     meta_info$title,
+    meta_info$category,
     meta_info$id
   )
-  DBI::dbExecute(con, sql)
-
+  DBI::dbExecute(con, sql, params=params)
   return(TRUE)
 }
 
