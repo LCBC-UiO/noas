@@ -85,6 +85,12 @@ cat_table_success <- function(success, names){
   cat("\n")
 }
 
+cat_add_type <- function(type) {
+  cat(crayon::magenta("\n\U25C6"),
+      crayon::bold("Adding", type, "tables"), 
+      crayon::magenta("\U25C6"))
+}
+
 #' Rename headers
 #'
 #' checks and renames a table header
