@@ -123,7 +123,7 @@ rename_table_headers <- function(ft, table_name){
   ft
 }
 
-
+# generic table funcs ----
 #' Insert table into DB
 #' 
 #' Initiates a table in the DB, with the prefix "tmp_"
@@ -179,6 +179,29 @@ insert_table <- function(x,
 }
 
 
+get_data <- function(table_name, db_dir, key_Vars) {
+  cat(crayon::bold("\n---", table_name, "---\n")) 
+  
+  dir <- file.path(db_dir, table_name)
+  
+  ffiles <- list.files(dir, "tsv$", full.names = TRUE)
+  
+  ft <- lapply(ffiles, read_dbtable)
+  
+  # remove table name from headers
+  ft <- rename_table_headers(ft, table_name)
+  
+  # Turn all in to character, except key variables
+  ft <- lapply(ft, dplyr::mutate_at, 
+               .vars = dplyr::vars(-dplyr::one_of(key_Vars)), 
+               .funs = as.character)
+  
+  return(list(data = ft, files = ffiles))
+}
+
+
+
+# meta data ----
 #' Inserts meta-information to the DB
 #' 
 #' Inserte meta-information provided
@@ -189,39 +212,26 @@ insert_table <- function(x,
 #' @param meta_info information from \code{\link{get_metadata}}
 insert_metadata <- function(con, 
                             meta_info){
-  sql = paste0(
-    "UPDATE metatables ",
-    "SET title = $1 ",
+  sql = paste(
+    "UPDATE metatables",
+    "SET title = $1",
     # workaround for 'NULL' (text) being inserted
     #   force NULL when input is 'NULL'
     #   https://github.com/r-dbi/RPostgres/issues/95
-    ", category = NULLIF($2, 'NULL')::text ", 
-    "WHERE id = $3",
-    sep=""
+    ", category = NULLIF($2, 'NULL')::text", 
+    "WHERE id = $3"
   )
+  
   params <- list(
     meta_info$title,
     meta_info$category,
     meta_info$id
   )
+  
   DBI::dbExecute(con, sql, params=params)
-  return(TRUE)
+  invisible(TRUE)
 }
 
-#' Read in _metadata.json
-#'
-#' @param dirpath dir where _metadata.json lives
-read_metadata <- function(dirpath){
-  
-  ffile <- file.path(dirpath, "_metadata.json")
-  if(file.exists(ffile)){
-    meta <- jsonlite::read_json(ffile, 
-                                simplifyVector = TRUE)
-    return(meta)
-  }else(
-    return(NULL)
-  )
-}
 
 #' Get meta-data information
 #' 
@@ -246,15 +256,7 @@ get_metadata <- function(data, table_name, dirpath){
   # Generate som information based on file location
   meta_info$id <- dir_split[length(dir_split)]
   meta_info$raw_data <- dirpath
-  
-  type <- table_types()[table_types() %in% dir_split]
-  meta_info$table_type <- switch(type,
-                            "long" = "longitudinal",
-                            "cross" = "cross-sectional", 
-                            "core" = "core",
-                            "repeated" = "repeated within visit")
-  
-
+  meta_info$table_type <- table_types()[table_types() %in% dir_split]
   
   # If no column specification in meta-data
   if(is.null(meta_info$columns)){
@@ -270,6 +272,16 @@ get_metadata <- function(data, table_name, dirpath){
   }
   
   return(meta_info)
+}
+
+fix_metadata <- function(data, table_name, dir, con) {
+  # get meta-data
+  meta_info <- get_metadata(data, table_name, dir)
+  # add meta-data
+  if (!is.null(meta_info)) {
+    j <- insert_metadata(con, meta_info)
+    cat_table_success(j, sprintf("%s metadata added", table_name))
+  }
 }
 
 # cross tables ----
@@ -317,40 +329,25 @@ insert_table_cross <- function(x,
 add_cross_table <- function(table_name, 
                             con, 
                             db_dir){
-  cat(crayon::bold("---", table_name, "---\n")) 
-  
-  dir <- file.path(db_dir, table_name)
-  
-  ffiles <- list.files(dir, "tsv$", full.names = TRUE)
-  
-  ft <- lapply(ffiles, read_dbtable)
   
   
-  # remove table name from headers
-  ft <- rename_table_headers(ft, table_name)
+  # retrieve the data
+  data <- get_data(table_name, db_dir, c("subject_id"))
   
-  # Turn all in to character, except first three key variables
-  ft <- lapply(ft, dplyr::mutate_at, 
-               .vars = dplyr::vars(-subject_id), 
-               .funs = as.character)
+  # insert data to db
+  j <- mapply(insert_table_cross, 
+              x = data$data, 
+              orig_name = data$files,
+              MoreArgs = list(con = con, 
+                              table_name = table_name)
+  )
   
-  ffiles <- basename(ffiles)
-  
-  j <- list()
-  for(i in 1:length(ft)){
-    j[[i]] <- insert_table_cross(x = ft[[i]], 
-                                 con = con, 
-                                 table_name = table_name,
-                                 orig_name = ffiles[i])
-  }
-  # get meta-data
-  meta_info <- get_metadata(ft[[1]], table_name, dir)
-  # add meta-data
-  if (!is.null(meta_info)) {
-    j <- insert_metadata(con, meta_info)
-    cat_table_success(j, sprintf("%s metadata added", table_name))
-  }
-  cat("\n")
+  # insert meta_data if applicable
+  k <- fix_metadata(data$data[[1]], 
+                    table_name, 
+                    file.path(db_dir, table_name), 
+                    con)
+
   invisible(j)
 }
 
@@ -400,44 +397,26 @@ insert_table_long <- function(x,
 add_long_table <- function(table_name, 
                            con, 
                            db_dir){
-  cat(crayon::bold("---", table_name, "---\n")) 
   
-  dir <- file.path(db_dir, table_name)
+  # retrieve the data
+  data <- get_data(table_name, db_dir, c("subject_id",
+                                         "project_id", 
+                                         "wave_code"))
   
-  ffiles <- list.files(dir, "tsv$", full.names = TRUE)
+  # insert data to db
+  j <- mapply(insert_table_long, 
+         x = data$data, 
+         orig_name = data$files,
+         MoreArgs = list(con = con, 
+                         table_name = table_name)
+  )
+
+  # insert meta_data if applicable
+  k <- fix_metadata(data$data[[1]], 
+                    table_name, 
+                    file.path(db_dir, table_name), 
+                    con)
   
-  ft <- lapply(ffiles, read_dbtable)
-  
-  # remove table name from headers
-  ft <- rename_table_headers(ft, table_name)
-  
-  
-  
-  # Turn all in to character, except first three key variables
-  ft <- lapply(ft, dplyr::mutate_at, 
-               .vars = dplyr::vars(-subject_id,
-                                   -project_id,
-                                   -wave_code), 
-               .funs = as.character)
-  
-  ffiles <- basename(ffiles)
-  
-  j <- list()
-  for(i in 1:length(ft)){
-    j[[i]] <- insert_table_long(x = ft[[i]], 
-                                con = con, 
-                                table_name = table_name,
-                                orig_name = ffiles[i])
-  }
-  
-  # get meta-data
-  meta_info <- get_metadata(ft[[1]], table_name, dir)
-  # add meta-data
-  if (!is.null(meta_info)) {
-    j <- insert_metadata(con, meta_info)
-    cat_table_success(j, sprintf("%s metadata added", table_name))
-  }
-  cat("\n")
   invisible(j)
 }
 
@@ -490,51 +469,50 @@ insert_table_repeated <- function(x,
 add_repeated_table <- function(table_name, 
                                con, 
                                db_dir){
-  cat(crayon::bold("---", table_name, "---\n")) 
   
-  dir <- file.path(db_dir, table_name)
-  
-  ffiles <- list.files(dir, "tsv$", full.names = TRUE)
-  
-  ft <- lapply(ffiles, read_dbtable)
-  
-  # take away table name from column headers
-  ft <- lapply(ft, dplyr::rename_all, .funs = function(x) gsub(table_name, "", x))
+  # retrieve the data
+  data <- get_data(table_name, db_dir, c("subject_id",
+                                         "project_id", 
+                                         "wave_code"))
   
   # forth column should be column making row unique
   # might want to change this later
-  visit_id_column_old <- names(ft[[1]])[4]
+  visit_id_column_old <- names(data$data[[1]])[4]
   visit_id_column_new <- paste0("_", visit_id_column_old)
   cat(crayon::yellow("!"), "Forth column is ", crayon::italic(visit_id_column_old), "\n")
-  ft <- lapply(ft, dplyr::rename_all, 
-               .funs = function(x) gsub(visit_id_column_old, visit_id_column_new, x))
+  data$data <- lapply(data$data, 
+                      dplyr::rename_all, 
+                      .funs = function(x) gsub(visit_id_column_old, visit_id_column_new, x))
+
+  # insert data to db
+  j <- mapply(insert_table_repeated, 
+              x = data$data, 
+              orig_name = data$files,
+              MoreArgs = list(con = con, 
+                              table_name = table_name,
+                              visit_id_column = visit_id_column_new)
+  )
   
-  # Turn all in to character, except first three key variables
-  ft <- lapply(ft, dplyr::mutate_at, 
-               .vars = dplyr::vars(-subject_id,
-                                   -project_id,
-                                   -wave_code), 
-               .funs = as.character)
-  
-  ffiles <- basename(ffiles)
-  
-  j <- list()
-  for(i in 1:length(ft)){
-    j[[i]] <- insert_table_repeated(x = ft[[i]], 
-                                    con = con, 
-                                    table_name = table_name,
-                                    visit_id_column = visit_id_column_new,
-                                    orig_name = ffiles[i])
-  }
-  # get meta-data
-  meta_info <- get_metadata(ft[[1]], table_name, dir)
-  # add meta-data
-  if (!is.null(meta_info)) {
-    j <- insert_metadata(con, meta_info)
-    cat_table_success(j, sprintf("%s metadata added", table_name))
-  }
+  # insert meta-data if applicable
+  k <- fix_metadata(data$data[[1]], 
+                    table_name, 
+                    file.path(db_dir, table_name), 
+                    con)
+
   invisible(j)
 }
+
+# core tables ----
+add_core_tab <- function(tab, db_dir, con){
+  filenm <- list.files(db_dir, paste0(tab,".tsv"), full.names = TRUE)
+  dt <- read_dbtable(filenm)
+  j <- DBI::dbWriteTable(con, tab, dt, 
+                         append = TRUE, row.name = FALSE)
+  
+  cat_table_success(j, tab)
+  invisible(j)
+}
+
 
 
 # read functions ----
