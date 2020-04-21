@@ -23,7 +23,7 @@
     <div class="opthead">
       <table><tr>
       <td class="optopener">
-        <i class="ddarrow"></i>{{ "["+ti.category+"] " if ti.category is not none else "" }}{{ ti.title }} (n={{ti.n}})
+        <i class="ddarrow"></i>{{ "["+ti.category+"] " if ti.category is not none else "" }}{{ ti.title }} ({{ti.id + "; " if ti.idx > 0 else "" }}n={{ti.n}})
       </td>
       {% if ti.idx > 0 %}
         <td>
