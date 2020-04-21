@@ -247,6 +247,7 @@ get_metadata <- function(data, table_name, dirpath){
   meta_info <- read_metadata(dirpath)
   
   # if there is no meta-data, do nothing
+  # rest is done by the sql commands
   if(is.null(meta_info)){
     return(NULL)
   }
