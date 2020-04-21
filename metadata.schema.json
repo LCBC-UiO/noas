@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft/2019-09/schema",
+  "title": "NOAS metadata",
+  "type": "object",
+  "required": ["title"],
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title of table"
+    },
+    "category": {
+      "type": "string",
+      "description": "Category of table"
+    },
+    "columns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique column identifier"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of column"
+          },
+          "type": {
+            "type": "string",
+            "description": "Data type of column ['text','float','int','date']"
+          }
+        }
+      }
+    }
+  }
+}
