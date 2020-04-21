@@ -24,4 +24,9 @@
     * problem: without referencing each others visit_id, the query will split their data into separate rows
     * cbind before importing?
   * data/test_data: rm NA-only rows? 
+compute derived data
+   * currently some MOAS data is derived from raw data based on r-functions in two packages:
+      * https://github.com/LCBC-UiO/Questionnaires
+      * https://github.com/LCBC-UiO/Conversions
+  * can we refractor them to use let DB run them?
 
