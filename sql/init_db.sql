@@ -20,7 +20,8 @@ LOOP
 END LOOP;
 END
 $do$;
-DROP TYPE  IF EXISTS e_sex CASCADE;
+DROP TYPE IF EXISTS e_sex CASCADE;
+DROP TYPE IF EXISTS e_sampletype CASCADE;
 
 --------------------------------------------------------------------------------
 
@@ -29,6 +30,13 @@ DROP TYPE  IF EXISTS e_sex CASCADE;
 CREATE TYPE e_sex AS enum (
   'Female'
   ,'Male'
+);
+
+CREATE TYPE e_sampletype AS enum (
+  'core'
+  ,'cross'
+  ,'long'
+  ,'repeated'
 );
 
 --------------------------------------------------------------------------------
@@ -84,9 +92,10 @@ CREATE TABLE visits (
 
 CREATE TABLE metatables (
   id text,
-  category text,
-  idx      integer DEFAULT 1,
-  title    text,
+  sampletype e_sampletype,
+  category   text,
+  idx        integer DEFAULT 1,
+  title      text,
   CONSTRAINT metatables_pk PRIMARY KEY(id)
 );
 
@@ -134,7 +143,7 @@ CREATE VIEW core_core AS
 
 -- Add metadata for core table
 
-INSERT INTO metatables (id, category, idx, title) VALUES ('core', 'core', 0, 'Core data');
+INSERT INTO metatables (id, sampletype, idx, title) VALUES ('core', 'core', 0, 'Core data');
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_id',          0, 'Subject ID');
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_id',          1, 'Project ID');
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_code',           2, 'Wave code');
@@ -155,12 +164,12 @@ INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_rek
 
 -- Count number of rows for a table 
 -- (this is similart to "count(*)"" but works with a parameter of type "text")
-CREATE OR REPLACE FUNCTION row_count (metatable_category text, metatable_id text)
+CREATE OR REPLACE FUNCTION row_count (metatable_sampletype e_sampletype, metatable_id text)
 RETURNS integer AS $total$
 DECLARE
 	total integer;
 BEGIN
-   EXECUTE format('select count(*) from %I', metatable_category || '_' || metatable_id) INTO total;
+   EXECUTE format('select count(*) from %I', metatable_sampletype || '_' || metatable_id) INTO total;
    RETURN total;
 END;
 $total$ LANGUAGE plpgsql;

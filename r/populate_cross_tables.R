@@ -17,7 +17,7 @@ if(length(tables)>0){
   # loop through all and add
   j <- sapply(tables, add_cross_table, con = con, db_dir = db_dir) 
 }else{
-  cat(crayon::yellow("!"),crayon::bold("No long tables to add\n"))
+  cat(crayon::yellow("!"),crayon::bold("No cross tables to add\n"))
 }
 
 

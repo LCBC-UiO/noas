@@ -26,18 +26,13 @@ INSERT INTO long_{table_name}
   SELECT * FROM tmp_{table_name} t
   WHERE (t.subject_id, t.project_id, t.wave_code) IN (SELECT subject_id, project_id, wave_code FROM visits);
 
--- add meta data (table)
 
-INSERT INTO metatables (id, category, title)
-  VALUES ('{table_name}', 'long', INITCAP('{table_name}')) --TODO: use name FROM meta-data files
+INSERT INTO metatables (id, sampletype, title)
+  VALUES ('{table_name}', 'long', INITCAP('{table_name}'))
   ON conflict (id) do nothing;
 
+-- add default meta data (columns)
 
--- add meta data (columns)
-
--- TODO: Replace the code below.
---       This data in meatacolumns will have to come FROM some meta-data files
---       For now is just some auto-generated stuff.
 DO
 $do$
 DECLARE
