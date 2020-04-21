@@ -32,6 +32,7 @@ from
   select
     mt.id,
     mt.category,
+    mt.sampletype,
     mt.title,
     mt.idx,
     (
@@ -114,11 +115,11 @@ def get_sql_join(meta_json, rvalues):
     sqls.append("LEFT OUTER JOIN cross_{table_id} {table_id} ON core.subject_id={table_id}.subject_id".format(table_id=tabmeta['id']))
   sqls = []
   for tabmeta in meta_json:
-    if (tabmeta['category'] == "long"):
+    if (tabmeta['sampletype'] == "long"):
       _get_sql_join_long(tabmeta, rvalues, sqls)
-    elif (tabmeta['category'] == "repeated"):
+    elif (tabmeta['sampletype'] == "repeated"):
       _get_sql_join_repeated(tabmeta, rvalues, sqls)
-    elif (tabmeta['category'] == "cross"):
+    elif (tabmeta['sampletype'] == "cross"):
       _get_sql_join_cross(tabmeta, rvalues, sqls)
   return "\n".join(sqls)
 
@@ -143,11 +144,11 @@ def get_sql_where(meta_json, rvalues):
     # skip non-included tables and core table
     if rvalues.get('include_{}'.format(tabmeta['id'])) != "1" or tabmeta['idx'] == 0:
       return ""
-    if tabmeta['category'] == "long":
+    if tabmeta['sampletype'] == "long":
       return sql_getdata_where_condition_long.format(conjunction=sqlconj, table_id=tabmeta['id'])
-    if tabmeta['category'] == "repeated":
+    if tabmeta['sampletype'] == "repeated":
       return sql_getdata_where_condition_repeated.format(conjunction=sqlconj, table_id=tabmeta['id'])
-    if tabmeta['category'] == "cross":
+    if tabmeta['sampletype'] == "cross":
       return sql_getdata_where_condition_cross.format(conjunction=sqlconj, table_id=tabmeta['id'])
   if rvalues.get("options_join") == "all":
     return "TRUE"
@@ -155,6 +156,7 @@ def get_sql_where(meta_json, rvalues):
   conj = "AND"  if rvalues.get("options_join") == "intersect" else "OR"
   cc = ""
   for tabmeta in meta_json:
+    print(_get_where_long(tabmeta, rvalues, conj))
     cc += _get_where_long(tabmeta, rvalues, conj)
   # skip empty WHERE (no data sets selected)
   if cc == "":
