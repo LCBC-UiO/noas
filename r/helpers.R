@@ -100,9 +100,7 @@ cat_add_type <- function(type) {
 #' @param ft data
 #' @param table_name tale name
 rename_table_headers <- function(ft, key_vars){
-  ft <- lapply(ft, .renm_cols, cols = key_vars)
-  
-  ft
+  lapply(ft, .renm_cols, cols = key_vars)
 }
 
 .renm_cols <- function(data, cols){
