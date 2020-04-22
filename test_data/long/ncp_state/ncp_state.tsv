@@ -1,4 +1,4 @@
-subject_id	project_id	wave_code	ncp_state_group	ncp_state_condition
+subject_id	project_id	wave_code	group	condition
 9901718	MemP	1	start_train	baseline
 9901718	MemP	2	start_train	post-train
 9901718	MemP	3	start_train	postrest
