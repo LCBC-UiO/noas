@@ -113,6 +113,7 @@ rename_table_headers <- function(ft, key_vars){
 
 fix_names <- function(x){
   x <- gsub("^X", "", x)
+  x <- tolower(x)
   paste0("_", x)
 }
 
