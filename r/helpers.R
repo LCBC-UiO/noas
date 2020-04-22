@@ -211,10 +211,26 @@ get_data <- function(table_name, db_dir, key_vars) {
   # remove table name from headers
   ft <- rename_table_headers(ft, key_vars)
   
-  # Turn all in to character, except key variables
-  ft <- lapply(ft, dplyr::mutate_at, 
-               .vars = dplyr::vars(-dplyr::one_of(key_vars)), 
+  meta <- get_metadata(ft[[1]], table_name, dir)$columns
+  
+  # Turn remaining in to character, except key variables
+  ft <- lapply(ft, dplyr::mutate_at,
+               .vars = dplyr::vars(-dplyr::one_of(key_vars)),
                .funs = as.character)
+  
+  # assign column types from metadata if they are specified
+  if(!is.null(meta$id)){
+    meta$id <- fix_names(meta$id)
+    meta$func <- type_2_rclass(meta$type)
+    
+    if(length(meta$func) > 0){
+      # match files to assure correct assigning
+      meta <- meta[meta$id %in% names(ft[[1]]), ]
+      
+      ft <- lapply(ft, change_col_type, meta$id, meta$func)
+    }
+  }
+  
   
   return(list(data = ft, files = ffiles))
 }
@@ -279,30 +295,21 @@ get_metadata <- function(data, table_name, dirpath){
   meta_info$raw_data <- dirpath
   meta_info$table_type <- table_types()[table_types() %in% dir_split]
   
-  # If no column specification in meta-data
-  if(is.null(meta_info$columns)){
-    
-    meta_info$columns <- lapply(4:ncol(data), 
-                                function(x) 
-                                  list(class = "text",
-                                       title = camel_case(paste0(table_name, names(data)[x])),
-                                       id = names(data)[x],
-                                       idx = x-3)
-    )
-    names(meta_info$columns) <- paste0(table_name, names(data[-1:-3]))
-  }
-  
   return(meta_info)
 }
 
 fix_metadata <- function(data, table_name, dir, con) {
+  
   # get meta-data
   meta_info <- get_metadata(data, table_name, dir)
+  
   # add meta-data
   if (!is.null(meta_info)) {
     j <- insert_metadata(con, meta_info)
     cat_table_success(j, sprintf("%s metadata added", table_name))
   }
+  
+  data
 }
 
 # cross tables ----
@@ -504,7 +511,7 @@ add_repeated_table <- function(table_name,
   data$data <- lapply(data$data, 
                       dplyr::rename_all, 
                       .funs = function(x) gsub(visit_id_column_old, visit_id_column_new, x))
-
+  
   # insert data to db
   j <- mapply(insert_table_repeated, 
               x = data$data, 
@@ -519,7 +526,7 @@ add_repeated_table <- function(table_name,
                     table_name, 
                     file.path(db_dir, table_name), 
                     con)
-
+  
   invisible(j)
 }
 
@@ -641,7 +648,7 @@ populate_table <- function(type, con) {
   
   if(length(tables)>0){
     cat_add_type(type)
-
+    
     func <- paste0("add_", type, "_table")
     
     # loop through all and add
