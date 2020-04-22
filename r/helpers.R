@@ -99,28 +99,19 @@ cat_add_type <- function(type) {
 #' 
 #' @param ft data
 #' @param table_name tale name
-rename_table_headers <- function(ft, table_name){
-  
-  # if a column has the same name as the table_name
-  # do a small renaming to allow it to happen
-  if(table_name %in% names(ft[[1]])){
-    idx <- which(names(ft[[1]]) %in% table_name)
-    new <- paste(table_name, table_name, sep="_")
-    
-    cat(crayon::yellow("!"), "Column name same as table name.",
-        crayon::yellow("\n!"), "Renaming column", crayon::italic(table_name), "to", 
-        crayon::italic(paste(table_name, table_name, sep = "_")),
-        "\n")
-    
-    ft <- lapply(ft, dplyr::rename_all, 
-                 .funs = function(x) gsub(paste0("^", table_name, "$"), new, x))
-  }
-  
-  # take away table name from column headers
-  ft <- lapply(ft, dplyr::rename_all, 
-               .funs = function(x) gsub(paste0("^", table_name), "", x))
+rename_table_headers <- function(ft, key_vars){
+  ft <- lapply(ft, .renm_cols, cols = key_vars)
   
   ft
+}
+
+.renm_cols <- function(data, cols){
+  
+  idx <- !(names(data) %in% cols)
+  
+  names(data)[idx] <- gsub("^X", "", names(data)[idx])
+  names(data)[idx] <- paste0("_", names(data)[idx])
+  data
 }
 
 # generic table funcs ----
@@ -179,7 +170,7 @@ insert_table <- function(x,
 }
 
 
-get_data <- function(table_name, db_dir, key_Vars) {
+get_data <- function(table_name, db_dir, key_vars) {
   cat(crayon::bold("\n---", table_name, "---\n")) 
   
   dir <- file.path(db_dir, table_name)
@@ -189,11 +180,11 @@ get_data <- function(table_name, db_dir, key_Vars) {
   ft <- lapply(ffiles, read_dbtable)
   
   # remove table name from headers
-  ft <- rename_table_headers(ft, table_name)
+  ft <- rename_table_headers(ft, key_vars)
   
   # Turn all in to character, except key variables
   ft <- lapply(ft, dplyr::mutate_at, 
-               .vars = dplyr::vars(-dplyr::one_of(key_Vars)), 
+               .vars = dplyr::vars(-dplyr::one_of(key_vars)), 
                .funs = as.character)
   
   return(list(data = ft, files = ffiles))
