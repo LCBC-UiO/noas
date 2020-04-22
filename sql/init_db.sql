@@ -41,6 +41,41 @@ CREATE TYPE e_sampletype AS enum (
 
 --------------------------------------------------------------------------------
 
+-- Define functions
+
+-- Count number of rows for a table 
+-- (this is similart to "count(*)"" but works with a parameter of type "text")
+CREATE OR REPLACE FUNCTION row_count (metatable_sampletype e_sampletype, metatable_id text)
+RETURNS integer AS $total$
+DECLARE
+	total integer;
+BEGIN
+   EXECUTE format('select count(*) from %I', metatable_sampletype || '_' || metatable_id) INTO total;
+   RETURN total;
+END;
+$total$ LANGUAGE plpgsql;
+
+-- get duration in years - used for age at visit
+CREATE OR REPLACE FUNCTION decimal_years (d interval)
+RETURNS float AS $yrs$
+DECLARE
+	yrs float;
+BEGIN
+  SELECT ROUND((
+      date_part('years', d)::float + (
+        date_part('month', d)::float * (365::float/12) +
+        date_part('day', d)
+      ) / 365
+    )::numeric
+    , 2
+  ) INTO yrs;
+  RETURN yrs;
+END;
+$yrs$ LANGUAGE plpgsql;
+
+
+--------------------------------------------------------------------------------
+
 -- Create project table
 
 CREATE TABLE projects (
@@ -128,7 +163,8 @@ CREATE VIEW core_core AS
     projects.id          AS project_id,
     projects.name        AS project_name,
     projects.code        AS project_code,
-    projects.description AS project_description
+    projects.description AS project_description,
+    decimal_years(age(visits.visitdate, subjects.birthdate)) AS visit_visitage
   FROM
     visits
   LEFT OUTER JOIN waves ON
@@ -151,25 +187,11 @@ INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_birthdate',   4, 'Birth date');
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_shareable',   5, 'Sharable');
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'visit_visitdate',     6, 'Visit date');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_name',        7, 'Project name');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_code',        8, 'Project code');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_description', 9, 'Project description');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_description',   10, 'Wave description');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_reknr',         11, 'Wave REK Nr.');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'visit_visitage',      7, 'Age at visit');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_name',        8, 'Project name');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_code',        9, 'Project code');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_description',10, 'Project description');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_description',   11, 'Wave description');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_reknr',         12, 'Wave REK Nr.');
 
 
---------------------------------------------------------------------------------
-
--- Define functions
-
--- Count number of rows for a table 
--- (this is similart to "count(*)"" but works with a parameter of type "text")
-CREATE OR REPLACE FUNCTION row_count (metatable_sampletype e_sampletype, metatable_id text)
-RETURNS integer AS $total$
-DECLARE
-	total integer;
-BEGIN
-   EXECUTE format('select count(*) from %I', metatable_sampletype || '_' || metatable_id) INTO total;
-   RETURN total;
-END;
-$total$ LANGUAGE plpgsql;
