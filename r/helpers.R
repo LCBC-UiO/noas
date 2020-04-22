@@ -214,11 +214,6 @@ get_data <- function(table_name, db_dir, key_vars) {
   
   meta <- get_metadata(ft[[1]], table_name, dir)$columns
   
-  # Turn remaining in to character, except key variables
-  ft <- lapply(ft, dplyr::mutate_at,
-               .vars = dplyr::vars(-dplyr::one_of(key_vars)),
-               .funs = as.character)
-  
   # assign column types from metadata if they are specified
   if(!is.null(meta$id)){
     meta$id <- fix_names(meta$id)
@@ -230,8 +225,14 @@ get_data <- function(table_name, db_dir, key_vars) {
       
       ft <- lapply(ft, change_col_type, meta$id, meta$func)
     }
+  }else{
+    meta$id <- NULL
   }
   
+  # Turn columns to character, except key variables and those in metadata
+  ft <- lapply(ft, dplyr::mutate_at,
+               .vars = dplyr::vars(-dplyr::one_of(c(key_vars, meta$id))),
+               .funs = as.character)
   
   return(list(data = ft, files = ffiles))
 }
@@ -362,7 +363,7 @@ add_cross_table <- function(table_name,
   
   # retrieve the data
   data <- get_data(table_name, db_dir, c("subject_id"))
-  
+
   # insert meta_data if applicable
   data <- fix_metadata(data$data, 
                        table_name, 
