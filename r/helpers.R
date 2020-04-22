@@ -107,9 +107,40 @@ rename_table_headers <- function(ft, key_vars){
   
   idx <- !(names(data) %in% cols)
   
-  names(data)[idx] <- gsub("^X", "", names(data)[idx])
-  names(data)[idx] <- paste0("_", names(data)[idx])
+  names(data)[idx] <- fix_names(names(data)[idx])
   data
+}
+
+fix_names <- function(x){
+  x <- gsub("^X", "", x)
+  paste0("_", x)
+}
+
+type_2_rclass <- function(type){
+  lapply(type, type_change)
+}
+
+type_change <- function(x){
+  j <- switch(x,
+              "float" = as.numeric,
+              "int" = as.integer,
+              "date" = as.Date,
+              #"hms" = "time",
+              #  "duration",
+              "datetime" = as.POSIXct.Date
+  )
+  
+  if(is.null(j)) j <- as.character
+  j
+}
+
+change_col_type <- function(data, column, func){
+  for(i in 1:length(column)){
+    data[, column[i]] <- func[[i]](data[, column[i]])
+  }
+  dplyr::as_tibble(
+    data
+  )
 }
 
 # generic table funcs ----
