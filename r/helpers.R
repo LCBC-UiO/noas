@@ -362,6 +362,12 @@ add_cross_table <- function(table_name,
   # retrieve the data
   data <- get_data(table_name, db_dir, c("subject_id"))
   
+  # insert meta_data if applicable
+  data <- fix_metadata(data$data, 
+                       table_name, 
+                       file.path(db_dir, table_name), 
+                       con)
+  
   # insert data to db
   j <- mapply(insert_table_cross, 
               x = data$data, 
@@ -370,12 +376,8 @@ add_cross_table <- function(table_name,
                               table_name = table_name)
   )
   
-  # insert meta_data if applicable
-  k <- fix_metadata(data$data[[1]], 
-                    table_name, 
-                    file.path(db_dir, table_name), 
-                    con)
-
+  
+  
   invisible(j)
 }
 
@@ -433,17 +435,17 @@ add_long_table <- function(table_name,
   
   # insert data to db
   j <- mapply(insert_table_long, 
-         x = data$data, 
-         orig_name = data$files,
-         MoreArgs = list(con = con, 
-                         table_name = table_name)
+              x = data$data, 
+              orig_name = data$files,
+              MoreArgs = list(con = con, 
+                              table_name = table_name)
   )
-
+  
   # insert meta_data if applicable
-  k <- fix_metadata(data$data[[1]], 
-                    table_name, 
-                    file.path(db_dir, table_name), 
-                    con)
+  data <- fix_metadata(data$data[[1]], 
+                       table_name, 
+                       file.path(db_dir, table_name), 
+                       con)
   
   invisible(j)
 }
