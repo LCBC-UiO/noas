@@ -16,6 +16,7 @@
       "type": "array",
       "items": {
         "type": "object",
+        required: ["id", "title", "type"],
         "properties": {
           "id": {
             "type": "string",
@@ -27,7 +28,7 @@
           },
           "type": {
             "type": "string",
-            "description": "Data type of column ['text','float','int','date']"
+            "description": "Data type of column ['text','float','int','date','time','duration']"
           }
         }
       }
