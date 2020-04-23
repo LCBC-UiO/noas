@@ -17,8 +17,8 @@ populate_table("cross", con)
 
 spent <- as.numeric(round(Sys.time() - start, 3))
 spent <- dplyr::case_when(
-  spent < 10 ~ crayon::green(spent),
-  spent > 30 ~ crayon::red(spent),
+  spent < 5 ~ crayon::green(spent),
+  spent > 10 ~ crayon::red(spent),
   TRUE ~ crayon::yellow(spent)
 )
 
