@@ -79,7 +79,7 @@ cat_table_success <- function(success, names){
                                             crayon::red("\U10102")))
     j <- unlist(j)
     
-    j <- paste(j, names, sep=" ")
+    j <- paste(j, basename(names), sep=" ")
     cat(j)
   }
   cat("\n")
