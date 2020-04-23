@@ -3,19 +3,23 @@
   * write metadata: set column "id" and "type" in json 
     * no "idx" and "title"
   * reading metadata: setting types in db 
-    * can be dne by setting data.frame column types in R before pushng to db
-    * start with float, int? 
+    * expand types, currently only int, float, text and date
+    * time is imported as integer currently
     * "duration" type => "as.character" fo now?
-  * remove column prefix in data TSVs
-    * add "_" if first character is not in [A-Za-z]
-    * when reading into DB: add "_" if first character is not '_'
   * r/sql: how to handle undefined visits for long/repeated?
     * currently, rows are silently discarded if (subj_id, project_id, wave_code) is not defined in core
   * compute derived data
     * currently some MOAS data is derived from raw data based on r-functions in two packages:
       * https://github.com/LCBC-UiO/Questionnaires
       * https://github.com/LCBC-UiO/Conversions
-    * can we refractor them to use let DB run them?
+    * can we refractor them to use let DB run them? <-- ie translate to sql?
+  * visits table:
+    * timepoint: column of computed sequential visit number
+    * original_id: column of id assigned at time of collection, as subject_id is not what people will find in old documents and data. Important for matching older, currently not harmonised data to correct data in the db.
+  * other core-like tables
+    * table with project_id and wave_code information (like test versions etc)
+    * table with information on MRI scanners
+    
 
     
 potential problems:
