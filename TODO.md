@@ -19,6 +19,8 @@
   * other core-like tables
     * table with project_id and wave_code information (like test versions etc)
     * table with information on MRI scanners
+  * add db connection info to "show sql query"
+    * add read-only user?
     
 
     
