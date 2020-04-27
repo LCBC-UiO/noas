@@ -44,6 +44,6 @@ run_webui:
 	singularity exec singularity/moas-flask.simg bash webui/start.sh
 
 .PHONY: run_db
-run_db: ${DBDATA_DIR}/postgresql.conf
+run_db: ${DBDATADIR}/postgresql.conf
 	3rdparty/postgresql/bin/pg_isready -h localhost -p $(DBPORT) -d $(DBNAME) && $(MAKE) dbstop || true
-	3rdparty/postgresql/bin/postgres -D $(DBDATA_DIR) -h 0.0.0.0 -p $(DBPORT)
+	3rdparty/postgresql/bin/postgres -D $(DBDATADIR) -h 0.0.0.0 -p $(DBPORT)
