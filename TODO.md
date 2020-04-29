@@ -1,5 +1,7 @@
 # TODO
 
+
+featurs:
   * write metadata: set column "id" and "type" in json 
     * no "idx" and "title"
   * reading metadata: setting types in db 
@@ -21,7 +23,9 @@
     * table with information on MRI scanners
   * add db connection info to "show sql query"
     * add read-only user?
-    
+
+## bugs
+  * mri/repeated: double underscore (`__`) before "site_name" column name
 
     
 potential problems:
