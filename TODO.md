@@ -1,7 +1,7 @@
 # TODO
 
 
-featurs:
+## features
   * write metadata: set column "id" and "type" in json 
     * no "idx" and "title"
   * reading metadata: setting types in db 
@@ -28,7 +28,7 @@ featurs:
   * mri/repeated: double underscore (`__`) before "site_name" column name
 
     
-potential problems:
+## potential problems
   * r/sql: how to connect multiple repeated tables?
     * problem: without referencing each others visit_id, the query will split their data into separate rows
   * name conflicts
