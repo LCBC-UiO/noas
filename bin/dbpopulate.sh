@@ -1,3 +1,4 @@
 #!/bin/bash
+# takes a single argument of either unicode or ascii for output formatting
 
-Rscript r/populate_db.R
+Rscript r/script-populate_db.R unicode
