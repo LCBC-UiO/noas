@@ -1,5 +1,7 @@
 # TODO
 
+
+## features
   * write metadata: set column "id" and "type" in json 
     * no "idx" and "title"
   * reading metadata: setting types in db 
@@ -21,10 +23,12 @@
     * table with information on MRI scanners
   * add db connection info to "show sql query"
     * add read-only user?
-    
+
+## bugs
+  * mri/repeated: double underscore (`__`) before "site_name" column name
 
     
-potential problems:
+## potential problems
   * r/sql: how to connect multiple repeated tables?
     * problem: without referencing each others visit_id, the query will split their data into separate rows
   * name conflicts
