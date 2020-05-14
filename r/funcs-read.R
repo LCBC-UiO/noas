@@ -9,9 +9,9 @@
 #'
 #' @return data.frame
 #' @export
-read_dbtable <- function(path){
+read_dbtable <- function(path, ...){
   read.table(path, header = TRUE, sep = "\t", 
-             stringsAsFactors = FALSE)
+             stringsAsFactors = FALSE, ...)
 }
 
 
