@@ -4,8 +4,9 @@ source('r/funcs-utils.R')
 source('r/funcs-populate.R')
 
 args <- commandArgs(trailingOnly = TRUE)
-args <- match.arg(args, c("unicode", "ascii"))
-unicode <- ifelse(args == "unicode", TRUE, FALSE)
+if(length(args) > 0) args <- match.arg(args, c("unicode", "ascii"))
+
+unicode <- if(!isatty(stdout())||length(args) == 0||args == "unicode"){ TRUE }else{ FALSE }
 
 # establish connection
 con <- moasdb_connect()
