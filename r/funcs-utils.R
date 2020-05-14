@@ -49,24 +49,59 @@ table_types <- function(){
   c("core", "cross", "long", "repeated")
 }
 
-codes <- function(unicode = TRUE){
+
+prim_keys <- function(){
+  list(
+    cross = "subject_id",
+    long = c("subject_id", "project_id", "wave_code"),
+    repeated = c("subject_id", "project_id", "wave_code")
+  )
+}
+
+codes <- function(unicode = TRUE, with_char = TRUE){
+  
+  chars <- if(with_char & unicode){
+    list(
+      success = "\U2713",
+      fail = "\U10102",
+      note = "\U0021",
+      table = "\U25C6"
+      )
+  }else if(with_char){
+    list(
+      success = "v  ",
+      fail = "x  ",
+      note = "!  ",
+      table = "---"
+    )
+  }else{
+    list(
+      success = "",
+      fail = "",
+      note = "",
+      table = ""
+    )
+  }
+    
   if(unicode){
-    list(success = function(...) crayon::green("\U2713",...),
-         fail = function(...) crayon::red("\U10102",...),
-         note = function(...) crayon::yellow("\U0021",...),
-         table = function(...) crayon::magenta("\U25C6",...),
+    list(success = function(...) crayon::green(chars$success, ...),
+         fail = function(...) crayon::red(chars$fail, ...),
+         note = function(...) crayon::yellow(chars$note, ...),
+         table = function(...) crayon::magenta(chars$table, ...),
          bold = function(...) crayon::bold(...),
          italic = function(...) crayon::italic(...)
     )
   }else{
-    list(success = function(...) paste("v\t",...),
-         fail = function(...) paste("x\t",...),
-         note = function(...) paste("!\t",...),
-         table = function(...) paste("---",...),
+    list(success = function(...) paste(chars$success, ...),
+         fail = function(...) paste(chars$fail, ...),
+         note = function(...) paste(chars$note, ...),
+         table = function(...) paste(chars$table, ...),
          bold = function(...) paste(...),
          italic = function(...) paste(...)
     )
   }
+  
+  
 }
 
 #' Print out table adding success

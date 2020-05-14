@@ -23,6 +23,8 @@ insert_table <- function(x,
                          ...){
   stopifnot(is.data.frame(x))
   
+  table_name <- gsub("/", "_", table_name)
+  
   tryCatch({
     k <- DBI::dbWriteTable(
       con, 

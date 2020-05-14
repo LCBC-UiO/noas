@@ -18,9 +18,12 @@ populate_table <- function(type, con, unicode = TRUE) {
   
   db_dir <- file.path(read_config()$TABDIR, type)
  
-  # list all directoried in the long db directory, except first, which is parent dir
-  tables <- list.dirs(db_dir, full.names = FALSE)[-1]
-  
+  # list all directoried in the long db directory
+  # list only dirs with tsv files, and 
+  # list only final full directory with tables in
+  tables <- list.files(db_dir, pattern = ".tsv", recursive = TRUE)
+  tables <- unique(dirname(tables))
+
   if(length(tables)>0){
     cat_add_type(type, unicode = unicode)
     
