@@ -21,7 +21,8 @@ populate_table("long", con, unicode = unicode)
 populate_table("repeated", con, unicode = unicode)
 populate_table("cross", con, unicode = unicode)
 
-spent <- as.numeric(round(Sys.time() - start, 3))
+spent <- round(as.numeric(Sys.time() - start, units="mins"), 3)
+
 spent <- dplyr::case_when(
   spent < 5 ~ codes(unicode)$success(spent),
   spent > 10 ~ codes(unicode)$fail(spent),
