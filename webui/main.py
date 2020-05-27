@@ -185,7 +185,7 @@ def generate_gnu_r_str(request_values):
   gnu_r_str += '  rx <- httr::POST("http://{}:{}/query",body=body)\n'.format(host, port)
   gnu_r_str += '  # convert to table\n'
   gnu_r_str += '  con <- textConnection(httr::content(rx, "text"))\n'
-  gnu_r_str += '  d_noas <- read.table(con, header=T, sep="\\t", na.strings="None")\n'
+  gnu_r_str += '  d_noas <- read.table(con, header=T, sep="\\t", na.strings="None", stringsAsFactors=F)\n'
   gnu_r_str += '  write("your data is available in \\"d_noas\\"", "")\n'
   gnu_r_str += '  close(con)\n'
   gnu_r_str += '}\n'
