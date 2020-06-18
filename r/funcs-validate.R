@@ -26,10 +26,16 @@ validate_tables <- function(path, type, unicode = TRUE){
   keys <- check_keys(ffiles, type, unicode = unicode)
   
   cols <- check_cols(ffiles, unicode = unicode)
-  
+  cat("\n")
+  if(all(delim, keys, cols)){
+    cat(codes(unicode)$success("Validation succeess: "), 
+        "Tables can safely be added to the database.\n")
+  }else{
+    cat(codes(unicode)$fail("Validation failed: "), 
+        "Tables cannot be added to the database.\n")
+  }
+    
 }
-
-
 
 #' Check if primary keys are set correctly
 #' 
@@ -40,22 +46,35 @@ validate_tables <- function(path, type, unicode = TRUE){
 #' @param type type of table 'cross', 'long', or 'repeated'
 #' @param unicode logical. if unicode printout should be toggled
 check_keys <- function(files, type, unicode = TRUE){
-  # browser()
+  type <- match.arg(type, c("cross", "long", "repeated"))
+  
   keys <- eval(parse(text=paste0("prim_keys()$", type)))
   
   tabs <- lapply(files, read_dbtable, nrows = 1)
-  tabs <- lapply(tabs, function(x) x[,1:3])
+
+  # check forth column is all the same for repeated
+  if(type == "repeated"){
+    nns <- sapply(tabs, function(x) names(x)[4])
+    if(length(unique(nns)) != 1){
+      cat(codes(unicode)$fail("Forth column is not the same across tables as required in repeated tables.\n"))
+      return(FALSE)
+    }
+  }
+  
+  tabs <- lapply(tabs, function(x) x[,1:length(keys)])
   nams <- lapply(tabs, function(x) which(!keys %in% names(x)))
   idx <- unlist(lapply(nams, function(x) length(x) !=0 ))
   
   if(any(idx)){
-    cat(codes(unicode, with_char = FALSE)$fail("\nValidation failed: "), 
-        "Some tables are missing necessary primary columns.")
+    cat(codes(unicode)$fail("Some tables are missing necessary primary columns.\n"))
     
     k <- lapply(which(idx), 
                 function(x) list(file = files[x],
                                  missing = prim_keys()$long[nams[[x]]]))
     j <- lapply(k, cat_miss_key, unicode = unicode) 
+    return(FALSE)
+  }else{
+    return(TRUE)
   }
 }
 
@@ -69,8 +88,8 @@ check_keys <- function(files, type, unicode = TRUE){
 #' @param unicode logical. if unicode printout should be toggled
 check_table_ext <- function(file, unicode = TRUE){
   if(!grepl("tsv$", file)){
-    cat(codes(unicode, with_char = FALSE)$fail("\nValidation fail: "), 
-        file, "does not have the '.tsv' extension. Files must be tab-separated.")
+    cat(codes(unicode)$fail(), 
+        file, "does not have the '.tsv' extension. Files must be tab-separated.\n")
     return(FALSE)
   }else{
     return(TRUE)
@@ -78,7 +97,8 @@ check_table_ext <- function(file, unicode = TRUE){
 }
 
 check_delim <- function(files, unicode = TRUE){
-  cont <- lapply(files, readLines)
+
+  cont <- lapply(files, readLines, warn = FALSE)
   cont <- lapply(cont, function(x) x[1])
   
   strings <- c(",", "\t", ";")
@@ -101,10 +121,10 @@ check_delim <- function(files, unicode = TRUE){
     return(TRUE) 
   }
 
-  cat(codes(unicode, with_char = FALSE)$fail("\nValidation failed: "), 
-      "Not all tables have tab (\t) as separator")
+  cat(codes(unicode,)$fail("Not all tables have tab (\\t) as separator\n"))
   
   k <- lapply(split(delim, file), cat_delim_err, unicode = TRUE)
+  return(FALSE)
 }
 
 
@@ -130,8 +150,7 @@ check_cols <- function(files, unicode = TRUE){
     k_nams <- dplyr::as_tibble(table(n_nams))
     
     if(nrow(k_nams) == length(files)){
-      cat(codes(unicode, with_char = FALSE)$fail("\n\nValidation failed: "), 
-          "all files have different number of columns, they cannot be combined.")
+      cat(codes(unicode)$fail("Files have different number of columns, they cannot be combined.\n"))
       return(FALSE)
     }
     
@@ -148,7 +167,7 @@ check_cols <- function(files, unicode = TRUE){
             file = files[x])
     )
     
-    cat(codes(unicode, with_char = FALSE)$fail("\n\nValidation failed: "), "Files contain different columns.")
+    cat(codes(unicode)$fail("Files contain different columns.\n"))
     j <- lapply(diff_names, cat_err_cols, unicode = unicode)
     
     return(FALSE)  
