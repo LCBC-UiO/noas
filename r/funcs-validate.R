@@ -1,4 +1,5 @@
 source("r/funcs-utils.R", echo = FALSE)
+source("r/funcs-printouts.R", echo = FALSE)
 source("r/funcs-read.R", echo = FALSE)
 
 #' Validate NOAS table
@@ -161,40 +162,3 @@ check_cols <- function(files, unicode = TRUE){
   return("uncaught state")
 }
 
-
-cat_err_cols <- function(x, unicode = TRUE){
-  
-  miss <- if(length(x$missing) != 0){
-    paste0("\nis", codes(unicode, with_char = FALSE)$note("missing "), "columns: ", 
-           paste(sapply(x$missing, wrap_string), collapse = ", "))
-  }else{
-    ""
-  }
-  
-  extra <- if(length(x$extra) != 0){
-    paste0("\nhas", codes(unicode, with_char = FALSE)$note("extra "), "unknown columns: ", 
-           paste(sapply(x$extra, wrap_string), collapse = ", "))
-  }else{
-    ""
-  }
-  
-  cat("\n\nTable", codes(unicode)$bold(x$file), miss, extra)
-}
-
-cat_miss_key <- function(x,  unicode = TRUE){
-  cat("\n\nTable", codes(unicode)$bold(x$file), 
-      paste0("\nis", codes(unicode, with_char = FALSE)$note("missing "), "primary columns: ", 
-             paste(sapply(x$missing, wrap_string), collapse = ", ")))
-}
-
-cat_delim_err <- function(x, unicode = TRUE){
-  cat("\n\nTable", codes(unicode)$bold(x$file), 
-      paste0("\nlooks like its separated with ", 
-             codes(unicode, with_char = FALSE)$note(x$key))
-  )
-}
-
-str_count <- function(char, s) {
-  s2 <- gsub(char,"",s)
-  return (nchar(s) - nchar(s2))
-}

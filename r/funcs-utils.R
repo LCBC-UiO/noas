@@ -127,49 +127,6 @@ codes <- function(unicode = TRUE, with_char = TRUE){
   
 }
 
-#' Print out table adding success
-#'
-#' @param success logical vector for successes
-#' @param names charatcer vector of equal length as \code{success}
-#'
-#' @return
-#' @export
-#'
-#' @examples
-#' log_vect <- c(TRUE, TRUE, FALSE)
-#' log_name <- c("tab1", "tab2", "tab3")
-#' cat_table_success("tables added", log_vect, log_name)
-cat_table_success <- function(success, names, unicode = TRUE){
-  
-  if(length(success) != length(names))
-    stop("success and names are not of equal length", call. = FALSE)
-  
-  if(length(success) == 0){
-    cat(codes(unicode)$note(), "no tables added")
-  }else{
-    
-    # if success is TRUE or 0 (adding to existing tables),
-    # return green checkmark, else return red x
-    j <- lapply(success, function(x) ifelse(x | x == 0, 
-                                            codes(unicode)$success(), 
-                                            codes(unicode)$fail()))
-    j <- unlist(j)
-    
-    j <- paste(j, basename(names), sep=" ")
-    cat(j)
-  }
-  cat("\n")
-}
-
-
-cat_add_type <- function(type, unicode = TRUE) {
-  cat("\n",
-      codes(unicode)$table(),
-      codes(unicode)$bold("Adding", type, "tables "), 
-      codes(unicode)$table(),
-      "\n")
-}
-
 #' Rename headers
 #'
 #' checks and renames a table header
