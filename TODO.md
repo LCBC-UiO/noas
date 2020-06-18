@@ -8,6 +8,7 @@
     * expand types, currently only int, float, text and date
     * time is imported as integer currently
     * "duration" type => "as.character" fo now?
+    * move metadata setting to SQL instead
   * r/sql: how to handle undefined visits for long/repeated?
     * currently, rows are silently discarded if (subj_id, project_id, wave_code) is not defined in core
   * compute derived data

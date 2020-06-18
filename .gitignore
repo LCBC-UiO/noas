@@ -10,3 +10,4 @@ webui/__pycache__/*
 .Rproj.user$
 NOAS.Rproj
 .Rproj.user
+**/.DS_Store
