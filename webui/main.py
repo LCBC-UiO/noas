@@ -171,26 +171,27 @@ def generate_gnu_r_str(request_values):
   from config import Config
   port = Config()['WEBSERVERPORT']
   host = Config()['WEBSERVERHOSTNAME']
-  gnu_r_str =  '# requires the "httr" library!\n'
-  gnu_r_str += 'if (! "httr" %in% rownames(installed.packages())) {\n'
-  gnu_r_str += '  write("please install the \\"httr\\" library", "")\n'
-  gnu_r_str += '} else {\n'
-  gnu_r_str += "  # define query parameters\n"
-  gnu_r_str += "  body <- list(NULL\n"
+  gnu_r_str =  "d_noas <- (function(){\n"
+  gnu_r_str += "  l_body <- list(NULL\n"
   for k,v in request_values.items():
     gnu_r_str += "    ,{} = \"{}\"\n".format(k,v)
-  gnu_r_str += "    ,{} = \"{}\"\n".format("options_format", "tsv")
-  gnu_r_str +=  "  )\n"
-  gnu_r_str += "  # download\n"
-  gnu_r_str += '  rx <- httr::POST("http://{}:{}/query",body=body)\n'.format(host, port)
-  gnu_r_str += '  # convert to table\n'
-  gnu_r_str += '  con <- textConnection(httr::content(rx, "text"))\n'
-  gnu_r_str += '  d_noas <- read.table(con, header=T, sep="\\t", na.strings="None")\n'
-  gnu_r_str += '  write("your data is available in \\"d_noas\\"", "")\n'
-  gnu_r_str += '  close(con)\n'
-  gnu_r_str += '}\n'
-  gnu_r_str += "\n"
-  gnu_r_str += "\n"
+  gnu_r_str +=   "    ,options_format = \"tsv\"\n"
+  gnu_r_str += "  )\n"
+  gnu_r_str += "  body <- paste0(sprintf('%s=%s',names(l_body), l_body)[-1], collapse='&')\n"
+  gnu_r_str += "  header <- paste0(c(\n"
+  gnu_r_str += "    'POST /query HTTP/1.0'\n"
+  gnu_r_str += "    ,'Content-Type: application/x-www-form-urlencoded'\n"
+  gnu_r_str += "    ,sprintf('Content-Length: %d', nchar(body))\n"
+  gnu_r_str += "    ,'Connection: close'\n"
+  gnu_r_str += "  ), collapse='\\r\\n')\n"
+  gnu_r_str += "  con <- socketConnection(host='{}', port={}, blocking=T, server=F, open='r+')\n".format(host, port)
+  gnu_r_str += "  on.exit(close(con))\n"
+  gnu_r_str += "  write(sprintf('%s\\r\\n\\r\\n%s', header, body), con);\n"
+  gnu_r_str += "  pl_str <- paste0(readLines(con), collapse='\\n'); # receive data\n"
+  gnu_r_str += "  table_str <- substr(pl_str, regexpr('\\n\\n', pl_str)+2, nchar(pl_str)); # skip http header\n"
+  gnu_r_str += "  return(read.table(text=table_str, header=T, sep='\\t', na.strings='None', stringsAsFactors=F))\n"
+  gnu_r_str += "})()\n"
+
   return gnu_r_str
 
 @app.route('/query', methods=['GET', 'POST'])
