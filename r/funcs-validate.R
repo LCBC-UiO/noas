@@ -14,11 +14,11 @@ source("r/funcs-read.R", echo = FALSE)
 #'
 #' @export
 validate_tables <- function(path, type, unicode = TRUE){
-  
+
   ffiles <- list.files(path, full.names = TRUE)
   ffiles <- ffiles[!grepl("json$", ffiles)]
   exts <- sapply(ffiles, check_table_ext, unicode = unicode) 
-  
+
   delim <- check_delim(ffiles, unicode)
   # Table type specific checks  
   type <- match.arg(type, c("cross", "long", "repeated"))
