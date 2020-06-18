@@ -6,12 +6,15 @@
 #' extra arguments
 #'
 #' @param path path to table
-#'
+#' @param ... other arguments to read.table()
 #' @return data.frame
 #' @export
 read_dbtable <- function(path, ...){
-  read.table(path, header = TRUE, sep = "\t", 
-             stringsAsFactors = FALSE, ...)
+  read.table(text = readLines(path, warn = FALSE), 
+             header = TRUE,
+             sep = "\t", 
+             stringsAsFactors = FALSE, 
+             ...)
 }
 
 

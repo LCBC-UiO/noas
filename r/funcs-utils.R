@@ -50,6 +50,13 @@ table_types <- function(){
 }
 
 
+#' List primary keys of the table types
+#' 
+#' Different table types have differnt primary keys.
+#' This functions returns a list containing the 
+#' primary keys for each table type
+#'
+#' @return list of primary keys by table type
 prim_keys <- function(){
   list(
     cross = "subject_id",
@@ -58,6 +65,22 @@ prim_keys <- function(){
   )
 }
 
+#' Printout codes
+#' 
+#' When printing out diagnostics to the
+#' terminal, the charachter settings for
+#' this may depend on the terminal and 
+#' interacitivity of running the functions.
+#' This function returns a list for printing
+#' certain pre-set printout versions. These
+#' vary depending on the contect to the printout, and
+#' the type of printout.
+#' 
+#'
+#' @param unicode logical. should the prinout include unicode characters
+#' @param with_char logical. if prinout should include default prefixed characters,
+#'
+#' @return list of printouts functions
 codes <- function(unicode = TRUE, with_char = TRUE){
   
   chars <- if(with_char & unicode){
@@ -167,6 +190,16 @@ rename_table_headers <- function(ft, key_vars){
   data
 }
 
+#' Cleanup column names
+#' 
+#' function to do initial cleaning
+#' of columns names so that they are
+#' lower case and do not start with 
+#' unwanted characters
+#'
+#' @param x string. column name
+#'
+#' @return string of cleaned column name
 fix_names <- function(x){
   x <- gsub("^X", "", x)
   x <- tolower(x)
@@ -201,6 +234,21 @@ change_col_type <- function(data, column, func){
   )
 }
 
+
+
+#' Count characters in string
+#' 
+#' function to count the number of 
+#' a given character in a string.
+#'
+#' @param char character to count
+#' @param s string to count in
+#'
+#' @return integer
+str_count <- function(char, s) {
+  s2 <- gsub(char,"",s)
+  return (nchar(s) - nchar(s2))
+}
 
 
 

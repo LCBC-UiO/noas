@@ -1,6 +1,13 @@
 source("r/funcs-read.R", echo = FALSE)
 source("r/funcs-utils.R", echo = FALSE)
+source("r/funcs-printouts.R", echo = FALSE)
 source("r/funcs-metadata.R", echo = FALSE)
+
+# Insert functions are functions taking a single
+# table and placing it in the DB
+# Add functions efficiently adds multiple tables
+# of the same type. 
+
 
 # generic table funcs ----
 #' Insert table into DB
