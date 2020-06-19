@@ -5,7 +5,7 @@ source('r/funcs-validate.R')
 args <- commandArgs(trailingOnly = TRUE)
 
 if(length(args) == 3){
-  unicode <- if(!isatty(stdout())||length(args) == 0||args[3] == "unicode"){ TRUE }else{ FALSE }
+  unicode <- if(!isatty(stdout())||args[3] == "unicode"){ TRUE }else{ FALSE }
 }else{
   unicode <- TRUE
 }
