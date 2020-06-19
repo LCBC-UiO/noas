@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 # takes a two or three arguments.
 # 1. path to data folder to validate
 # 2. type of data to validate (cross, long, repeated)
