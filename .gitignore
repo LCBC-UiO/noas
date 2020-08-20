@@ -6,3 +6,8 @@ db/*
 config.txt
 .Rhistory
 singularity/*.simg
+webui/__pycache__/*
+.Rproj.user$
+NOAS.Rproj
+.Rproj.user
+**/.DS_Store

@@ -35,8 +35,15 @@ distclean:
 	$(MAKE) -C 3rdparty clean
 
 
+.PHONY: run_dbimport
 run_dbimport:
 	singularity exec singularity/moas-r.simg bash bin/dbpopulate.sh
 
+.PHONY: run_webui
 run_webui:
 	singularity exec singularity/moas-flask.simg bash webui/start.sh
+
+.PHONY: run_db
+run_db: ${DBDATADIR}/postgresql.conf
+	3rdparty/postgresql/bin/pg_isready -h localhost -p $(DBPORT) -d $(DBNAME) && $(MAKE) dbstop || true
+	3rdparty/postgresql/bin/postgres -D $(DBDATADIR) -h 0.0.0.0 -p $(DBPORT)

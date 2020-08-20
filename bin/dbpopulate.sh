@@ -1,5 +1,4 @@
 #!/bin/bash
+# takes a single argument of either unicode or ascii for output formatting
 
-Rscript r/db_start.R
-Rscript r/populate_core_tables.R
-Rscript r/populate_long_tables.R
+Rscript r/script-populate_db.R unicode

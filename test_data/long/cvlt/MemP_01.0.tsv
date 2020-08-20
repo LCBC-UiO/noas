@@ -1,4 +1,4 @@
-subject_id	project_id	wave_code	cvlt_a1	cvlt_a2	cvlt_a3	cvlt_a4	cvlt_a5	cvlt_a_total_intrusions	cvlt_a_total	cvlt_a_total_t	cvlt_listb	cvlt_listb_intrusions	cvlt_5min_free	cvlt_5min_free_scaled	cvlt_5min_intrusions	cvlt_5min_cued	cvlt_5min_cued_intrusions	cvlt_30min_free	cvlt_30min_free_scaled	cvlt_30min_intrusions	cvlt_30min_cued	cvlt_30min_cued_intrusions	cvlt_recog_hits	cvlt_recog_fp	cvlt_recog_forced
+subject_id	project_id	wave_code	a1	a2	a3	a4	a5	a_total_intrusions	a_total	a_total_t	listb	listb_intrusions	5min_free	5min_free_scaled	5min_intrusions	5min_cued	5min_cued_intrusions	30min_free	30min_free_scaled	30min_intrusions	30min_cued	30min_cued_intrusions	recog_hits	recog_fp	recog_forced
 9901718	MemP	1	5	8	10	9	9	NA	41	NA	NA	NA	12	NA	NA	NA	NA	9	NA	NA	NA	NA	15	7	NA
 9900683	MemP	1	4	7	8	11	8	NA	38	NA	NA	NA	8	NA	NA	NA	NA	7	NA	NA	NA	NA	12	1	NA
 9901922	MemP	1	5	9	11	14	12	NA	51	NA	NA	NA	12	NA	NA	NA	NA	13	NA	NA	NA	NA	15	1	NA

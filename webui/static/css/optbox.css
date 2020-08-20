@@ -61,9 +61,10 @@ table td:first-child {
 }
 
 .openoptbody {
-  max-height: 700px;
+  max-height: 800px;
   transition: max-height 0.5s ease-in;
   transition-delay: 0.3s;
+  overflow-y: scroll;
 }
 
 .optinclude {
@@ -73,6 +74,18 @@ table td:first-child {
   padding: 4px;
   padding-right: 10px;
   display: inline-block;
+}
+
+.opt-selectall {
+  cursor: pointer;
+  background: var(--colbackground4);
+  margin-bottom: 10px;
+  border-radius: 8px;
+  padding: 4px;
+  padding-right: 10px;
+  padding-left: 10px;
+  display: inline-block;
+  font-weight: bold;
 }
 
 .openddarrow {

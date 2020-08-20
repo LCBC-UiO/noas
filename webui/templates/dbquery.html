@@ -23,9 +23,10 @@
     <div class="opthead">
       <table><tr>
       <td class="optopener">
-        <i class="ddarrow"></i>{{ ti.title }} (n={{ti.n}})
+        <i class="ddarrow"></i>{{ "["+ti.category+"] " if ti.category is not none else "" }}{{ ti.title }} ({{ti.id + "; " if ti.idx > 0 else "" }}n={{ti.n}})
       </td>
-      {% if ti.idx > 0 %}
+      <!--  help/description button
+        {% if ti.idx > 0 %}
         <td>
           <span data-toggle="tooltip" title="show table info">
             <a href="#"><i class="optaction fas fa-fw fa-question-circle fa-inverse" aria-hidden="true" data-toggle="modal" data-target="#modal-tabdescr-{{ ti.id }}"></i></a>
@@ -53,7 +54,7 @@
         </td>
       {% else %}
         <td style="opacity: 0.0;">.<td>
-      {% endif %}
+      {% endif %} -->
       </tr></table>
     </div>
     <div class="optbody">
@@ -64,24 +65,23 @@
             <input type="checkbox" class="form-check-input" id="include_{{ti.id}}" name="include_{{ti.id}}" value="1">
             <label class="form-check-label ml-4 pl-2" for="include_{{ti.id}}">Include this data</label>
           </div>
+          <a id="select_all_{{ti.id}}" class="opt-selectall hidable">Select all</a>
         {% endif %}
         <!-- only hide if its not core box -->
-        <div {% if ti.idx > 0 %} class="hidable" {% endif %}>
-          <div class="row p-0">
-          {% for fi in ti.cols %}
-            <div class="col-sm-3 mb-0">
-              <div class='form-group form-check mb-2'>
-                <!-- <span data-toggle="tooltip" title="{{ ti.title }}" data-placement="right"> -->
-                <input type='checkbox' class="form-check-input" id="{{ti.id}}{{ '_' if ti.idx==0 else '' }}{{fi.id}}" name="{{ti.id}}{{ '_' if ti.idx==0 else '' }}{{fi.id}}" value="1">
-                <label class="form-check-label ml-4 pl-2 font-weight-normal" for="{{ti.id}}{{ '_' if ti.idx==0 else '' }}{{fi.id}}">
-                  {{ fi.title }}
-                </label>
-                <!-- </span> -->
-              </div>
+        <div class="row p-0">
+        {% for fi in ti.cols %}
+          <div class="col-sm-3 mb-0">
+            <div class='form-group form-check mb-2'>
+              <!-- <span data-toggle="tooltip" title="{{ ti.title }}" data-placement="right"> -->
+              <input type='checkbox' class="form-check-input {{"hidable" if ti.idx > 0 else ""}}" id="{{ti.id}}{{ '_' if ti.idx==0 else '' }}{{fi.id}}" name="{{ti.id}}{{ '_' if ti.idx==0 else '' }}{{fi.id}}" value="1">
+              <label class="form-check-label ml-4 pl-2 font-weight-normal" for="{{ti.id}}{{ '_' if ti.idx==0 else '' }}{{fi.id}}">
+                {{ fi.title }}
+              </label>
+              <!-- </span> -->
             </div>
-            {% if (fi.idx + 1) is divisibleby(4) %}</div><div class="row p-0">{% endif %}
-          {% endfor %}
           </div>
+          {% if (fi.idx + 1) is divisibleby(4) %}</div><div class="row p-0">{% endif %}
+        {% endfor %}
         </div>
       </div>
     </div>
@@ -113,11 +113,12 @@
 $(document).ready(function(){
   $('[data-toggle="tooltip"]').tooltip();
 
-  // hide all non-part inputs at start
+  // hide all non-core inputs at start
   $('.optcontent').each(function() {
-    $(this).find('.hidable :input').each(function(){
-    $(this).css('opacity', 0.0);
-  })})
+    $(this).find('.hidable').each(function(){
+      $(this).css('opacity', 0.0);
+    });
+  });
 
   // toggle visibility by master checkbox
   $('[id^="include_"]').each(function() {
@@ -126,10 +127,25 @@ $(document).ready(function(){
       if (this.checked) {
         op = 1.0
       }
-      $(this).closest('.optcontent').find('.hidable :input').each(function(){
+      $(this).closest('.optcontent').find('.hidable').each(function(){
         $(this).css('opacity', op);
       })
     })
+  });
+  
+  const strSelectAll = "Select all";
+  const strUnseletctAll = "Unselect all";
+  // register select all buttons
+  function setSelectAll(e, checked, label) {
+    const table_id = e.id.replace("select_all_", "");
+    const b = e.innerHTML == strSelectAll;
+    e.innerHTML = b ? strUnseletctAll : strSelectAll;
+    document.querySelectorAll(`[id^="${table_id}_"]`).forEach( (e) => {
+      e.checked = b;
+    });
+  }
+  document.querySelectorAll('[id^="select_all_"]').forEach( (e) => {
+    e.addEventListener('click', () => setSelectAll(e));
   });
 });
 </script>

@@ -2,8 +2,7 @@
 # Create a new file "config.txt" and override any of the variables below
 
 # tables
-TABDIR_CORE="test_data/core/"
-TABDIR_LONG="test_data/long/" # longitudinal
+TABDIR="test_data/"
 
 # DB connection info
 DBHOST="localhost"

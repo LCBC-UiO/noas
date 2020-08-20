@@ -32,10 +32,11 @@ from
   select
     mt.id,
     mt.category,
+    mt.sampletype,
     mt.title,
     mt.idx,
     (
-			select row_count(mt.category, mt.id)
+			select row_count(mt.sampletype, mt.id)
 		) as n,
     (
     select
@@ -56,6 +57,7 @@ from
     metatables mt
   order by
     mt.idx,
+    mt.category,
     mt.title ) t
     """
 
@@ -64,7 +66,7 @@ def web_buildquery():
   from db import Db
   import json
   with Db().get().cursor() as cur:
-    cur.execute(sql_getmeta);
+    cur.execute(sql_getmeta)
     meta_json = cur.fetchall()[0].meta_json
     #print(json.dumps(meta_json, indent=2, sort_keys=True, default=str))
     Db().get().close()
@@ -103,9 +105,22 @@ def get_sql_join(meta_json, rvalues):
     if rvalues.get('include_' + tabmeta['id']) != "1" or tabmeta['idx'] == 0:
       return
     sqls.append("LEFT OUTER JOIN long_{table_id} {table_id} ON core.subject_id={table_id}.subject_id AND core.project_id={table_id}.project_id AND core.wave_code={table_id}.wave_code".format(table_id=tabmeta['id']))
+  def _get_sql_join_repeated(tabmeta, rvalues, sqls):
+    if rvalues.get('include_' + tabmeta['id']) != "1" or tabmeta['idx'] == 0:
+      return
+    sqls.append("LEFT OUTER JOIN repeated_{table_id} {table_id} ON core.subject_id={table_id}.subject_id AND core.project_id={table_id}.project_id AND core.wave_code={table_id}.wave_code".format(table_id=tabmeta['id']))
+  def _get_sql_join_cross(tabmeta, rvalues, sqls):
+    if rvalues.get('include_' + tabmeta['id']) != "1" or tabmeta['idx'] == 0:
+      return
+    sqls.append("LEFT OUTER JOIN cross_{table_id} {table_id} ON core.subject_id={table_id}.subject_id".format(table_id=tabmeta['id']))
   sqls = []
   for tabmeta in meta_json:
-    _get_sql_join_long(tabmeta, rvalues, sqls)
+    if (tabmeta['sampletype'] == "long"):
+      _get_sql_join_long(tabmeta, rvalues, sqls)
+    elif (tabmeta['sampletype'] == "repeated"):
+      _get_sql_join_repeated(tabmeta, rvalues, sqls)
+    elif (tabmeta['sampletype'] == "cross"):
+      _get_sql_join_cross(tabmeta, rvalues, sqls)
   return "\n".join(sqls)
 
 sql_getdata_where_main= """\
@@ -115,7 +130,13 @@ sql_getdata_where_main= """\
 """
 
 sql_getdata_where_condition_long = """\
-  {conjunction} core.subject_id IN (SELECT DISTINCT(subject_id) FROM long_{table_id} t WHERE t.project_id=core.project_id AND t.project_id=core.project_id AND t.wave_code=core.wave_code)
+  {conjunction} core.subject_id IN (SELECT DISTINCT(subject_id) FROM long_{table_id} t WHERE t.subject_id=core.subject_id AND t.project_id=core.project_id AND t.wave_code=core.wave_code)
+"""
+sql_getdata_where_condition_repeated = """\
+  {conjunction} core.subject_id IN (SELECT DISTINCT(subject_id) FROM repeated_{table_id} t WHERE t.subject_id=core.subject_id AND t.project_id=core.project_id AND t.wave_code=core.wave_code)
+"""
+sql_getdata_where_condition_cross = """\
+  {conjunction} core.subject_id IN (SELECT DISTINCT(subject_id) FROM cross_{table_id} t WHERE t.subject_id=core.subject_id)
 """
 
 def get_sql_where(meta_json, rvalues):
@@ -123,13 +144,19 @@ def get_sql_where(meta_json, rvalues):
     # skip non-included tables and core table
     if rvalues.get('include_{}'.format(tabmeta['id'])) != "1" or tabmeta['idx'] == 0:
       return ""
-    return sql_getdata_where_condition_long.format(conjunction=sqlconj, table_id=tabmeta['id'])
+    if tabmeta['sampletype'] == "long":
+      return sql_getdata_where_condition_long.format(conjunction=sqlconj, table_id=tabmeta['id'])
+    if tabmeta['sampletype'] == "repeated":
+      return sql_getdata_where_condition_repeated.format(conjunction=sqlconj, table_id=tabmeta['id'])
+    if tabmeta['sampletype'] == "cross":
+      return sql_getdata_where_condition_cross.format(conjunction=sqlconj, table_id=tabmeta['id'])
   if rvalues.get("options_join") == "all":
     return "TRUE"
   b    = "TRUE" if rvalues.get("options_join") == "intersect" else "FALSE"
   conj = "AND"  if rvalues.get("options_join") == "intersect" else "OR"
   cc = ""
   for tabmeta in meta_json:
+    print(_get_where_long(tabmeta, rvalues, conj))
     cc += _get_where_long(tabmeta, rvalues, conj)
   # skip empty WHERE (no data sets selected)
   if cc == "":
@@ -144,26 +171,27 @@ def generate_gnu_r_str(request_values):
   from config import Config
   port = Config()['WEBSERVERPORT']
   host = Config()['WEBSERVERHOSTNAME']
-  gnu_r_str =  '# requires the "httr" library!\n'
-  gnu_r_str += 'if (! "httr" %in% rownames(installed.packages())) {\n'
-  gnu_r_str += '  write("please install the \\"httr\\" library", "")\n'
-  gnu_r_str += '} else {\n'
-  gnu_r_str += "  # define query parameters\n"
-  gnu_r_str += "  body <- list(NULL\n"
+  gnu_r_str =  "d_noas <- (function(){\n"
+  gnu_r_str += "  l_body <- list(NULL\n"
   for k,v in request_values.items():
     gnu_r_str += "    ,{} = \"{}\"\n".format(k,v)
-  gnu_r_str += "    ,{} = \"{}\"\n".format("options_format", "tsv")
-  gnu_r_str +=  "  )\n"
-  gnu_r_str += "  # download\n"
-  gnu_r_str += '  rx <- httr::POST("http://{}:{}/query",body=body)\n'.format(host, port)
-  gnu_r_str += '  # convert to table\n'
-  gnu_r_str += '  con <- textConnection(httr::content(rx, "text"))\n'
-  gnu_r_str += '  d_noas <- read.table(con, header=T, sep="\\t", na.strings="None")\n'
-  gnu_r_str += '  write("your data is available in \\"d_noas\\"", "")\n'
-  gnu_r_str += '  close(con)\n'
-  gnu_r_str += '}\n'
-  gnu_r_str += "\n"
-  gnu_r_str += "\n"
+  gnu_r_str +=   "    ,options_format = \"tsv\"\n"
+  gnu_r_str += "  )\n"
+  gnu_r_str += "  body <- paste0(sprintf('%s=%s',names(l_body), l_body)[-1], collapse='&')\n"
+  gnu_r_str += "  header <- paste0(c(\n"
+  gnu_r_str += "    'POST /query HTTP/1.0'\n"
+  gnu_r_str += "    ,'Content-Type: application/x-www-form-urlencoded'\n"
+  gnu_r_str += "    ,sprintf('Content-Length: %d', nchar(body))\n"
+  gnu_r_str += "    ,'Connection: close'\n"
+  gnu_r_str += "  ), collapse='\\r\\n')\n"
+  gnu_r_str += "  con <- socketConnection(host='{}', port={}, blocking=T, server=F, open='r+')\n".format(host, port)
+  gnu_r_str += "  on.exit(close(con))\n"
+  gnu_r_str += "  write(sprintf('%s\\r\\n\\r\\n%s', header, body), con);\n"
+  gnu_r_str += "  pl_str <- paste0(readLines(con), collapse='\\n'); # receive data\n"
+  gnu_r_str += "  table_str <- substr(pl_str, regexpr('\\n\\n', pl_str)+2, nchar(pl_str)); # skip http header\n"
+  gnu_r_str += "  return(read.table(text=table_str, header=T, sep='\\t', na.strings='None', stringsAsFactors=F))\n"
+  gnu_r_str += "})()\n"
+
   return gnu_r_str
 
 @app.route('/query', methods=['GET', 'POST'])

@@ -1,0 +1,96 @@
+{
+  "title": "Edinburgh Handedness Inventory",
+  "category": "questionnaire",
+  "columns": [
+    {
+      "longname": "ehi nominal",
+      "id": "nominal",
+      "type": "text",
+      "idx": 1
+    },
+    {
+      "longname": "ehi date",
+      "id": "date",
+      "type": "date",
+      "idx": 2
+    },
+    {
+      "longname": "ehi 01",
+      "id": "01",
+      "type": "int",
+      "idx": 3
+    },
+    {
+      "longname": "ehi 02",
+      "id": "02",
+      "type": "int",
+      "idx": 4
+    },
+    {
+      "longname": "ehi 03",
+      "id": "03",
+      "type": "int",
+      "idx": 5
+    },
+    {
+      "longname": "ehi 04",
+      "id": "04",
+      "type": "int",
+      "idx": 6
+    },
+    {
+      "longname": "ehi 05",
+      "id": "05",
+      "type": "int",
+      "idx": 7
+    },
+    {
+      "longname": "ehi 06",
+      "id": "06",
+      "type": "int",
+      "idx": 8
+    },
+    {
+      "longname": "ehi 07",
+      "id": "07",
+      "type": "int",
+      "idx": 9
+    },
+    {
+      "longname": "ehi 08",
+      "id": "08",
+      "type": "int",
+      "idx": 10
+    },
+    {
+      "longname": "ehi 09",
+      "id": "09",
+      "type": "int",
+      "idx": 11
+    },
+    {
+      "longname": "ehi 10",
+      "id": "10",
+      "type": "int",
+      "idx": 12
+    },
+    {
+      "longname": "ehi lq",
+      "id": "lq",
+      "type": "float",
+      "idx": 13
+    },
+    {
+      "longname": "ehi lq cat",
+      "id": "lq_cat",
+      "type": "text",
+      "idx": 14
+    },
+    {
+      "longname": "ehi lqa cat",
+      "id": "lqa_cat",
+      "type": "text",
+      "idx": 15
+    }
+  ]
+}
