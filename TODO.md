@@ -7,8 +7,9 @@
       * supply git-hash as argument for import script
       * import script writes to namespace (use "latest" as default) 
       * in webui: show list of git-hashes + possiblility to select hash for query 
+        * select git-hash before showing available columns/tables
       * whenever data is exported, include git-hash (for example as part of filename)
-      * 
+  * support PGS data: should be dynamically computed for 
   * write metadata: set column "id" and "type" in json 
     * no "idx" and "title"
   * reading metadata: setting types in db 
