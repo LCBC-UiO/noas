@@ -22,7 +22,7 @@ popd
 
 # docker registry server to host docker image locally
 # do nothing if running, otherwise try to start registry or create registry
-[ $(docker inspect -f '{{.State.Running}}' registry) == "true" ] \
+[ "$(docker inspect -f '{{.State.Running}}' registry)" == "true" ] \
   || docker container start registry \
   || docker run -d -p 5000:5000 --restart=always --name registry registry:2
 
