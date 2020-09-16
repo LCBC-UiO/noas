@@ -61,6 +61,11 @@ body {
   color: var(--colnorm4);
 }
 
+.button:active {
+  box-shadow: 1px 1px 1px 1px #AAA;
+  transform: translateY(2px);
+}
+
 /*----------------------------------------------------------------------------*/
 
 /* font awesome */
