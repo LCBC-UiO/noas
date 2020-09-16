@@ -47,8 +47,9 @@ NOAS - Query selector
     loading...
   </div>
   <div class="mt-4">
-    <div id="submit" class="button">Submit</div>
+    <div id="submit" class="button">Submit</div><div id="btnSave" class="button">Save selection</div>
   </div>
+  <div class="mb-5"></div>
 
 <!-- enable popovers -->
 <script>
@@ -159,10 +160,10 @@ function showAlertBox(alertType, msg) {
         eLabel.classList.add("font-weight-normal");
         let eCheck = document.createElement("input");
         eLabel.appendChild(eCheck);
-        eCheck.id = `check_${e.id}_${ec.id}`;
+        eCheck.id = `colcheck_${e.id}_${ec.id}`;
         eCheck.type = 'checkbox';
         eCheck.classList.add("mr-3");
-        eCheck.noasTableId = ec.id;
+        eCheck.noasTableId = e.id;
         eCheck.noasColId = ec.id;
         eCheck.value = "1";
         eLabel.insertAdjacentHTML('beforeend', ec.title)
@@ -189,7 +190,7 @@ function showAlertBox(alertType, msg) {
     let eOptbox = document.createElement('div');
     eNoasTables.appendChild(eOptbox);
     eOptbox.classList.add("optbox");
-    eOptbox.id = `noasQueryOptions`;
+    eOptbox.id = `queryOpts`;
     // query options box header
     let eOpthead = document.createElement('div');
     eOptbox.appendChild(eOpthead);
@@ -238,15 +239,15 @@ function showAlertBox(alertType, msg) {
     }); // end query options
 
     // preselect some cols
-    let ecbcsubj = document.querySelector("#check_core_subject_id");
+    let ecbcsubj = document.querySelector("#colcheck_core_subject_id");
     ecbcsubj.checked = true;
     ecbcsubj.disabled = true;
-    document.querySelector("#check_core_project_id").checked = true;
-    document.querySelector("#check_core_wave_code").checked = true;
-    document.querySelector("#check_core_subject_sex").checked  = true;
+    document.querySelector("#colcheck_core_project_id").checked = true;
+    document.querySelector("#colcheck_core_wave_code").checked = true;
+    document.querySelector("#colcheck_core_subject_sex").checked  = true;
     // open default boxes
     document.querySelector("#noasTable_core td").click();
-    document.querySelector("#noasQueryOptions td").click();
+    document.querySelector("#queryOpts td").click();
   }
   
   // save selection
@@ -254,13 +255,30 @@ function showAlertBox(alertType, msg) {
     let sel = {
       columns: []  
     };
-    fileName = `selection_${(new Date()).toISOString()}.json`;
+    let cbs = document.querySelectorAll("[id^='colcheck_']");
+    cbs.forEach(e => {
+      if (!e.checked) {
+        return;
+      }
+      sel.columns.push([e.noasTableId, e.noasColId]);
+    });
+    const d = new Date();
+    const dyr = new Intl.DateTimeFormat('en', { year:   'numeric' }).format(d);
+    const dmo = new Intl.DateTimeFormat('en', { month:  '2-digit' }).format(d);  
+    const ddy = new Intl.DateTimeFormat('en', { day:    '2-digit' }).format(d);  
+    const dhr = new Intl.DateTimeFormat('en', { hour:   '2-digit', hour12: false}).format(d);  
+    const dmi = new Intl.DateTimeFormat('en', { minute: '2-digit' }).format(d);  
+    const dsc = new Intl.DateTimeFormat('en', { second: '2-digit' }).format(d);  
+    fileName = `noas_selection_${dyr}-${dmo}-${ddy}_${dhr}-${dmi}-${dsc}.json`;
     let json = JSON.stringify(sel);
     let file = new File([json], fileName, {type: "octet/stream"});
     let exportUrl = URL.createObjectURL(file);
     window.location.assign(exportUrl);
     URL.revokeObjectURL(exportUrl);
   }
+
+  document.querySelector("#btnSave").addEventListener('click', saveSelecion);
+  
   start();
 
 </script>
