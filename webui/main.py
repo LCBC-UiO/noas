@@ -73,7 +73,7 @@ def web_buildquery():
     meta_json = cur.fetchall()[0].meta_json
     #print(json.dumps(meta_json, indent=2, sort_keys=True, default=str))
     Db().get().close()
-    return flask.render_template('dbquery.html', dbmeta=meta_json)
+    return flask.render_template('dbquery.html', dbmeta=meta_json["tables"])
 
 
 #-------------------------------------------------------------------------------
