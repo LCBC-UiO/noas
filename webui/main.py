@@ -26,7 +26,10 @@ if os.path.isfile(os.environ['FLASKR_SETTINGS_OVERRIDE']):
 
 sql_getmeta = """\
 select
-  array_to_json(array_agg(row_to_json(t))) as meta_json
+  jsonb_build_object(
+    'tables'
+    , array_to_json(array_agg(row_to_json(t)))
+  ) as meta_json
 from
   (
   select
@@ -71,6 +74,24 @@ def web_buildquery():
     #print(json.dumps(meta_json, indent=2, sort_keys=True, default=str))
     Db().get().close()
     return flask.render_template('dbquery.html', dbmeta=meta_json)
+
+
+#-------------------------------------------------------------------------------
+
+
+@app.route('/dbmeta', methods=['GET'])
+def web_dbmeta():
+  from db import Db
+  import json
+  with Db().get().cursor() as cur:
+    cur.execute(sql_getmeta)
+    meta_json = cur.fetchall()[0].meta_json
+    Db().get().close()
+    return app.response_class(
+        status=200,
+        mimetype='application/json',
+        response=json.dumps(meta_json),
+      )
 
 #-------------------------------------------------------------------------------
 

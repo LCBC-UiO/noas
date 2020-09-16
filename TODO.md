@@ -1,8 +1,8 @@
 # TODO
   * webui: save and load selections
     * implementation:
-      * server: GET /get_db_meta - returns a json conatining all elements of the DB conatining all meta data
-        * the json from get_db_meta defines unique IDs for each selected element 
+      * DONE server: GET /dbmeta - returns a json conatining all elements of the DB conatining all meta data
+        * the json from dbmeta defines unique IDs for each selected element 
         * ( table_id, column_id, union/intersection/all, db_subjids, db_version )
       * instead of server side templating, generate the query selection page in client JS dynamically from the json
       * in client JS, a able to generate a "selection-json" of selected columns
