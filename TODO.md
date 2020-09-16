@@ -4,11 +4,14 @@
       * DONE server: GET /dbmeta - returns a json containing all elements of the DB conatining all meta data
         * the json from dbmeta defines unique IDs for each selected element 
         * ( table_id, column_id, union/intersection/all, db_subjids, db_version )
-      * instead of server side templating, generate the query selection page in client JS dynamically from the json
+      * DONE instead of server side templating, generate the query selection page in client JS dynamically from the json
       * in client JS, a able to generate a "selection-json" of selected columns
       * "selection-json" can be downloaded and reapplied in client JS
       * use "selection-json" to do the actual server-side DB query (POST /query)
         * have a query builder that accepts a json and returns the SQL
+    * other:
+      * do not prefix column ids with "_" in jsons?
+
    
 
 ## features
