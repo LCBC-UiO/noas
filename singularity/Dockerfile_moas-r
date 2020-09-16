@@ -18,8 +18,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
   libpq-dev
 
 RUN R -e "options(warn = 2); install.packages('DBI',    dependencies=TRUE, Ncpu=5, repos='http:/cran.uib.no/')"
-RUN R -e "options(warn = 2); install.packages('dplyr',  dependencies=TRUE, Ncpu=5, repos='http:/cran.uib.no/')"
-RUN R -e "options(warn = 2); install.packages('dbplyr', dependencies=TRUE, Ncpu=5, repos='http:/cran.uib.no/')"
+RUN R -e "options(warn = 1); install.packages('dplyr',  dependencies=TRUE, Ncpu=5, repos='http:/cran.uib.no/')"
+RUN R -e "options(warn = 1); install.packages('dbplyr', dependencies=TRUE, Ncpu=5, repos='http:/cran.uib.no/')"
 
 RUN mkdir /cluster /work /tsd /projects /usit
 
