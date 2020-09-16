@@ -47,3 +47,22 @@ run_webui:
 run_db: ${DBDATADIR}/postgresql.conf
 	3rdparty/postgresql/bin/pg_isready -h localhost -p $(DBPORT) -d $(DBNAME) && $(MAKE) dbstop || true
 	3rdparty/postgresql/bin/postgres -D $(DBDATADIR) -h 0.0.0.0 -p $(DBPORT)
+
+
+.PHONY: pyenv
+pyenv:
+	python3 -m virtualenv env
+
+.PHONY: pydeps
+pydeps: pyenv
+	bash -c "\
+		source env/bin/activate \
+	    && pip3 install -r requirements.txt \
+	"
+
+.PHONY: pyenv_webui
+pyenv_webui: pyenv
+	bash -c "\
+		source env/bin/activate \
+	    && bash webui/start.sh \
+	"

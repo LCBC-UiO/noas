@@ -4,9 +4,10 @@
 !3rdparty/Makefile
 db/*
 config.txt
-.Rhistory
+env/*
 singularity/*.simg
 webui/__pycache__/*
+.Rhistory
 .Rproj.user$
 NOAS.Rproj
 .Rproj.user
