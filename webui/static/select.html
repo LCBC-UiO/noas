@@ -225,7 +225,7 @@ function showAlertBox(alertType, msgs) {
     eOptcontent.classList.add("optcontent");
     eOptcontent.classList.add("container");
     eOptcontent.classList.add("mx-1");
-    [ 
+    [
       { id: "all",       text: "all visits (all n and many missing values)"},
       { id: "union",     text: "union of datasets"},
       { id: "intersect", text: "intersection of datasets (few n and few missing values)"},
@@ -235,8 +235,9 @@ function showAlertBox(alertType, msgs) {
       let eRadio = document.createElement("input");
       eLabel.appendChild(eRadio);
       eRadio.id = er.id;
+      eRadio.value = er.id;
       eRadio.type = 'radio';
-      eRadio.name = "optionsJoin";
+      eRadio.name = "setOps";
       eRadio.classList.add("mr-3");
       eLabel.insertAdjacentHTML('beforeend', er.text)
       eOptcontent.appendChild(document.createElement('br'));
@@ -259,14 +260,15 @@ function showAlertBox(alertType, msgs) {
   function clearSelection() {
     document.querySelectorAll("[id^='colcheck_']").forEach(e => e.checked = false);
     // check subjid
-    document.querySelector("#colcheck_core_subject_id");
+    document.querySelector("#colcheck_core_subject_id").checked = true;
   }
-  
-  // save selection
-  function saveSelecion() {
+
+  function getSelection() {
     let sel = {
-      columns: []  
+      columns: [],
+      set_op: null,
     };
+    // get selected columns
     let cbs = document.querySelectorAll("[id^='colcheck_']");
     cbs.forEach(e => {
       if (!e.checked) {
@@ -274,6 +276,14 @@ function showAlertBox(alertType, msgs) {
       }
       sel.columns.push({table_id: e.noasTableId, column_id: e.noasColId});
     });
+    // query options
+    sel.set_op = document.querySelector('input[name="setOps"]:checked').value;
+    return sel;
+  }
+  
+  // save selection
+  function saveSelecion() {
+    const sel = getSelection();
     const d = new Date();
     const dyr = new Intl.DateTimeFormat('en', { year:   'numeric' }).format(d);
     const dmo = new Intl.DateTimeFormat('en', { month:  '2-digit' }).format(d);  
@@ -308,6 +318,7 @@ function showAlertBox(alertType, msgs) {
       clearSelection();
       // apply selection
       let idsNotFound = [];
+      // column checkboxes
       selection.columns.forEach(e => {
         let checkid = `colcheck_${e.table_id}_${e.column_id}`;
         let cb = document.getElementById(checkid);
@@ -316,6 +327,10 @@ function showAlertBox(alertType, msgs) {
           return;
         }
         cb.checked = true;
+      });
+      // query options
+      document.querySelectorAll('input[name="setOps"]').forEach(e => {
+        e.checked = e.value == selection.set_op;
       });
       if (idsNotFound.length > 0) {
         let errmsg = [`While loading selections from "${file.name}", these entries were not found in current NOAS:`];
