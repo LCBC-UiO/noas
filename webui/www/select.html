@@ -2,17 +2,17 @@
 <html>
 <head>
 <meta charset="utf-8"/>
-<link rel="shortcut icon" href="/static/img/favicon.ico">
-<link rel="stylesheet" href="/static/css/layout.css" type="text/css"/>
-<link rel="stylesheet" href="/static/css/bootstrap.min.css" type="text/css"/>
-<link rel="stylesheet" href="/static/css/bootstrap.css" type="text/css"/>
-<script type="text/javascript" src="/static/js/solid.min.js" ></script>
-<script type="text/javascript" src="/static/js/fontawesome.min.js"></script>
-<script type="text/javascript" src="/static/js/jquery.min.js"></script>
-<script type="text/javascript" src="/static/js//popper.min.js"></script>
-<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+<link rel="shortcut icon" href="./img/favicon.ico">
+<link rel="stylesheet" href="./css/layout.css" type="text/css"/>
+<link rel="stylesheet" href="./css/bootstrap.min.css" type="text/css"/>
+<link rel="stylesheet" href="./css/bootstrap.css" type="text/css"/>
+<script type="text/javascript" src="./js/solid.min.js" ></script>
+<script type="text/javascript" src="./js/fontawesome.min.js"></script>
+<script type="text/javascript" src="./js/jquery.min.js"></script>
+<script type="text/javascript" src="./js//popper.min.js"></script>
+<script type="text/javascript" src="./js/bootstrap.min.js"></script>
 
-<link rel="stylesheet" href="/static/css/optbox.css" type="text/css"/>
+<link rel="stylesheet" href="./css/optbox.css" type="text/css"/>
 
 <title>
 NOAS - Query selector
@@ -84,7 +84,7 @@ function showAlertBox(alertType, msgs) {
 </script>
 <script>
   var g_cfg = {
-    get_meta_url: '/dbmeta'
+    get_meta_url: '/dbmeta.php'
   };
 
   async function getMetaData(mdAlert, dateMin) {
@@ -98,8 +98,11 @@ function showAlertBox(alertType, msgs) {
       return response.json();
     }
     try {
-      let data = await _getData(g_cfg.get_meta_url);
-      return data;
+      let jsn = await _getData(g_cfg.get_meta_url);
+      if (!jsn.status_ok) {
+        throw Error(jsn.status_msg);
+      }
+      return jsn.data;
     } catch (e) {
       showAlertBox(AlertType.ERROR, ["Unable to load data.", e.toString()]);
       console.log("err: " + e.toString());

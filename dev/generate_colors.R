@@ -1,4 +1,6 @@
-cols <- c(NULL
+# generate color scheme
+
+cols <- c(NULL # 4 lcbc colors, iirc
 ,"#C5DA84"
 ,"#94C11F"
 ,"#009FE3"

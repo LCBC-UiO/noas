@@ -6,6 +6,8 @@ _add: all
 modules := 
 
 include make_postgresql.mk
+include make_lighttpd.mk
+include make_php.mk
 
 all: $(addsuffix _build, $(modules))
 

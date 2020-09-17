@@ -3,12 +3,30 @@ BASEDIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 include config_default.txt
 -include config.txt
 
+all: 3rdparty
+
 simg_modules := \
-	moas-r \
-	moas-flask
+	moas-r 
 include singularity/make_simg.mk
 
-all: 3rdparty
+websrcs := \
+	webui/www/css/bootstrap-theme.css \
+	webui/www/css/bootstrap.css \
+	webui/www/css/bootstrap.min.css \
+	webui/www/css/bootstrap.min.css.map \
+	webui/www/css/tabulator.min.css \
+	webui/www/js/bootstrap.min.js \
+	webui/www/js/fontawesome.min.js \
+	webui/www/js/jquery.min.js \
+	webui/www/js/popper.min.js \
+	webui/www/js/solid.min.js \
+	webui/www/js/tabulator.min.js \
+	webui/www/js/xlsx.full.min.js
+
+webui/www/%:
+	echo $*.gz $@
+	zcat 3rdparty/$*.gz > $@ 
+
 
 .PHONY: dbstart
 dbstart: ${DBDATADIR}/postgresql.conf
@@ -24,7 +42,7 @@ dberase:
 	$(RM) -r ${DBDATADIR}
 
 .PHONY: 3rdparty
-3rdparty:
+3rdparty: $(websrcs)
 	$(MAKE) -C 3rdparty
 
 ${DBDATADIR}/postgresql.conf: 3rdparty
@@ -40,29 +58,17 @@ run_dbimport:
 	singularity exec singularity/moas-r.simg bash bin/dbpopulate.sh
 
 .PHONY: run_webui
-run_webui:
-	singularity exec singularity/moas-flask.simg bash webui/start.sh
+run_webui: 3rdparty
+	PORT=$(WEBSERVERPORT) \
+	DOCROOT=$(BASEDIR)/webui/www \
+	BASEDIR=$(BASEDIR) \
+	DBHOST=$(DBHOST) \
+	DBPORT=$(DBPORT) \
+	DBNAME=$(DBNAME) \
+	DBUSER=$(DBUSER) \
+	3rdparty/lighttpd/sbin/lighttpd -D -f lighttpd.conf
 
 .PHONY: run_db
 run_db: ${DBDATADIR}/postgresql.conf
 	3rdparty/postgresql/bin/pg_isready -h localhost -p $(DBPORT) -d $(DBNAME) && $(MAKE) dbstop || true
 	3rdparty/postgresql/bin/postgres -D $(DBDATADIR) -h 0.0.0.0 -p $(DBPORT)
-
-
-.PHONY: pyenv
-pyenv:
-	python3 -m virtualenv env
-
-.PHONY: pydeps
-pydeps: pyenv
-	bash -c "\
-		source env/bin/activate \
-	    && pip3 install -r requirements.txt \
-	"
-
-.PHONY: pyenv_webui
-pyenv_webui: pyenv
-	bash -c "\
-		source env/bin/activate \
-	    && bash webui/start.sh \
-	"
