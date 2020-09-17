@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="./css/layout.css" type="text/css"/>
 <link rel="stylesheet" href="./css/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="./css/bootstrap.css" type="text/css"/>
+<link rel="stylesheet" href="./css/optbox.css" type="text/css"/>
 <script type="text/javascript" src="./js/solid.min.js" ></script>
 <script type="text/javascript" src="./js/fontawesome.min.js"></script>
 <script type="text/javascript" src="./js/jquery.min.js"></script>
@@ -24,13 +25,14 @@ NOAS - Query selector
     </a>
   </nav>
 
+  <div class="container">
+    <div id="alerts"></div>
+  </div>
   <div class="d-flex">
     <div class="h4 mt-1">
       Database Query
       <a href="#" data-toggle="popover" data-trigger="focus" title="Help"
-        data-content="Select the data you are interested in and press 'Submit'.
-        If you want data sets in addition to the core data,
-        make sure to use the 'include this data' checkbox.">
+        data-content="Select the data you are interested in and press 'Submit' (bottom).">
         <i class="bluehover fas fa-question-circle" aria-hidden="true"></i>
       </a>
     </div>
@@ -39,9 +41,6 @@ NOAS - Query selector
     <label id="btnLoad" class="button button-minwidth">
       Load selection<input id="fileLoad" name="file" type="file" style="display: none;">
     </label>
-  </div>
-  <div class="container">
-    <div id="alerts"></div>
   </div>
   <div id="noasTables">
     loading...
@@ -67,14 +66,18 @@ const AlertType = {
 function showAlertBox(alertType, msgs) {
   let epar = document.querySelector('#alerts');
   let en = document.createElement('div');
+  epar.appendChild(en);
   en.classList.add('alert');
   en.classList.add(alertType.bsClass);
+  en.classList.add('alert-dismissible');
   en.classList.add('mt-1');
-  en.innerHTML = '';
-  [].concat(msgs).forEach((e,i) => {
-    en.innerHTML += i == 0 ? e : "<br>" + e;
-  });
-  epar.appendChild(en);
+  let ea = document.createElement('a');
+  en.appendChild(ea);
+  ea.classList.add("close");
+  ea.classList.add("p-0");
+  ea.setAttribute("data-dismiss", "alert");
+  ea.innerHTML = "&times";
+  en.insertAdjacentHTML('beforeend', [].concat(msgs).join("<br>"));
 }
 </script>
 <script>
