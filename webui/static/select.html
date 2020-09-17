@@ -47,7 +47,12 @@ NOAS - Query selector
     loading...
   </div>
   <div class="mt-4">
-    <div id="submit" class="button">Submit</div><div id="btnSave" class="button">Save selection</div>
+    <div id="submit" class="button">Submit</div>
+    <div id="btnClear" class="button">Clear selection</div>
+    <div id="btnSave" class="button">Save selection</div>
+    <label id="btnLoad" class="button">
+      Load selection<input id="fileLoad" name="file" type="file" style="display: none;">
+    </label>
   </div>
   <div class="mb-5"></div>
 
@@ -60,20 +65,20 @@ NOAS - Query selector
 <script>
 // bootstrap alerts
 const AlertType = {
-  ERROR: "error",
+  ERROR:   {id: "error",   bsClass: "alert-danger"},
+  OK:      {id: "ok",      bsClass: "alert-success"},
+  WARNING: {id: "warning", bsClass: "alert-warning"},
 }
-function showAlertBox(alertType, msg) {
+function showAlertBox(alertType, msgs) {
   let epar = document.querySelector('#alerts');
   let en = document.createElement('div');
   en.classList.add('alert');
-  switch (alertType) {
-    case AlertType.ERROR:
-      console.log("sd");
-      en.classList.add('alert-danger');
-      en.classList.add('mt-1');
-      break;
-  }
-  en.innerHTML = msg;
+  en.classList.add(alertType.bsClass);
+  en.classList.add('mt-1');
+  en.innerHTML = '';
+  [].concat(msgs).forEach((e,i) => {
+    en.innerHTML += i == 0 ? e : "<br>" + e;
+  });
   epar.appendChild(en);
 }
 </script>
@@ -96,7 +101,7 @@ function showAlertBox(alertType, msg) {
       let data = await _getData(g_cfg.get_meta_url);
       return data;
     } catch (e) {
-      showAlertBox(AlertType.ERROR, "Unable to load data.<br>" + e.toString());
+      showAlertBox(AlertType.ERROR, ["Unable to load data.", e.toString()]);
       console.log("err: " + e.toString());
     };
     return {};
@@ -249,6 +254,13 @@ function showAlertBox(alertType, msg) {
     document.querySelector("#noasTable_core td").click();
     document.querySelector("#queryOpts td").click();
   }
+
+  // clear selection
+  function clearSelection() {
+    document.querySelectorAll("[id^='colcheck_']").forEach(e => e.checked = false);
+    // check subjid
+    document.querySelector("#colcheck_core_subject_id");
+  }
   
   // save selection
   function saveSelecion() {
@@ -260,15 +272,19 @@ function showAlertBox(alertType, msg) {
       if (!e.checked) {
         return;
       }
-      sel.columns.push([e.noasTableId, e.noasColId]);
+      sel.columns.push({table_id: e.noasTableId, column_id: e.noasColId});
     });
     const d = new Date();
     const dyr = new Intl.DateTimeFormat('en', { year:   'numeric' }).format(d);
     const dmo = new Intl.DateTimeFormat('en', { month:  '2-digit' }).format(d);  
     const ddy = new Intl.DateTimeFormat('en', { day:    '2-digit' }).format(d);  
-    const dhr = new Intl.DateTimeFormat('en', { hour:   '2-digit', hour12: false}).format(d);  
-    const dmi = new Intl.DateTimeFormat('en', { minute: '2-digit' }).format(d);  
-    const dsc = new Intl.DateTimeFormat('en', { second: '2-digit' }).format(d);  
+    let dhr = new Intl.DateTimeFormat('en', { hour:   '2-digit', hour12: false}).format(d);  
+    let dmi = new Intl.DateTimeFormat('en', { minute: '2-digit' }).format(d);  
+    let dsc = new Intl.DateTimeFormat('en', { second: '2-digit' }).format(d);
+    // h, m, s won't be zero-padded, we have to fix this
+    dhr = dhr.padStart(2, '0');
+    dmi = dmi.padStart(2, '0');
+    dsc = dsc.padStart(2, '0');
     fileName = `noas_selection_${dyr}-${dmo}-${ddy}_${dhr}-${dmi}-${dsc}.json`;
     let json = JSON.stringify(sel);
     let file = new File([json], fileName, {type: "octet/stream"});
@@ -277,7 +293,49 @@ function showAlertBox(alertType, msg) {
     URL.revokeObjectURL(exportUrl);
   }
 
+  async function loadSelection() {
+    try {
+      // read json
+      var file = document.getElementById('fileLoad').files[0];
+      if (file === undefined) {
+        throw new Error("undefined file");
+      }
+      var reader = new FileReader();
+      reader.readAsText(file, 'UTF-8');
+      const data = await new Response(file).text()
+      let selection = JSON.parse(data);
+      // clear
+      clearSelection();
+      // apply selection
+      let idsNotFound = [];
+      selection.columns.forEach(e => {
+        let checkid = `colcheck_${e.table_id}_${e.column_id}`;
+        let cb = document.getElementById(checkid);
+        if (!cb) {
+          idsNotFound.push(e);
+          return;
+        }
+        cb.checked = true;
+      });
+      if (idsNotFound.length > 0) {
+        let errmsg = [`While loading selections from "${file.name}", these entries were not found in current NOAS:`];
+        idsNotFound.forEach( e => {
+          errmsg.push(`table "${e.table_id}", column "${e.column_id}"`);
+        });
+        showAlertBox(AlertType.WARNING, errmsg);
+        return;
+      }
+    } catch (e) {
+      showAlertBox(AlertType.ERROR, ["Unable to load selection.", e.toString()]);
+      console.log("err: " + e.toString());
+      return;
+    };
+    showAlertBox(AlertType.OK, "Loaded data selection: " + file.name);
+  }
+
+  document.querySelector("#btnClear").addEventListener('click', clearSelection);
   document.querySelector("#btnSave").addEventListener('click', saveSelecion);
+  document.querySelector("#btnLoad").addEventListener('change', loadSelection);
   
   start();
 

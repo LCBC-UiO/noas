@@ -7,7 +7,7 @@
       * DONE instead of server side templating, generate the query selection page in client JS dynamically from the json
       * DONE in client JS, ablility to generate a "selection-json" of selected columns
       * DONE "selection-json" can be downloaded 
-      * "selection-json" can be reapplied in client JS
+      * DONE "selection-json" can be reapplied in client JS
       * use "selection-json" to do the actual server-side DB query (POST /query)
         * have a query builder that accepts a json and returns the SQL
     * other:
