@@ -46,6 +46,7 @@
   </div>
   <script>
     var g_table = null;
+    var g_table = null;
 
     async function getTableData(selection) {
       async function _getData(url) {
@@ -96,19 +97,18 @@
       try {
         const sel = getSelection();
         // make db query
-        const table_data = await getTableData(sel);
-        console.log(table_data);
+        g_table_data = await getTableData(sel);
         // show data in table
         g_table = new Tabulator("#noasTable", {
           layout: "fitColumns", 
           pagination: "local",
           paginationSize: 40,
           autoColumns:true,
-          columns: getColDef(table_data.column_def),
+          columns: getColDef(g_table_data.column_def),
           downloadConfig:{
             columnCalcs: false,
           },
-          data: table_data.rows,
+          data: g_table_data.rows,
           /* replace null elements with empty string */
           downloadDataFormatter:function(data){
             data = JSON.parse(JSON.stringify(data).replace(/null/g, '""'))
@@ -128,13 +128,13 @@
     document.getElementById("btnSave").addEventListener('click', () => lcSaveSelection(getSelection()));
     document.getElementById("btnDlCsv").addEventListener('click', function() {
       const sel = getSelection();
-      const dlfilename = `noas_query_${lcGetDateFnStr(Date.parse(sel.date))}_${lcGetSelHash(sel)}.csv`;
+      const dlfilename = `noas_query_${lcGetDateFnStr(Date.parse(g_table_data.date))}_${lcGetSelHash(sel)}.csv`;
       g_table.download("csv", dlfilename, {delimiter:";"});
     });
     document.getElementById("btnDlXlsx").addEventListener('click', function() {
       const sel = getSelection();
       const md5 = lcGetSelHash(sel);
-      const dlfilename = `noas_query_${lcGetDateFnStr(Date.parse(sel.date))}_${md5}.xlsx`;
+      const dlfilename = `noas_query_${lcGetDateFnStr(Date.parse(g_table_data.date))}_${md5}.xlsx`;
       g_table.download("xlsx", dlfilename, {sheetName:"NOAS download " + md5 });
     });
     document.getElementById("btnBack").addEventListener('click', () => {history.back()});
