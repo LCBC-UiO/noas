@@ -8,10 +8,10 @@
       * DONE in client JS, ablility to generate a "selection-json" of selected columns
       * DONE "selection-json" can be downloaded 
       * DONE "selection-json" can be reapplied in client JS
-      * use "selection-json" to do the actual server-side DB query (POST /query)
-        * have a query builder that accepts a json and returns the SQL
+      * DONE use "selection-json" to do the actual server-side DB query (POST /query)
+        * DONE have a query builder that accepts a json and returns the SQL
     * other:
-      * do not prefix column ids with "_" in jsons?
+      * DONE: do not prefix column ids with "_" in jsons?
 
    
 
