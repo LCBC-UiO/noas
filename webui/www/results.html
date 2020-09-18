@@ -44,8 +44,8 @@
   <div id="noasTable">
     loading...
   </div>
+  <div class="mb-5"></div>
   <script>
-    var g_table = null;
     var g_table = null;
 
     async function getTableData(selection) {
@@ -71,11 +71,37 @@
 
 
     function getColDef(coldefs) {
+      let colCalcN = function(values, data, calcParams) {
+        return "n=" + values.length.toString();
+      }
+      let colCalcAvg = function(values, data, calcParams){
+        values = values.filter(e => e !== null);
+        const mean = values.reduce( (a,b) => a + parseFloat(b), 0) / values.length;
+        return "avg=" + (mean).toPrecision(4);
+      }
+      let colCalcAvgSd = function(values, data, calcParams){
+        values = values.filter(e => e !== null);
+        const n = values.length
+        const mean = values.reduce( (a,b) => a + parseFloat(b), 0) / n;
+        const sd = Math.sqrt(values.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / n)
+        return `avg=${mean.toPrecision(3)};SD=${sd.toPrecision(3)}`;
+      }
       return coldefs.map( e => {
-        return {
-          title: e.field,
+        let r = {
           title: e.id,
-        };
+          field: e.id,
+          
+        }
+        if (e.idx == 0) {
+          r.topCalc = colCalcN;
+          r.bottomCalc = colCalcN;
+          r.minWidth = 120;
+        } else if (e.type == "float" || e.type == "int") {
+          r.topCalc = colCalcAvgSd;
+          r.bottomCalc = colCalcAvgSd;
+          r.sorter = "number";
+        }
+        return r;
       });
     };
 
@@ -98,12 +124,14 @@
         const sel = getSelection();
         // make db query
         g_table_data = await getTableData(sel);
+        console.log(g_table_data);
+        console.log( getColDef(g_table_data.column_def));
+
         // show data in table
         g_table = new Tabulator("#noasTable", {
           layout: "fitColumns", 
           pagination: "local",
           paginationSize: 40,
-          autoColumns:true,
           columns: getColDef(g_table_data.column_def),
           downloadConfig:{
             columnCalcs: false,
