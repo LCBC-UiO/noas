@@ -21,7 +21,8 @@ from (
       array_to_json(array_agg(row_to_json(d)))
     from (
       select
-        mc.id,
+        -- skip '_'-prefix in column ID for all non-core tables
+        (case when mt.idx = 0 then mc.id else substr(mc.id, 2) end) as id,
         mc.title,
         mc.idx
       from
