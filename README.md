@@ -30,9 +30,9 @@
 
 ## Dev
 
-## supported column types 
+## Supported column types 
 
-These data type are supported as NOAS table columns (in metadata, DB and web UI).
+These data types are supported as NOAS table columns (in metadata, DB and web UI).
 
   * `text`
   * `float`

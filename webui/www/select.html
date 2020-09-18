@@ -13,6 +13,7 @@
 <script type="text/javascript" src="./js//popper.min.js"></script>
 <script type="text/javascript" src="./js/bootstrap.min.js"></script>
 <script type="text/javascript" src="./js/lcalerts.js"></script>
+<script type="text/javascript" src="./js/lchelper.js"></script>
 
 <title>
 NOAS - Query selector
@@ -21,7 +22,7 @@ NOAS - Query selector
 <body>
   
   <nav class="navbar navbar-expand navbar-dark">
-    <a class="navbar-brand font-weight-bold" href="/">
+    <a class="navbar-brand font-weight-bold" href="./select.html">
       NOAS
     </a>
   </nav>
@@ -38,20 +39,20 @@ NOAS - Query selector
       </a>
     </div>
     <div id="btnClear" class="button button-minwidth ml-auto">Clear selection</div>
-    <div id="btnSave" class="button button-minwidth">Save selection</div>
     <label id="btnLoad" class="button button-minwidth">
       Load selection<input id="fileLoad" name="file" type="file" style="display: none;">
     </label>
+    <div id="btnSubmitTop" class="button button-minwidth">Submit</div>
   </div>
   <div id="noasTables">
     loading...
   </div>
   <div class="mt-4">
-    <div id="submit" class="button button-minwidth">Submit</div>
+    <div id="btnSubmit" class="button button-minwidth">Submit</div>
   </div>
   <div class="mb-5"></div>
 
-<!-- enable popovers -->
+<!-- enable pop-overs -->
 <script>
   $(document).ready(function(){
     $('[data-toggle="popover"]').popover();
@@ -245,7 +246,7 @@ NOAS - Query selector
     let sel = {
       columns: [],
       set_op: null,
-      date: new Date(),
+      date: (new Date()).toISOString(),
     };
     // get selected columns
     let cbs = document.querySelectorAll("[id^='colcheck_']");
@@ -260,28 +261,6 @@ NOAS - Query selector
     return sel;
   }
   
-  // save selection
-  function saveSelecion() {
-    const sel = getSelection();
-    const d = sel.date;
-    const dyr = new Intl.DateTimeFormat('en', { year:  'numeric' }).format(d);
-    const dmo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(d);  
-    const ddy = new Intl.DateTimeFormat('en', { day:   '2-digit' }).format(d);  
-    let dhr = new Intl.DateTimeFormat('en', { hour:   '2-digit', hour12: false}).format(d);  
-    let dmi = new Intl.DateTimeFormat('en', { minute: '2-digit' }).format(d);  
-    let dsc = new Intl.DateTimeFormat('en', { second: '2-digit' }).format(d);
-    // h, m, s won't be zero-padded, we have to fix this
-    dhr = dhr.padStart(2, '0');
-    dmi = dmi.padStart(2, '0');
-    dsc = dsc.padStart(2, '0');
-    fileName = `noas_selection_${dyr}-${dmo}-${ddy}_${dhr}-${dmi}-${dsc}.json`;
-    let json = JSON.stringify(sel, null, 2);
-    let file = new File([json], fileName, {type: "octet/stream"});
-    let exportUrl = URL.createObjectURL(file);
-    window.location.assign(exportUrl);
-    URL.revokeObjectURL(exportUrl);
-  }
-
   async function loadSelection() {
     try {
       // read json
@@ -327,9 +306,18 @@ NOAS - Query selector
     showAlertBox(AlertType.OK, "Loaded data selection: " + file.name);
   }
 
-  document.querySelector("#btnClear").addEventListener('click', clearSelection);
-  document.querySelector("#btnSave").addEventListener('click', saveSelecion);
-  document.querySelector("#btnLoad").addEventListener('change', loadSelection);
+  function submitSelection() {
+    const sel = getSelection();
+    // save inside browser session to pass it to next page
+    window.sessionStorage.setItem('selection', JSON.stringify(sel));
+    // open result page
+    window.location.href = './results.html';
+  }
+
+  document.getElementById("btnClear").addEventListener('click', clearSelection);
+  document.getElementById("btnLoad").addEventListener('change', loadSelection);
+  document.getElementById("btnSubmit").addEventListener('click', submitSelection);
+  document.getElementById("btnSubmitTop").addEventListener('click', submitSelection);
   
   start();
 

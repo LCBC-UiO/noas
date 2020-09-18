@@ -66,6 +66,10 @@ body {
   transform: translateY(2px);
 }
 
+.button-minwidth {
+  min-width: 130px; 
+}
+
 /*----------------------------------------------------------------------------*/
 
 /* font awesome */
