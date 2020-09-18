@@ -32,7 +32,7 @@ from (
       order by
         mc.idx 
       ) d 
-    ) as cols
+    ) as columns
   from
     metatables mt
   order by
