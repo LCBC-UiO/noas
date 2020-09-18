@@ -75,7 +75,8 @@ try {
   $response['status_msg'] = "ok";
   $response['data'] = array(
     "column_def" => _get_column_def($stmt),
-    "rows" => $results
+    "rows" => $results,
+    "date" => (new DateTime())->format('c')
   );
 } catch (PDOException $e) {
   exit_error(400, $response, htmlentities($e->getMessage()));
