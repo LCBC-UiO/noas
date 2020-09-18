@@ -12,6 +12,7 @@
 <script type="text/javascript" src="./js/jquery.min.js"></script>
 <script type="text/javascript" src="./js//popper.min.js"></script>
 <script type="text/javascript" src="./js/bootstrap.min.js"></script>
+<script type="text/javascript" src="./js/lcalerts.js"></script>
 
 <title>
 NOAS - Query selector
@@ -57,35 +58,11 @@ NOAS - Query selector
   });
 </script>
 <script>
-// bootstrap alerts
-const AlertType = {
-  ERROR:   {id: "error",   bsClass: "alert-danger"},
-  OK:      {id: "ok",      bsClass: "alert-success"},
-  WARNING: {id: "warning", bsClass: "alert-warning"},
-}
-function showAlertBox(alertType, msgs) {
-  let epar = document.querySelector('#alerts');
-  let en = document.createElement('div');
-  epar.appendChild(en);
-  en.classList.add('alert');
-  en.classList.add(alertType.bsClass);
-  en.classList.add('alert-dismissible');
-  en.classList.add('mt-1');
-  let ea = document.createElement('a');
-  en.appendChild(ea);
-  ea.classList.add("close");
-  ea.classList.add("p-0");
-  ea.setAttribute("data-dismiss", "alert");
-  ea.innerHTML = "&times";
-  en.insertAdjacentHTML('beforeend', [].concat(msgs).join("<br>"));
-}
-</script>
-<script>
   var g_cfg = {
     get_meta_url: '/dbmeta.php'
   };
 
-  async function getMetaData(mdAlert, dateMin) {
+  async function getMetaData() {
     async function _getData(url) {
       const response = await fetch(url, {
         method: 'GET'
@@ -287,9 +264,9 @@ function showAlertBox(alertType, msgs) {
   function saveSelecion() {
     const sel = getSelection();
     const d = sel.date;
-    const dyr = new Intl.DateTimeFormat('en', { year:   'numeric' }).format(d);
-    const dmo = new Intl.DateTimeFormat('en', { month:  '2-digit' }).format(d);  
-    const ddy = new Intl.DateTimeFormat('en', { day:    '2-digit' }).format(d);  
+    const dyr = new Intl.DateTimeFormat('en', { year:  'numeric' }).format(d);
+    const dmo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(d);  
+    const ddy = new Intl.DateTimeFormat('en', { day:   '2-digit' }).format(d);  
     let dhr = new Intl.DateTimeFormat('en', { hour:   '2-digit', hour12: false}).format(d);  
     let dmi = new Intl.DateTimeFormat('en', { minute: '2-digit' }).format(d);  
     let dsc = new Intl.DateTimeFormat('en', { second: '2-digit' }).format(d);
