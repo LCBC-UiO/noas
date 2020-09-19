@@ -16,7 +16,8 @@
     (set `DBPORT` and `WEBSERVERPORT` to a port that is not in use!)  
      `cp config_default.txt config.txt` and edit `config.txt`
   * Start database  
-    `make dbstart` (use `make dberase` to reset the DB)
+    `make run_db` (use `make dberase` to reset the DB)  
+    Open a new tab for the steps below.
   * Import data  
     `make run_dbimport`  
     (Note: If all  R deps are installed, you can call `bin/dbpopulate.sh` directly)
@@ -38,3 +39,4 @@ These data types are supported as NOAS table columns (in metadata, DB and web UI
   * `float`
   * `int`
   * `date`
+
