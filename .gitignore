@@ -1,7 +1,8 @@
-3rdparty/*
-!3rdparty/download/*
-!3rdparty/*.mk
-!3rdparty/Makefile
+3rdparty/download/*
+3rdparty/build_*
+3rdparty/lighttpd/
+3rdparty/php/
+3rdparty/postgresql/
 db/*
 config.txt
 singularity/*.simg
