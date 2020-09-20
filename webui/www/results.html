@@ -62,7 +62,7 @@
         }
         return response.json();
       }
-      let jsn = await _getData("./query.php");
+      let jsn = await _getData("./query_json.php");
       if (!jsn.status_ok) {
         throw Error(jsn.status_msg);
       }

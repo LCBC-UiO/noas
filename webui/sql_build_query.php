@@ -115,7 +115,7 @@ function sql_build_query($dbmeta, $sel) {
   $sql = "
 SELECT
 {$sql_select}
-FROM core_core as core
+FROM core_core AS core
 {$sql_join}
 WHERE TRUE AND 
 {$sql_where}

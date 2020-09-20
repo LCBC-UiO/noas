@@ -12,12 +12,17 @@ $response = array(
   'type' => "query_result",
 );
 
+/*----------------------------------------------------------------------------*/
+
 function exit_error($code, $response, $msg) {
   http_response_code($code);
   $response['status_msg'] = $msg;
   echo json_encode($response);
   exit;
 }
+
+/*----------------------------------------------------------------------------*/
+
 function _get_column_def($stmt) {
   function _get_col_def($i, $stmt) {
     $type = 'text';
@@ -54,6 +59,8 @@ function _get_column_def($stmt) {
   );
 }
 
+/*----------------------------------------------------------------------------*/
+
 try {
   // get input selection
   $selection = json_decode(file_get_contents('php://input'));
@@ -66,11 +73,13 @@ try {
   $stmt->execute();
   $dbmeta = $stmt->fetchAll(PDO::FETCH_ASSOC);
   $dbmeta = json_decode($dbmeta[0]["meta_json"]);
-  // get sql query
+  // generate sql query string
   $sql_gettable = sql_build_query($dbmeta, $selection);
+  // run db query
   $stmt = $db->prepare($sql_gettable);
   $stmt->execute();
   $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  // output
   $response['status_ok'] = true;
   $response['status_msg'] = "ok";
   $response['data'] = array(
@@ -86,7 +95,6 @@ try {
 $db = null;
 
 http_response_code(200);
-header("Content-Type: application/json; charset=UTF-8");
 echo json_encode($response);
 
 ?>
