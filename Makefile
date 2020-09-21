@@ -26,7 +26,7 @@ websrcs := \
 
 webui/www/%:
 	echo $*.gz $@
-	zcat 3rdparty/$*.gz > $@ 
+	zcat < 3rdparty/$*.gz > $@ 
 
 
 .PHONY: dbstart
