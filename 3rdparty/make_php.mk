@@ -27,7 +27,7 @@ php/bin/php-cgi: download/php-${LIBVER_php}.tar.gz | postgresql_build
 		&& cd php_build \
 		&& tar xf ../download/php-${LIBVER_php}.tar.gz \
 		&& cd php-$(LIBVER_php) \
-		&& ./configure --prefix=$(BASEDIR)/php --without-libxml --without-sqlite3 --disable-dom --without-pdo-sqlite --disable-simplexml --disable-xml --disable-xmlreader --disable-xmlwriter --with-pgsql=$(BASEDIR)/postgresql --with-pdo-pgsql=$(BASEDIR)/postgresql
+		&& ./configure --prefix=$(BASEDIR)/php  --without-iconv --without-libxml --without-sqlite3 --disable-dom --without-pdo-sqlite --disable-simplexml --disable-xml --disable-xmlreader --disable-xmlwriter --with-pgsql=$(BASEDIR)/postgresql --with-pdo-pgsql=$(BASEDIR)/postgresql
 	$(MAKE) -C php_build/php-$(LIBVER_php)
 	$(MAKE) -C php_build/php-$(LIBVER_php) install
 	$(RM) -r php_build
