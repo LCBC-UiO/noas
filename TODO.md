@@ -43,5 +43,4 @@
   * name conflicts
     * sql: if table id is used more than once (for example in long and repeated)
     * sql: if table name is sql keyowrd?
-    * webui: if table name machtes other html ids ("options_..")
 
