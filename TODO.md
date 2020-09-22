@@ -1,19 +1,3 @@
-# TODO
-  * webui: save and load selections
-    * implementation:
-      * DONE server: GET /dbmeta - returns a json containing all elements of the DB conatining all meta data
-        * the json from dbmeta defines unique IDs for each selected element 
-        * ( table_id, column_id, union/intersection/all, db_subjids, db_version )
-      * DONE instead of server side templating, generate the query selection page in client JS dynamically from the json
-      * DONE in client JS, ablility to generate a "selection-json" of selected columns
-      * DONE "selection-json" can be downloaded 
-      * DONE "selection-json" can be reapplied in client JS
-      * DONE use "selection-json" to do the actual server-side DB query (POST /query)
-        * DONE have a query builder that accepts a json and returns the SQL
-    * other:
-      * DONE: do not prefix column ids with "_" in jsons?
-
-   
 
 ## features
   * r/db/webui: support query with snapshots
@@ -46,6 +30,8 @@
     * table with information on MRI scanners
   * add db connection info to "show sql query"
     * add read-only user?
+  * webui
+    * revive table filter in results.html?
 
 ## bugs
   * mri/repeated: double underscore (`__`) before "site_name" column name
