@@ -45,11 +45,8 @@
     <div type="button" class="button button-minwidth" data-toggle="modal" data-target="#modalImportR">Import to R</div>
     <div id="btnBack" class="button button-minwidth">Back</div>
   </div>
-  <div id="noasTable">
-    loading...
-  </div>
+  <div id="noasTable" class="mt-2"></div>
   <div class="mb-5"></div>
-
 
   <div class="modal" id="modalImportR">
     <div class="modal-dialog modal-lg">
@@ -146,9 +143,12 @@
       try {
         const sel = getSelection();
         // make db query
+        document.getElementById("noasTable").innerHTML = '<br><br><h4>loading data...</h4>';
         g_table_data = await getTableData(sel);
-        console.log(g_table_data);
-        console.log( getColDef(g_table_data.column_def));
+        //console.log(g_table_data);
+        //console.log( getColDef(g_table_data.column_def));
+        document.getElementById("noasTable").innerHTML = '<br><br><h4>preparing table...</h4>';
+
 
         // show data in table
         g_table = new Tabulator("#noasTable", {
@@ -171,7 +171,7 @@
         document.getElementById("codeImportR").innerHTML = 
           `d_noas <- (function(){\n` +
           `  selection <- '{ "columns": [\n` +
-        sel.columns.map(e => `    { "table_id": "${e.table_id}", "column_id": "${e.column_id}"}`).join(",\n") + "\n" +
+        sel.columns.map(e => `    { "table_id": "${e.table_id}", "column_id": "${e.column_id}" }`).join(",\n") + "\n" +
           `   ], "set_op": "intersect" }'\n` +
           `  header <- paste0(c(NULL\n` +
           `    ,'POST /query_tsv.php HTTP/1.0'\n` +
