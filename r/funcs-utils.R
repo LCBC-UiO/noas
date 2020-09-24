@@ -77,44 +77,42 @@ prim_keys <- function(){
 #' the type of printout.
 #' 
 #'
-#' @param unicode logical. should the prinout include unicode characters
-#' @param with_char logical. if prinout should include default prefixed characters,
+#' @param unicode logical. should the printout include unicode characters
+#' @param with_char logical. if printout should include default prefixed characters,
 #'
 #' @return list of printouts functions
 codes <- function(unicode = TRUE, with_char = TRUE){
   
-  chars <- if(with_char & unicode){
-    list(
-      success = "\U2713",
-      fail = "\U10102",
-      note = "\U0021",
-      table = "\U25C6"
+  chars <- list(
+      success = "\x1B[32m",
+      fail = "\x1B[31m",
+      note = "\x1B[33m",
+      table = "\x1B[35m",
+      bold = "\x1B[1m",
+      italic = "\x1B[4m"
       )
-  }else if(with_char){
-    list(
-      success = "v  ",
-      fail = "x  ",
-      note = "!  ",
-      table = "---"
+  
+  # add chars
+  if(with_char)
+    chars <- list(
+      success = paste0(chars$success, "v  "),
+      fail = paste0(chars$fail, "x  "),
+      note = paste0(chars$note, "!  "),
+      table = paste0(chars$table, "---  "),
+      bold = "\x1B[1m  ",
+      italic = "\x1B[4m  "
     )
-  }else{
-    list(
-      success = "",
-      fail = "",
-      note = "",
-      table = ""
-    )
-  }
-    
-  if(unicode){
-    list(success = function(...) crayon::green(chars$success, ...),
-         fail = function(...) crayon::red(chars$fail, ...),
-         note = function(...) crayon::yellow(chars$note, ...),
-         table = function(...) crayon::magenta(chars$table, ...),
-         bold = function(...) crayon::bold(...),
-         italic = function(...) crayon::italic(...)
-    )
-  }else{
+  
+  # reset colours
+  chars <- list(
+    success = paste0(chars$success, "\x1B[39m"),
+    fail = paste0(chars$fail, "\x1B[39m"),
+    note = paste0(chars$note, "\x1B[39m"),
+    table = paste0(chars$table, "\x1B[39m"),
+    bold = chars$bold, 
+    italic = chars$italic
+  )
+
     list(success = function(...) paste(chars$success, ...),
          fail = function(...) paste(chars$fail, ...),
          note = function(...) paste(chars$note, ...),
@@ -122,9 +120,6 @@ codes <- function(unicode = TRUE, with_char = TRUE){
          bold = function(...) paste(...),
          italic = function(...) paste(...)
     )
-  }
-  
-  
 }
 
 #' Rename headers
