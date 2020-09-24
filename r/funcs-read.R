@@ -74,7 +74,6 @@ read_sql <- function(path, ...){
 #'
 #' @param dirpath dir where _metadata.json lives
 read_metadata <- function(dirpath){
-  
   ffile <- file.path(dirpath, "_metadata.json")
   if(file.exists(ffile)){
     meta <- jsonlite::read_json(ffile, 

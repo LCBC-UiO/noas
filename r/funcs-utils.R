@@ -181,8 +181,8 @@ change_col_type <- function(data, column, func){
   for(i in 1:length(column)){
     data[, column[i]] <- func[[i]](data[, column[i]])
   }
-  dplyr::as_tibble(
-    data
+  as.data.frame(
+    data, stringsAsFactor = FALSE
   )
 }
 

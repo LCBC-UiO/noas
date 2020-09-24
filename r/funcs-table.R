@@ -74,12 +74,13 @@ get_data <- function(table_name, db_dir, key_vars, unicode = TRUE) {
   
   ffiles <- list.files(dir, "tsv$", full.names = TRUE)
   
-  # if(table_name == "dbs_info") browser()
-  
-  # remove tables with "unkown" project, these are for record keeping
+  # remove tables with "unknown" project, these are for record keeping
   ffiles <- ffiles[!grepl("unknown|NA|00.0", ffiles)]
   
   ft <- lapply(ffiles, read_dbtable)
+
+  # Turn all to character
+  ft <- lapply(ft, function(x) as.data.frame(lapply(x, as.character)))
   
   # remove table name from headers
   ft <- rename_table_headers(ft, key_vars)
@@ -101,10 +102,15 @@ get_data <- function(table_name, db_dir, key_vars, unicode = TRUE) {
     meta$id <- NULL
   }
   
-  # Turn columns to character, except key variables and those in metadata
-  ft <- lapply(ft, dplyr::mutate_at,
-               .vars = dplyr::vars(-dplyr::one_of(c(key_vars, meta$id))),
-               .funs = as.character)
+  ft <- lapply(ft, function(x){
+    x$subject_id <- as.integer(x$subject_id)
+    
+    if("wave_code" %in% names(x))
+      x$wave_code <- as.integer(x$wave_code)
+    
+    x
+  })
+  
   
   return(list(data = ft, files = ffiles))
 }
@@ -312,15 +318,17 @@ add_repeated_table <- function(table_name,
                                          "project_id", 
                                          "wave_code"),
                    unicode = unicode)
-  
+
   # forth column should be column making row unique
   # might want to change this later
   visit_id_column_old <- names(data$data[[1]])[4]
   visit_id_column_new <- paste0("_", visit_id_column_old)
   cat(codes(unicode)$note(), "Forth column is ", codes(unicode)$italic(visit_id_column_old), "\n")
   data$data <- lapply(data$data, 
-                      dplyr::rename_all, 
-                      .funs = function(x) gsub(visit_id_column_old, visit_id_column_new, x))
+                      function(x) {
+                        names(x) <- gsub(visit_id_column_old, visit_id_column_new, names(x))
+                        x
+                      })
   
   # insert data to db
   j <- mapply(insert_table_repeated, 
