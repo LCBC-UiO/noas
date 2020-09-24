@@ -17,7 +17,7 @@ cat_table_success <- function(success, names, unicode = TRUE){
     stop("success and names are not of equal length", call. = FALSE)
   
   if(length(success) == 0){
-    cat(codes(unicode)$note(), "no tables added")
+    spec_cat(paste0(codes(unicode)$note(), "no tables added"))
   }else{
     
     # if success is TRUE or 0 (adding to existing tables),
@@ -28,18 +28,23 @@ cat_table_success <- function(success, names, unicode = TRUE){
     j <- unlist(j)
     
     j <- paste(j, basename(names), sep=" ")
-    cat(j)
+    
+    spec_cat(j)
   }
   cat("\n")
+  
+  
 }
 
 
 cat_add_type <- function(type, unicode = TRUE) {
-  cat("\n",
+  x <- paste0("'\n",
       codes(unicode)$table(),
       codes(unicode)$bold("Adding", type, "tables "), 
       codes(unicode)$table(),
-      "\n")
+      "\n'")
+  
+  spec_cat(x)
 }
 
 
@@ -61,18 +66,24 @@ cat_err_cols <- function(x, unicode = TRUE){
     ""
   }
   
-  cat("\n\nTable", codes(unicode)$bold(x$file), miss, extra)
+  x <- paste0("\n\nTable", codes(unicode)$bold(x$file), miss, extra)
+  
+  spec_cat(x)
 }
 
 cat_miss_key <- function(x,  unicode = TRUE){
-  cat("\n\nTable", codes(unicode)$bold(x$file), 
+  xx <- paste0("\n\nTable", codes(unicode)$bold(x$file), 
       paste0("\nis", codes(unicode, with_char = FALSE)$note("missing "), "primary columns: ", 
              paste(sapply(x$missing, wrap_string), collapse = ", ")))
+  spec_cat(x)
 }
 
 cat_delim_err <- function(x, unicode = TRUE){
-  cat("\n\nTable", codes(unicode)$bold(x$file), 
+  x <- paste0("\n\nTable", codes(unicode)$bold(x$file), 
       paste0("\nlooks like its separated with ", 
              codes(unicode, with_char = FALSE)$note(x$key))
   )
+  spec_cat(x)
 }
+
+spec_cat <- function(x) system2("echo", x)
