@@ -98,17 +98,19 @@ get_data <- function(table_name, db_dir, key_vars, unicode = TRUE) {
       # match files to assure correct assigning
       meta <- meta[meta$id %in% names(ft[[1]]), ]
       
+      # Apply column type change
       ft <- lapply(ft, change_col_type, meta$id, meta$func)
     }
   }else{
     meta$id <- NULL
   }
   
+  # Alter subject_id and wave_code back to correct type
   ft <- lapply(ft, function(x){
     x$subject_id <- as.integer(x$subject_id)
     
     if("wave_code" %in% names(x))
-      x$wave_code <- as.integer(x$wave_code)
+      x$wave_code <- as.numeric(x$wave_code)
     
     x
   })
