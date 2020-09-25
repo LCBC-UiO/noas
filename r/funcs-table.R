@@ -77,6 +77,7 @@ get_data <- function(table_name, db_dir, key_vars, unicode = TRUE) {
   # remove tables with "unknown" project, these are for record keeping
   ffiles <- ffiles[!grepl("unknown|NA|00.0", ffiles)]
   
+  # Read in all tables
   ft <- lapply(ffiles, read_dbtable)
 
   # Turn all to character
@@ -85,6 +86,7 @@ get_data <- function(table_name, db_dir, key_vars, unicode = TRUE) {
   # remove table name from headers
   ft <- rename_table_headers(ft, key_vars)
   
+  # retrieve meta-data information
   meta <- get_metadata(ft[[1]], table_name, dir)$columns
   
   # assign column types from metadata if they are specified
