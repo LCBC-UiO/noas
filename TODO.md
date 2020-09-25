@@ -32,6 +32,9 @@
     * add read-only user?
   * webui
     * revive table filter in results.html?
+  * r/db: split import and data type setting
+    * import all data as strings (except key vars)
+    * set types based on meta-data information by R calling SQL commands
 
 ## bugs
   * mri/repeated: double underscore (`__`) before "site_name" column name
