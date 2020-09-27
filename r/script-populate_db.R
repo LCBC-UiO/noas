@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 
 # get helper functions
 source('r/funcs-utils.R')
