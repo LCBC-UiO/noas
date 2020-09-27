@@ -23,11 +23,12 @@ populate_table("cross", con, unicode = unicode)
 
 spent <- round(as.numeric(Sys.time() - start, units="mins"), 3)
 
-spent <- dplyr::case_when(
-  spent < 5 ~ codes(unicode)$success(spent),
-  spent > 10 ~ codes(unicode)$fail(spent),
-  TRUE ~ codes(unicode)$note(spent)
-)
+
+spent <- (function(){
+  if (spent < 5)  return(codes(unicode)$success(spent))
+  if (spent > 10) return(codes(unicode)$fail(spent))
+  return(codes(unicode)$note(spent))
+})()
 
 cat("\n ---------- \n")
 cat_table_success(TRUE,
