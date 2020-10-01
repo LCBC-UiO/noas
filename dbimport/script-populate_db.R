@@ -1,4 +1,4 @@
-#!/usdbimport/bin/env Rscript
+#!/usr/bin/env Rscript
 
 # get helper functions
 source('dbimport/funcs-utils.R')

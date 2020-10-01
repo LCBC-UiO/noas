@@ -1,8 +1,8 @@
 # Populate longitudinal tables
-library(tidyverse)
+library(dplyr)
 
 # get helper functions
-source('r/helpers.R')
+source('dbimport/helpers.R')
 
 # establish connection
 con <- moasdb_connect()
