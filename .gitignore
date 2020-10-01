@@ -3,6 +3,7 @@
 3rdparty/lighttpd/
 3rdparty/php/
 3rdparty/postgresql/
+3rdparty/r_packages/
 db/*
 config.txt
 singularity/*.simg

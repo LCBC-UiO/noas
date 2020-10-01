@@ -5,9 +5,9 @@ include config_default.txt
 
 all: 3rdparty
 
-simg_modules := \
-	moas-r 
-include singularity/make_simg.mk
+PHONY: prepare_offline
+prepare_offline:
+	make -C 3rdparty download
 
 websrcs := \
 	webui/www/css/bootstrap-theme.css \
@@ -56,7 +56,7 @@ distclean:
 
 .PHONY: run_dbimport
 run_dbimport:
-	singularity exec singularity/moas-r.simg bash bin/dbpopulate.sh
+	R_LIBS_USER=$(BASEDIR)/3rdparty/r_packages bin/dbpopulate
 
 .PHONY: run_webui
 run_webui: 3rdparty
