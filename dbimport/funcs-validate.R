@@ -103,16 +103,23 @@ check_delim <- function(files, cat_type = "ascii"){
   
   strings <- c(",", "\t", ";")
   
-  delim <- lapply(cont, function(x){
-    k <- data.frame(lapply(strings, str_count, s = x))
-    names(k) = strings
+  delim <- lapply(1:length(cont), function(x){
+    k <- data.frame(lapply(strings, str_count, s = cont[[x]]))
+    names(k) <- strings
+    k$file <- files[x]
     k
   })
-  names(delim) <- files
-  delim <- dplyr::bind_rows(delim, .id = "file")
-  delim <- dplyr::mutate(delim, mm = max(c(`,`, `\t`, `;`)))
+
+  delim <- do.call(rbind, delim)
+  delim$mm <- apply(delim[1:3], 1, max)
   
-  delim <- tidyr::gather(delim, key, val, -file, -mm)
+  df <- do.call(rbind, lapply(strings, function(x) {
+    data.frame(file = delim$file, 
+               mm = delim$mm,
+               sep = x, 
+               n = delim[, x])
+  }))
+  
   delim <- delim[delim$mm ==  delim$val,]
   delim <- delim[delim$key != "\t",]
   
@@ -146,7 +153,7 @@ check_cols <- function(files, cat_type = "ascii"){
   nn_nams <- length(unique(n_nams))
   
   if(nn_nams != 1){
-    k_nams <- as.data.frame(table(n_nams))
+    k_nams <- as.data.frame(table(n_nams), stringsAsFactors = FALSE)
     
     if(nrow(k_nams) == length(files)){
       cat(codes(cat_type)$fail("Files have different number of columns, they cannot be combined.\n"))
