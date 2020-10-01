@@ -139,7 +139,7 @@ insert_table_cross <- function(x,
                                cat_type = "ascii"){
   
   j <- insert_table(x, con, table_name,
-                    template = "sql/insert_cross_table.sql",
+                    template = "dbimport/sql/insert_cross_table.sql",
                     #append = TRUE,
                     temporary = TRUE,
                     overwrite = TRUE
@@ -214,7 +214,7 @@ insert_table_long <- function(x,
                               cat_type = "ascii"){
   
   j <- insert_table(x, con, table_name,
-                    template = "sql/insert_long_table.sql",
+                    template = "dbimport/sql/insert_long_table.sql",
                     #append = TRUE,
                     temporary = TRUE,
                     overwrite = TRUE
@@ -291,7 +291,7 @@ insert_table_repeated <- function(x,
   j <- insert_table(x, con, 
                     table_name,
                     visit_id_column,
-                    template = "sql/insert_repeated_table.sql",
+                    template = "dbimport/sql/insert_repeated_table.sql",
                     #append = TRUE,
                     temporary = TRUE,
                     overwrite = TRUE

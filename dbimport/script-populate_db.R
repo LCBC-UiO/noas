@@ -13,7 +13,7 @@ cat_type <- if(!isatty(stdout())||length(args) == 0||args == "unicode"){ "unicod
 con <- moasdb_connect()
 
 j <- DBI::dbExecute(con, 
-                    read_sql("sql/init_db.sql"))
+                    read_sql("dbimport/sql/init_db.sql"))
 
 start <- Sys.time()
 
