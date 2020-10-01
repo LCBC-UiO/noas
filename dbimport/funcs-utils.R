@@ -146,5 +146,3 @@ str_count <- function(char, s) {
   return (nchar(s) - nchar(s2))
 }
 
-
-

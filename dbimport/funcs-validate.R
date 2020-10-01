@@ -136,7 +136,7 @@ check_delim <- function(files, cat_type = "ascii"){
 #' @param files vector of file paths
 #' @param cat_type character. either ascii or unicode (no embelishment)
 check_cols <- function(files, cat_type = "ascii"){
-  
+
   tabs <- lapply(files, read_dbtable)
   
   nams <- lapply(tabs, names)
