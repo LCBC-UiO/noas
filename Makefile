@@ -56,7 +56,7 @@ distclean:
 
 .PHONY: run_dbimport
 run_dbimport:
-	R_LIBS_USER=$(BASEDIR)/3rdparty/r_packages bin/dbpopulate
+	R_LIBS_USER=$(BASEDIR)/3rdparty/r_packages dbimport/script-populate_db.R
 
 .PHONY: run_webui
 run_webui: 3rdparty
