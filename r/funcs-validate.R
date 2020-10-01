@@ -115,7 +115,7 @@ check_delim <- function(files, cat_type = "ascii"){
   delim <- tidyr::gather(delim, key, val, -file, -mm)
   delim <- dplyr::filter(delim, mm == val)
   
-  delim <- dplyr::filter(delim, key != "\t")
+  delim <- delim[delim$key != "\t",]
   
   if( nrow(delim) < 1){
     return(TRUE) 
@@ -147,7 +147,7 @@ check_cols <- function(files, cat_type = "ascii"){
   nn_nams <- length(unique(n_nams))
   
   if(nn_nams != 1){
-    k_nams <- dplyr::as_tibble(table(n_nams))
+    k_nams <- as.data.frame(table(n_nams))
     
     if(nrow(k_nams) == length(files)){
       cat(codes(cat_type)$fail("Files have different number of columns, they cannot be combined.\n"))
