@@ -2,7 +2,7 @@
 # Create a new file "config.txt" and override any of the variables below
 
 # tables
-TABDIR="test_data/"
+TABDIR="data/test/"
 
 # DB connection info
 DBHOST="localhost"
