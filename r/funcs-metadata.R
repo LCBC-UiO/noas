@@ -54,7 +54,7 @@ get_metadata <- function(data, table_name, dirpath){
   
   dir_split <- strsplit(dirpath, "/")[[1]]
   
-  # Generate som information based on file location
+  # Generate some information based on file location
   meta_info$id <- dir_split[length(dir_split)]
   meta_info$raw_data <- dirpath
   meta_info$table_type <- table_types()[table_types() %in% dir_split]
