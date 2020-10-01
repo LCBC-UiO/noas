@@ -113,7 +113,7 @@ check_delim <- function(files, cat_type = "ascii"){
   delim <- dplyr::mutate(delim, mm = max(c(`,`, `\t`, `;`)))
   
   delim <- tidyr::gather(delim, key, val, -file, -mm)
-  delim <- delim[delim$mm ==  delim$mm,]
+  delim <- delim[delim$mm ==  delim$val,]
   delim <- delim[delim$key != "\t",]
   
   if( nrow(delim) < 1){
