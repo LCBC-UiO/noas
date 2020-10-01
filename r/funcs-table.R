@@ -67,8 +67,8 @@ insert_table <- function(x,
 }
 
 
-get_data <- function(table_name, db_dir, key_vars, unicode = TRUE) {
-  cat(codes(unicode)$bold("\n---", table_name, "---\n")) 
+get_data <- function(table_name, db_dir, key_vars, cat_type = "ascii") {
+  cat(codes(cat_type)$bold("\n---", table_name, "---\n")) 
   
   dir <- file.path(db_dir, table_name)
   
@@ -131,11 +131,12 @@ get_data <- function(table_name, db_dir, key_vars, unicode = TRUE) {
 #' @param con database connection
 #' @param table_name name to give the table
 #' @param orig_name file name of originating file
+#' @param cat_type character. either ascii or unicode (no embelishment)
 insert_table_cross <- function(x, 
                                con, 
                                table_name, 
                                orig_name = table_name,
-                               unicode = TRUE){
+                               cat_type = "ascii"){
   
   j <- insert_table(x, con, table_name,
                     template = "sql/insert_cross_table.sql",
@@ -144,7 +145,7 @@ insert_table_cross <- function(x,
                     overwrite = TRUE
   )
   
-  cat_table_success(j, orig_name, unicode)
+  cat_table_success(j, orig_name, cat_type)
   invisible(j)
 }
 
@@ -160,17 +161,18 @@ insert_table_cross <- function(x,
 #' @param table_name name of the table 
 #' @param con database connection
 #' @param db_dir directory for the databse
+#' @param cat_type character. either ascii or unicode (no embelishment)
 #'
 #' @return success of adding, invisible
 #' @export
 add_cross_table <- function(table_name, 
                             con, 
                             db_dir,
-                            unicode = TRUE){
+                            cat_type = "ascii"){
   
   
   # retrieve the data
-  data <- get_data(table_name, db_dir, c("subject_id"), unicode)
+  data <- get_data(table_name, db_dir, c("subject_id"), cat_type)
   
   # insert data to db
   j <- mapply(insert_table_cross, 
@@ -178,7 +180,7 @@ add_cross_table <- function(table_name,
               orig_name = data$files,
               MoreArgs = list(con = con, 
                               table_name = table_name,
-                              unicode = unicode)
+                              cat_type = cat_type)
   )
   
   # insert meta_data if applicable
@@ -186,7 +188,7 @@ add_cross_table <- function(table_name,
                     table_name, 
                     file.path(db_dir, table_name), 
                     con, 
-                    unicode = unicode)
+                    cat_type = cat_type)
   
   
   invisible(j)
@@ -204,11 +206,12 @@ add_cross_table <- function(table_name,
 #' @param con database connection
 #' @param table_name name to give the table
 #' @param orig_name file name of originating file
+#' @param cat_type character. either ascii or unicode (no embelishment)
 insert_table_long <- function(x, 
                               con, 
                               table_name, 
                               orig_name = table_name,
-                              unicode = TRUE){
+                              cat_type = "ascii"){
   
   j <- insert_table(x, con, table_name,
                     template = "sql/insert_long_table.sql",
@@ -217,7 +220,7 @@ insert_table_long <- function(x,
                     overwrite = TRUE
   )
   
-  cat_table_success(j, orig_name, unicode)
+  cat_table_success(j, orig_name, cat_type)
   invisible(j)
 }
 
@@ -239,12 +242,12 @@ insert_table_long <- function(x,
 add_long_table <- function(table_name, 
                            con, 
                            db_dir, 
-                           unicode = TRUE){
+                           cat_type = "ascii"){
   # retrieve the data
   data <- get_data(table_name, db_dir, c("subject_id",
                                          "project_id", 
                                          "wave_code"),
-                   unicode = unicode)
+                   cat_type = cat_type)
   
   # insert data to db
   j <- mapply(insert_table_long, 
@@ -252,7 +255,7 @@ add_long_table <- function(table_name,
               orig_name = data$files,
               MoreArgs = list(con = con, 
                               table_name = table_name,
-                              unicode = unicode)
+                              cat_type = cat_type)
   )
   
   # insert meta_data if applicable
@@ -260,7 +263,7 @@ add_long_table <- function(table_name,
                        table_name, 
                        file.path(db_dir, table_name), 
                        con, 
-                       unicode = unicode)
+                       cat_type = cat_type)
   
   invisible(j)
 }
@@ -277,12 +280,13 @@ add_long_table <- function(table_name,
 #' @param con database connection
 #' @param table_name name to give the table
 #' @param orig_name file name of originating file
+#' @param cat_type character. either ascii or unicode (no embelishment)
 insert_table_repeated <- function(x, 
                                   con, 
                                   table_name, 
                                   visit_id_column,
                                   orig_name = table_name,
-                                  unicode = TRUE){
+                                  cat_type = "ascii"){
   
   j <- insert_table(x, con, 
                     table_name,
@@ -293,7 +297,7 @@ insert_table_repeated <- function(x,
                     overwrite = TRUE
   )
   
-  cat_table_success(j, orig_name, unicode)
+  cat_table_success(j, orig_name, cat_type)
   invisible(j)
 }
 
@@ -308,26 +312,27 @@ insert_table_repeated <- function(x,
 #'
 #' @param table_name name of the table 
 #' @param con database connection
-#' @param db_dir directory for the databse
+#' @param db_dir directory for the database
+#' @param cat_type character. either ascii or unicode (no embelishment)
 #'
 #' @return success of adding, invisible
 #' @export
 add_repeated_table <- function(table_name, 
                                con, 
                                db_dir,
-                               unicode = TRUE){
+                               cat_type = "ascii"){
   
   # retrieve the data
   data <- get_data(table_name, db_dir, c("subject_id",
                                          "project_id", 
                                          "wave_code"),
-                   unicode = unicode)
+                   cat_type = cat_type)
 
   # forth column should be column making row unique
   # might want to change this later
   visit_id_column_old <- names(data$data[[1]])[4]
   visit_id_column_new <- paste0("_", visit_id_column_old)
-  cat(codes(unicode)$note(), "Forth column is ", codes(unicode)$italic(visit_id_column_old), "\n")
+  # cat(codes(cat_type)$note(), "Forth column is ", codes(cat_type)$italic(visit_id_column_old), "\n")
   data$data <- lapply(data$data, 
                       function(x) {
                         names(x) <- gsub(visit_id_column_old, visit_id_column_new, names(x))
@@ -341,7 +346,7 @@ add_repeated_table <- function(table_name,
               MoreArgs = list(con = con, 
                               table_name = table_name,
                               visit_id_column = visit_id_column_new,
-                              unicode = unicode)
+                              cat_type = cat_type)
   )
   
   # insert meta-data if applicable
@@ -349,19 +354,19 @@ add_repeated_table <- function(table_name,
                     table_name, 
                     file.path(db_dir, table_name), 
                     con, 
-                    unicode = unicode)
+                    cat_type = cat_type)
   
   invisible(j)
 }
 
 # core tables ----
-add_core_tab <- function(tab, db_dir, con, unicode = TRUE){
+add_core_tab <- function(tab, db_dir, con, cat_type = "ascii"){
   filenm <- list.files(db_dir, paste0(tab,".tsv"), full.names = TRUE)
   dt <- read_dbtable(filenm)
   j <- DBI::dbWriteTable(con, tab, dt, 
                          append = TRUE, row.name = FALSE)
   
-  cat_table_success(j, tab, unicode)
+  cat_table_success(j, tab, cat_type)
   invisible(j)
 }
 
