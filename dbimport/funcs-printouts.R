@@ -37,13 +37,12 @@ cat_table_success <- function(success, names, cat_type = "ascii"){
 
 
 cat_add_type <- function(type, cat_type = "ascii") {
-  x <- paste0("'\n",
-              codes(cat_type)$table(),
+  x <- paste0(codes(cat_type)$table(),
               codes(cat_type)$bold("Adding", type, "tables "), 
-              codes(cat_type)$table(),
-              "\n'")
-  
+              codes(cat_type)$table())
+  cat("\n")
   spec_cat(x)
+  cat("\n")
 }
 
 
@@ -52,37 +51,39 @@ cat_add_type <- function(type, cat_type = "ascii") {
 cat_err_cols <- function(x, cat_type = "ascii"){
   
   miss <- if(length(x$missing) != 0){
-    paste0("\nis", codes(cat_type, with_char = FALSE)$note("missing "), "columns: ", 
+    paste0("is", codes(cat_type, with_char = FALSE)$note("missing "), "columns: ", 
            paste(sapply(x$missing, wrap_string), collapse = ", "))
   }else{
     ""
   }
   
   extra <- if(length(x$extra) != 0){
-    paste0("\nhas", codes(cat_type, with_char = FALSE)$note("extra "), "unknown columns: ", 
+    paste0("has", codes(cat_type, with_char = FALSE)$note("extra "), "unknown columns: ", 
            paste(sapply(x$extra, wrap_string), collapse = ", "))
   }else{
     ""
   }
   
-  x <- paste0("\n\nTable", codes(cat_type)$bold(x$file), miss, extra)
-  
-  spec_cat(x)
+  y <- c(paste("Table", codes(cat_type)$bold(x$file)),
+         miss, extra)
+  cat("\n")
+  j <- sapply(y, spec_cat)
 }
 
 cat_miss_key <- function(x,  cat_type = "ascii"){
-  xx <- paste0("\n\nTable", codes(cat_type)$bold(x$file), 
-               paste0("\nis", codes(cat_type, with_char = FALSE)$note("missing "), "primary columns: ", 
-                      paste(sapply(x$missing, wrap_string), collapse = ", ")))
-  spec_cat(x)
+  y <- c(paste0("Table", codes(cat_type)$bold(x$file)), 
+         paste0("is", codes(cat_type, with_char = FALSE)$note("missing "), "primary columns: ", 
+                paste(sapply(x$missing, wrap_string), collapse = ", ")))
+  cat("\n")
+  j <- sapply(y, spec_cat)
 }
 
 cat_delim_err <- function(x, cat_type = "ascii"){
-  x <- paste0("\n\nTable", codes(cat_type)$bold(x$file), 
-              paste0("\nlooks like its separated with ", 
-                     codes(cat_type, with_char = FALSE)$note(x$key))
+  x <- c(paste0("Table", codes(cat_type)$bold(x$file)), 
+         codes(cat_type, with_char = FALSE)$note(x$key)
   )
-  spec_cat(x)
+  cat("\n")
+  j <- sapply(y, spec_cat)
 }
 
 
