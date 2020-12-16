@@ -126,7 +126,8 @@ change_col_type <- function(data, column, func){
     data[, column[i]] <- func[[i]](data[, column[i]])
   }
   as.data.frame(
-    data, stringsAsFactor = FALSE
+    data, 
+    stringsAsFactor = FALSE
   )
 }
 

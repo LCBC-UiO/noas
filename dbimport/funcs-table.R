@@ -81,7 +81,8 @@ get_data <- function(table_name, db_dir, key_vars, cat_type = "ascii") {
   ft <- lapply(ffiles, read_dbtable)
 
   # Turn all to character
-  ft <- lapply(ft, function(x) as.data.frame(lapply(x, as.character)))
+  ft <- lapply(ft, function(x) as.data.frame(lapply(x, as.character), 
+                                             stringsAsFactors = FALSE))
   
   # remove table name from headers
   ft <- rename_table_headers(ft, key_vars)

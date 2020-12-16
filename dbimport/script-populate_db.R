@@ -1,5 +1,7 @@
 #!/usr/bin/env Rscript
 
+options("stringsAsFactors" = FALSE)
+
 # get helper functions
 source('dbimport/funcs-utils.R')
 source('dbimport/funcs-populate.R')
