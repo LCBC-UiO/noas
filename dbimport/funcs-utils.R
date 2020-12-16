@@ -102,8 +102,29 @@ fix_names <- function(x){
   paste0("_", x)
 }
 
+get_rows <- function(con, table){
+  if(DBI::dbExistsTable(con, table)){
+    query <- sprintf("select * from %s;", table)
+    res <- DBI::dbSendQuery(con, query)
+    x <- DBI::dbFetch(res)
+    DBI::dbClearResult(res)
+    return(nrow(x))
+  }else{
+    return(0)
+  }
+}
+
 type_2_rclass <- function(type){
   lapply(type, type_change)
+}
+
+sql_templates <- function(type){
+  type <- match.arg(type, c("core", "cross", "repeated", "long"))
+  
+  switch(type,
+         "cross" = "dbimport/sql/insert_cross_table.sql",
+         "long" = "dbimport/sql/insert_long_table.sql",
+         "repeated" = "dbimport/sql/insert_repeated_table.sql")
 }
 
 type_change <- function(x){

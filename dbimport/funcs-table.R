@@ -24,13 +24,18 @@ source("dbimport/funcs-metadata.R", echo = FALSE)
 #' @param ... additional arguments to \code{\link[DBI]{dbWriteTable}}
 insert_table <- function(x, 
                          con, 
+                         type,
                          table_name, 
+                         file_name, 
                          visit_id_column = NULL,
-                         template_path,
                          ...){
   stopifnot(is.data.frame(x))
   
   table_name <- gsub("/", "_", table_name)
+  template_path <- sql_templates(type)
+
+  dbtab <- paste(type, table_name, sep="_")
+  n_before <- get_rows(con, dbtab)
   
   tryCatch({
     k <- DBI::dbWriteTable(
@@ -64,6 +69,12 @@ insert_table <- function(x,
            table_name,";")
   )
   )
+  
+  n_after <- get_rows(con, dbtab)
+  n <- sprintf("\\(%5d/%5d omitted\\)", abs(n_after-n_before-nrow(x)), nrow(x))
+  
+  cat_table_success(j, paste(file_name, n, sep="\t"), cat_type)
+  invisible(j)
 }
 
 
