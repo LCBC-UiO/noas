@@ -132,36 +132,7 @@ get_data <- function(table_name, db_dir, key_vars, cat_type = "ascii") {
 }
 
 
-# cross tables ----
-#' Insert cross data to DB
-#' 
-#' Calls insert_table with some presets
-#' to add longitudinal data in an
-#' easy way to the DB.
-#'
-#' @param x data.frame table to add
-#' @param con database connection
-#' @param table_name name to give the table
-#' @param orig_name file name of originating file
-#' @param cat_type character. either ascii or unicode (no embelishment)
-insert_table_cross <- function(x, 
-                               con, 
-                               table_name, 
-                               orig_name = table_name,
-                               cat_type = "ascii"){
-  
-  j <- insert_table(x, con, table_name,
-                    template = "dbimport/sql/insert_cross_table.sql",
-                    #append = TRUE,
-                    temporary = TRUE,
-                    overwrite = TRUE
-  )
-  
-  cat_table_success(j, orig_name, cat_type)
-  invisible(j)
-}
-
-
+# Type specific adds ----
 #' Add long table to database
 #' 
 #' will add a long table to the 
@@ -208,36 +179,6 @@ add_cross_table <- function(table_name,
 }
 
 
-# long tables ----
-#' Insert lognitudinal data to DB
-#' 
-#' Calls insert_table with some presets
-#' to add longitudinal data in an
-#' easy way to the DB.
-#'
-#' @param x data.frame table to add
-#' @param con database connection
-#' @param table_name name to give the table
-#' @param orig_name file name of originating file
-#' @param cat_type character. either ascii or unicode (no embelishment)
-insert_table_long <- function(x, 
-                              con, 
-                              table_name, 
-                              orig_name = table_name,
-                              cat_type = "ascii"){
-  
-  j <- insert_table(x, con, table_name,
-                    template = "dbimport/sql/insert_long_table.sql",
-                    #append = TRUE,
-                    temporary = TRUE,
-                    overwrite = TRUE
-  )
-  
-  cat_table_success(j, orig_name, cat_type)
-  invisible(j)
-}
-
-
 #' Add long table to database
 #' 
 #' will add a long table to the 
@@ -279,39 +220,6 @@ add_long_table <- function(table_name,
                        con, 
                        cat_type = cat_type)
   
-  invisible(j)
-}
-
-
-# repeated tables ----
-#' Insert repeated data to DB
-#' 
-#' Calls insert_table with some presets
-#' to add repeated data in an
-#' easy way to the DB.
-#'
-#' @param x data.frame table to add
-#' @param con database connection
-#' @param table_name name to give the table
-#' @param orig_name file name of originating file
-#' @param cat_type character. either ascii or unicode (no embelishment)
-insert_table_repeated <- function(x, 
-                                  con, 
-                                  table_name, 
-                                  visit_id_column,
-                                  orig_name = table_name,
-                                  cat_type = "ascii"){
-  
-  j <- insert_table(x, con, 
-                    table_name,
-                    visit_id_column,
-                    template = "dbimport/sql/insert_repeated_table.sql",
-                    #append = TRUE,
-                    temporary = TRUE,
-                    overwrite = TRUE
-  )
-  
-  cat_table_success(j, orig_name, cat_type)
   invisible(j)
 }
 

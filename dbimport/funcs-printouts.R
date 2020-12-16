@@ -20,7 +20,7 @@ cat_table_success <- function(success, names, cat_type = "ascii"){
   if(length(success) == 0){
     spec_cat(paste0(codes(cat_type)$note(), "no tables added"))
   }else{
-    
+
     # if success is TRUE or 0 (adding to existing tables),
     # return green checkmark, else return red x
     j <- lapply(success, function(x) ifelse(x | x == 0, 
