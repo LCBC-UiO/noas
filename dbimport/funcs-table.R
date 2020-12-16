@@ -187,10 +187,11 @@ add_cross_table <- function(table_name,
   data <- get_data(table_name, db_dir, c("subject_id"), cat_type)
   
   # insert data to db
-  j <- mapply(insert_table_cross, 
+  j <- mapply(insert_table, 
               x = data$data, 
-              orig_name = data$files,
+              file_name = data$files,
               MoreArgs = list(con = con, 
+                              type = "cross",
                               table_name = table_name,
                               cat_type = cat_type)
   )
@@ -260,12 +261,13 @@ add_long_table <- function(table_name,
                                          "project_id", 
                                          "wave_code"),
                    cat_type = cat_type)
-  
+
   # insert data to db
-  j <- mapply(insert_table_long, 
+  j <- mapply(insert_table, 
               x = data$data, 
-              orig_name = data$files,
+              file_name = data$files,
               MoreArgs = list(con = con, 
+                              type = "long",
                               table_name = table_name,
                               cat_type = cat_type)
   )
@@ -352,10 +354,11 @@ add_repeated_table <- function(table_name,
                       })
   
   # insert data to db
-  j <- mapply(insert_table_repeated, 
+  j <- mapply(insert_table, 
               x = data$data, 
-              orig_name = data$files,
+              file_name = data$files,
               MoreArgs = list(con = con, 
+                              type = "repeated",
                               table_name = table_name,
                               visit_id_column = visit_id_column_new,
                               cat_type = cat_type)
@@ -379,12 +382,19 @@ add_core_tab <- function(tab, db_dir, con, cat_type = "ascii"){
   filenm <- list.files(db_dir, paste0(tab,".*.tsv"), full.names = TRUE)
 
   .tbl_add <- function(file){
-    dt <- read_dbtable(file)
-    j <- DBI::dbWriteTable(con, tab, dt, 
+    x <- read_dbtable(file)
+    
+    n_before <- get_rows(con, tab)
+    
+    j <- DBI::dbWriteTable(con, tab, x, 
                            append = TRUE, row.name = FALSE)
     
-    cat_table_success(j, file, cat_type)
-    invisible(j) 
+    
+    n_after <- get_rows(con, tab)
+    n <- sprintf("\\(%5d/%5d omitted\\)", abs(n_after-n_before-nrow(x)), nrow(x))
+    
+    cat_table_success(j, paste(file, n, sep="\t"), cat_type)
+    invisible(j)
   }
   
   lapply(filenm, .tbl_add)
