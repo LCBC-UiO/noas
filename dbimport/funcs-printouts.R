@@ -45,6 +45,10 @@ cat_add_type <- function(type, cat_type = "ascii") {
   cat("\n")
 }
 
+cat_add_table <- function(cat_type, table_name){
+  cat(codes(cat_type)$bold("\n---", table_name, "---\n"))
+}
+
 
 # validation ----
 

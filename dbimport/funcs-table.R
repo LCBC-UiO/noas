@@ -68,7 +68,7 @@ insert_table <- function(x,
 
 
 get_data <- function(table_name, db_dir, key_vars, cat_type = "ascii") {
-  cat(codes(cat_type)$bold("\n---", table_name, "---\n")) 
+  cat_add_table(cat_type, table_name) 
   
   dir <- file.path(db_dir, table_name)
   
@@ -361,12 +361,20 @@ add_repeated_table <- function(table_name,
 
 # core tables ----
 add_core_tab <- function(tab, db_dir, con, cat_type = "ascii"){
-  filenm <- list.files(db_dir, paste0(tab,".tsv"), full.names = TRUE)
-  dt <- read_dbtable(filenm)
-  j <- DBI::dbWriteTable(con, tab, dt, 
-                         append = TRUE, row.name = FALSE)
   
-  cat_table_success(j, tab, cat_type)
-  invisible(j)
+  cat_add_table(cat_type, tab) 
+  
+  filenm <- list.files(db_dir, paste0(tab,".*.tsv"), full.names = TRUE)
+
+  .tbl_add <- function(file){
+    dt <- read_dbtable(file)
+    j <- DBI::dbWriteTable(con, tab, dt, 
+                           append = TRUE, row.name = FALSE)
+    
+    cat_table_success(j, file, cat_type)
+    invisible(j) 
+  }
+  
+  lapply(filenm, .tbl_add)
 }
 

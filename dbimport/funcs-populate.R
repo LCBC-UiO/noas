@@ -11,7 +11,7 @@ populate_core <- function(con, cat_type = "ascii"){
   cat("\n")
   
   # Add all core tables
-  j <- lapply(c("projects", "subjects", "waves", "visits"),
+  j <- lapply(c("subjects", "projects", "waves", "visits"),
               add_core_tab, con = con, db_dir = db_dir, cat_type = cat_type)
 }
 
