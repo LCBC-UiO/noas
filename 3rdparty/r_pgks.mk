@@ -7,11 +7,15 @@ BASEDIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 _all: all
 
 # packages
-r_pkgs := \
-	digest_0.6.25 \
-	jsonlite_1.7.1 \
-	RPostgreSQL_0.6-2 \
-	DBI_1.1.0
+
+# note: the non-Archive urls will break over time. this wil need updates
+r_pkg_urls := \
+	https://cran.r-project.org/src/contrib/Archive/digest/digest_0.6.25.tar.gz \
+	https://cran.r-project.org/src/contrib/Archive/jsonlite/jsonlite_1.7.1.tar.gz \
+	https://cran.r-project.org/src/contrib/RPostgreSQL_0.6-2.tar.gz \
+	https://cran.r-project.org/src/contrib/DBI_1.1.0.tar.gz
+
+r_pkgs := $(notdir $(r_pkg_urls))
 
 # package dependencies
 ./r_packages/RPostgreSQL_0.6-2_deps: ./r_packages/DBI_1.1.0
@@ -28,7 +32,7 @@ $(r_pkg_deps):
 r_pkgs_dl := $(patsubst %, ./download/%.tar.gz, $(r_pkgs))
 $(r_pkgs_dl): ./download/%.tar.gz:
 	mkdir -p ./download/
-	wget https://cran.r-project.org/src/contrib/$*.tar.gz -O $@
+	wget $(filter %$($*).tar.gz, $(r_pkg_urls)) -O $@  # the filter func returns one url
 
 # install
 r_pkgs_isnt := $(patsubst %, ./r_packages/%, $(r_pkgs))
