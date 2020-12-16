@@ -28,7 +28,11 @@ cat_table_success <- function(success, names, cat_type = "ascii"){
                                             codes(cat_type)$fail()))
     j <- unlist(j)
     
-    j <- paste(j, basename(names), sep=" ")
+    pr <- strsplit(names, "\t")[[1]]
+    pr[1] <- basename(pr[1])
+    pr <- paste0(pr, collapse = "\t")
+    
+    j <- paste(j, pr, sep="\t")
     
     spec_cat(j)
   }
