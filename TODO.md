@@ -14,7 +14,6 @@
     * expand types, currently only int, float, text and date
     * time is imported as integer currently
     * "duration" type => "as.character" fo now?
-    * move metadata setting to SQL instead
   * r/sql: how to handle undefined visits for long/repeated?
     * currently, rows are silently discarded if (subj_id, project_id, wave_code) is not defined in core
   * compute derived data
@@ -32,9 +31,6 @@
     * add read-only user?
   * webui
     * revive table filter in results.html?
-  * r/db: split import and data type setting
-    * import all data as strings (except key vars)
-    * set types based on meta-data information by R calling SQL commands
 
 ## bugs
   * mri/repeated: double underscore (`__`) before "site_name" column name
