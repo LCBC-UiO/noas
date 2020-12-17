@@ -55,6 +55,16 @@ read_config <- function() {
   if (file.exists("config.txt")) { 
     cfg <- .add_configs(cfg, "config.txt")
   }
+  # override with any existing NOAS_XXX env variables
+  for (key in names(cfg)) { 
+    nkey <- sprintf("NOAS_%s", key)
+    exists("storage", mode="environment")
+    v <- Sys.getenv(nkey)
+    # only works for non-empty env vars
+    if (v != "") {
+      cfg[key] = v
+    }
+  }
   return(cfg)
 }
 
