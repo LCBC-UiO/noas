@@ -24,7 +24,9 @@ test_me:
 
 # package dependencies
 ./r_packages/RPostgreSQL_0.6-2_deps: ./r_packages/DBI_1.1.0
-./r_packages/RPostgreSQL_0.6-2: export PATH := $(BASEDIR)/postgresql/bin/:$(PATH)
+./r_packages/RPostgreSQL_0.6-2: \
+	export PATH := $(BASEDIR)/postgresql/bin/:$(PATH)
+	export LD_LIBRARY_PATH := $(BASEDIR)/postgresql/lib/
 
 #-------------------------------------------------------------------------------
 

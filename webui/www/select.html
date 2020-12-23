@@ -23,8 +23,17 @@ NOAS - Query selector
   
   <nav class="navbar navbar-expand navbar-dark">
     <a class="navbar-brand font-weight-bold" href="./select.html">
-      NOAS
+      <script language="JavaScript">
+        var request = new XMLHttpRequest()
+        request.open('GET', './static_info.json', false); 
+        request.send(null);
+        if (request.status === 200) {
+          document.write(JSON.parse(request.responseText).instance_name);
+        }
+      </script>
     </a>
+    <span class="navbar-text" id="version-label">.</span>
+    <span class="hidden" id="version-id">.</span>
   </nav>
 
   <div class="container">
@@ -90,6 +99,8 @@ NOAS - Query selector
     const meta = await getMetaData();
     let eNoasTables = document.querySelector("#noasTables");
     eNoasTables.innerHTML = '';
+    document.getElementById("version-label").innerHTML = `${meta.version.label} (${meta.version.ts})`;
+    document.getElementById("version-id").innerHTML = `${meta.version.id}`;
     meta.tables.forEach((e,i) => {
       let eOptbox = document.createElement('div');
       eNoasTables.appendChild(eOptbox);
@@ -247,6 +258,7 @@ NOAS - Query selector
       columns: [],
       set_op: null,
       date: (new Date()).toISOString(),
+      version: document.getElementById("version-id").innerHTML,
     };
     // get selected columns
     let cbs = document.querySelectorAll("[id^='colcheck_']");

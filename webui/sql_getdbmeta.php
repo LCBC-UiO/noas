@@ -1,9 +1,16 @@
 <?php
 
 $sql_getdbmeta = "
+with vers as ( select * from versions limit 1)
 select
   jsonb_build_object(
-    'tables'
+    'version'
+    , jsonb_build_object(
+      'id',      (select id    from vers)
+      , 'label', (select label from vers)
+      , 'ts',    (select ts    from vers)
+    )
+    ,'tables'
     , array_to_json(array_agg(row_to_json(t)))
   ) as meta_json
 from (

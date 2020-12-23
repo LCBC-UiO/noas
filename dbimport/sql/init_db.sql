@@ -146,6 +146,13 @@ CREATE TABLE metacolumns (
   CONSTRAINT metacolumns_fk FOREIGN KEY (metatable_id) REFERENCES metatables(id)
 );
 
+CREATE TABLE versions (
+  id    text,
+  label text,
+  ts    timestamp,
+  CONSTRAINT versions_pkey PRIMARY KEY (id)
+);
+
 --------------------------------------------------------------------------------
 
 -- Combine core tables
