@@ -58,7 +58,6 @@ read_config <- function() {
   # override with any existing NOAS_XXX env variables
   for (key in names(cfg)) { 
     nkey <- sprintf("NOAS_%s", key)
-    exists("storage", mode="environment")
     v <- Sys.getenv(nkey)
     # only works for non-empty env vars
     if (v != "") {
