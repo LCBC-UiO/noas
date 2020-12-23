@@ -3,12 +3,6 @@ BASEDIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 include config_default.txt
 -include config.txt
 
-all: 3rdparty
-
-PHONY: prepare_offline
-prepare_offline:
-	make -C 3rdparty download
-
 websrcs := \
 	webui/www/css/bootstrap-theme.css \
 	webui/www/css/bootstrap.css \
@@ -24,42 +18,26 @@ websrcs := \
 	webui/www/js/tabulator.min.js \
 	webui/www/js/xlsx.full.min.js
 
-webui/www/%:
-	echo $*.gz $@
-	zcat < 3rdparty/$*.gz > $@ 
+# ------------------------------------------------------------------------------
 
+# build
 
-.PHONY: dbstart
-dbstart: ${DBDATADIR}/postgresql.conf
-	3rdparty/postgresql/bin/pg_isready -h localhost -p $(DBPORT) -d ${DBNAME} || 3rdparty/postgresql/bin/pg_ctl -D ${DBDATADIR} -l ${DBLOGFILE} -w start && echo ok
+all: 3rdparty
 
-.PHONY: dbstop
-dbstop:
-	3rdparty/postgresql/bin/pg_ctl -D ${DBDATADIR} stop
+PHONY: prepare_offline
+prepare_offline:
+	make -C 3rdparty download
 
-.PHONY: 
-dberase:
-	3rdparty/postgresql/bin/pg_ctl -D ${DBDATADIR} stop || true
-	$(RM) -r ${DBDATADIR}
+# ------------------------------------------------------------------------------
 
-.PHONY: 3rdparty
-3rdparty: $(websrcs)
-	$(MAKE) -C 3rdparty
-
-${DBDATADIR}/postgresql.conf: 3rdparty
-	bash bin/dbinit.sh
-
-.PHONY: distclean
-distclean:
-	$(MAKE) -C 3rdparty clean
-
+# run
 
 .PHONY: run_dbimport
 run_dbimport: 3rdparty
 	R_LIBS_USER=$(BASEDIR)/3rdparty/r_packages dbimport/script-populate_db.R
 
 .PHONY: run_webui
-run_webui: 3rdparty
+run_webui: all
 	PORT=$(WEBSERVERPORT) \
 	DOCROOT=$(BASEDIR)/webui/www \
 	BASEDIR=$(BASEDIR) \
@@ -73,3 +51,43 @@ run_webui: 3rdparty
 run_db: ${DBDATADIR}/postgresql.conf
 	3rdparty/postgresql/bin/pg_isready -h localhost -p $(DBPORT) -d $(DBNAME) && $(MAKE) dbstop || true
 	3rdparty/postgresql/bin/postgres -D $(DBDATADIR) -h 0.0.0.0 -p $(DBPORT)
+
+# ------------------------------------------------------------------------------
+
+# clean
+
+.PHONY: 
+dberase:
+	3rdparty/postgresql/bin/pg_ctl -D ${DBDATADIR} stop || true
+	$(RM) -r ${DBDATADIR}
+
+.PHONY: distclean
+distclean: clean
+	$(MAKE) -C 3rdparty clean
+
+.PHONY: clean
+clean: dberase
+	$(RM) $(websrcs)
+
+# ------------------------------------------------------------------------------
+
+# internal
+
+webui/www/%: 3rdparty/%.gz
+	echo $*.gz $@
+	zcat < 3rdparty/$*.gz > $@ 
+
+.PHONY: dbstart
+dbstart: ${DBDATADIR}/postgresql.conf
+	3rdparty/postgresql/bin/pg_isready -h localhost -p $(DBPORT) -d ${DBNAME} || 3rdparty/postgresql/bin/pg_ctl -D ${DBDATADIR} -l ${DBLOGFILE} -w start && echo ok
+
+.PHONY: dbstop
+dbstop:
+	3rdparty/postgresql/bin/pg_ctl -D ${DBDATADIR} stop
+
+.PHONY: 3rdparty
+3rdparty: $(websrcs)
+	$(MAKE) -C 3rdparty
+
+${DBDATADIR}/postgresql.conf: 3rdparty
+	bash bin/dbinit.sh
