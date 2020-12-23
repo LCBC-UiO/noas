@@ -6,6 +6,12 @@ options("stringsAsFactors" = FALSE)
 source('dbimport/funcs-utils.R')
 source('dbimport/funcs-populate.R')
 
+
+.get_env <- function(envkey, default) {
+  v <- Sys.getenv(envkey)
+  return(ifelse(v=="", default, v))
+}
+
 args <- commandArgs(trailingOnly = TRUE)
 if(length(args) > 0) args <- match.arg(args, c("unicode", "ascii"))
 
@@ -16,6 +22,14 @@ con <- moasdb_connect()
 
 j <- DBI::dbExecute(con, 
                     read_sql("dbimport/sql/init_db.sql"))
+# NOTE: convert these parameters to positional command line arguments?
+DBI::dbExecute(con, 
+              "INSERT INTO versions (id, label, ts) VALUES ($1, $2, $3)",
+              params=list(
+                .get_env("NOAS_IMPORT_ID",    sprintf("undefined (%s)", as.character(date()))),
+                .get_env("NOAS_IMPORT_LABEL", "unnamed version"),
+                .get_env("NOAS_IMPORT_DATE",  date())
+              ))
 
 start <- Sys.time()
 
