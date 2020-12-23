@@ -23,7 +23,14 @@ NOAS - Query selector
   
   <nav class="navbar navbar-expand navbar-dark">
     <a class="navbar-brand font-weight-bold" href="./select.html">
-      NOAS
+      <script language="JavaScript">
+        var request = new XMLHttpRequest()
+        request.open('GET', './static_info.json', false); 
+        request.send(null);
+        if (request.status === 200) {
+          document.write(JSON.parse(request.responseText).instance_name);
+        }
+      </script>
     </a>
   </nav>
 

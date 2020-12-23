@@ -22,7 +22,7 @@ websrcs := \
 
 # build
 
-all: 3rdparty
+all: 3rdparty webui/www/static_info.json
 
 PHONY: prepare_offline
 prepare_offline:
@@ -69,6 +69,7 @@ distclean: clean
 
 .PHONY: clean
 clean: dberase
+	$(RM) webui/www/static_info.json
 	$(RM) $(websrcs)
 
 # ------------------------------------------------------------------------------
@@ -78,6 +79,9 @@ clean: dberase
 webui/www/%: 3rdparty/%.gz
 	echo $*.gz $@
 	zcat < 3rdparty/$*.gz > $@ 
+
+webui/www/static_info.json:
+	echo "{ \"instance_name\": \"$(INSTANCE_NAME)\" }" > $@
 
 .PHONY: dbstart
 dbstart: ${DBDATADIR}/postgresql.conf

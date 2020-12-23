@@ -1,6 +1,7 @@
 # To change settings: 
 # Create a new file "config.txt" and override any of the variables below
 
+
 # tables
 TABDIR="data/test/"
 
@@ -13,6 +14,7 @@ DBROUSER="lcbcuser"
 
 # web UI
 WEBSERVERPORT="3880"
+INSTANCE_NAME="NOAS example"
 
 # DBMS
 DBDATADIR="db/data"
