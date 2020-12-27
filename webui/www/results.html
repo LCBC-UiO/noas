@@ -33,6 +33,7 @@
         }
       </script>
     </a>
+    <span class="navbar-text" id="version-label">&nbsp;</span>
   </nav>
 
   <div class="container">
@@ -152,10 +153,7 @@
         // make db query
         document.getElementById("noasTable").innerHTML = '<br><br><h4>loading data...</h4>';
         g_table_data = await getTableData(sel);
-        //console.log(g_table_data);
-        //console.log( getColDef(g_table_data.column_def));
         document.getElementById("noasTable").innerHTML = '<br><br><h4>preparing table...</h4>';
-
 
         // show data in table
         g_table = new Tabulator("#noasTable", {
@@ -163,7 +161,7 @@
           pagination: "local",
           paginationSize: 40,
           columns: getColDef(g_table_data.column_def),
-          downloadConfig:{
+          downloadConfig: {
             columnCalcs: false,
           },
           data: g_table_data.rows,
@@ -179,7 +177,7 @@
           `d_noas <- (function(){\n` +
           `  selection <- '{ "columns": [\n` +
         sel.columns.map(e => `    { "table_id": "${e.table_id}", "column_id": "${e.column_id}" }`).join(",\n") + "\n" +
-          `   ], "set_op": "intersect" }'\n` +
+          `   ], "set_op": "intersect", "version": "${sel.version}" }'\n` +
           `  header <- paste0(c(NULL\n` +
           `    ,'POST /query_tsv.php HTTP/1.0'\n` +
           `    ,'Content-Type: application/json'\n` +
@@ -207,14 +205,17 @@
     document.getElementById("btnSave").addEventListener('click', () => lcSaveSelection(getSelection()));
     document.getElementById("btnDlCsv").addEventListener('click', function() {
       const sel = getSelection();
-      const dlfilename = `noas_query_${lcGetDateFnStr(Date.parse(g_table_data.date))}_${lcGetSelHash(sel)}.csv`;
+      const md5 = lcGetSelHash(sel)
+      const did = lcGetDataVersionFnStr(sel);
+      const dlfilename = `noas_query_${lcGetDateFnStr(Date.parse(g_table_data.date))}_${md5}_${did}.csv`;
       g_table.download("csv", dlfilename, {delimiter:";"});
     });
     document.getElementById("btnDlXlsx").addEventListener('click', function() {
       const sel = getSelection();
       const md5 = lcGetSelHash(sel);
-      const dlfilename = `noas_query_${lcGetDateFnStr(Date.parse(g_table_data.date))}_${md5}.xlsx`;
-      g_table.download("xlsx", dlfilename, {sheetName:"NOAS download " + md5 });
+      const did = lcGetDataVersionFnStr(sel);
+      const dlfilename = `noas_query_${lcGetDateFnStr(Date.parse(g_table_data.date))}_${md5}_${did}.xlsx`;
+      g_table.download("xlsx", dlfilename, {sheetName:`NOAS download ${md5} ${did}`});
     });
     document.getElementById("btnBack").addEventListener('click', () => {history.back()});
     
