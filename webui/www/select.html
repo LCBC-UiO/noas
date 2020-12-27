@@ -97,9 +97,20 @@ NOAS - Query selector
 
   async function start() {
     const meta = await getMetaData();
+    // set version
+    {
+      const vdateStr = (new Date(meta.version.ts)).toLocaleString();
+      document.getElementById("version-label").innerHTML = `${meta.version.label} (${vdateStr})`;
+      if (!meta.version.import_completed) {
+        const errmsg = [ 
+          `Either the last update of the database (${vdateStr}) had an error or the update has not finished yet.`,
+          `The data shown here will be incomplete.`
+        ];
+        showAlertBox(AlertType.ERROR, errmsg);
+      }
+    }
     let eNoasTables = document.querySelector("#noasTables");
     eNoasTables.innerHTML = '';
-    document.getElementById("version-label").innerHTML = `${meta.version.label} (${meta.version.ts})`;
     document.getElementById("version-id").innerHTML = `${meta.version.id}`;
     meta.tables.forEach((e,i) => {
       let eOptbox = document.createElement('div');

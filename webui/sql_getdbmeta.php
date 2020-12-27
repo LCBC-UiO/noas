@@ -6,9 +6,10 @@ select
   jsonb_build_object(
     'version'
     , jsonb_build_object(
-      'id',      (select id    from vers)
-      , 'label', (select label from vers)
-      , 'ts',    (select ts    from vers)
+        'id',               (select id               from vers)
+      , 'label',            (select label            from vers)
+      , 'ts',               (select ts               from vers)
+      , 'import_completed', (select import_completed from vers)
     )
     ,'tables'
     , array_to_json(array_agg(row_to_json(t)))
