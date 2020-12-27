@@ -147,9 +147,10 @@ CREATE TABLE metacolumns (
 );
 
 CREATE TABLE versions (
-  id    text,
-  label text,
-  ts    timestamp,
+  id               text,
+  label            text,
+  ts               timestamp,
+  import_completed bool DEFAULT false,
   CONSTRAINT versions_pkey PRIMARY KEY (id)
 );
 
