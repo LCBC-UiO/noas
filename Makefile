@@ -74,14 +74,28 @@ clean: dberase
 
 # ------------------------------------------------------------------------------
 
+# update
+
+.PHONY: update
+update:
+	$(RM) webui/www/static_info.json
+	git pull
+	$(MAKE) webui/www/static_info.json
+
+# ------------------------------------------------------------------------------
+
 # internal
 
 webui/www/%: 3rdparty/%.gz
 	echo $*.gz $@
 	zcat < 3rdparty/$*.gz > $@ 
 
-webui/www/static_info.json:
-	echo "{ \"instance_name\": \"$(INSTANCE_NAME)\" }" > $@
+# we depend on git index
+webui/www/static_info.json: .git/index
+	echo "{" > $@
+	echo "\"instance_name\": \"$(INSTANCE_NAME)\"," >> $@
+	echo "\"git_hash\": \"$(shell git rev-parse HEAD)\"" >> $@
+	echo "}" >> $@
 
 .PHONY: dbstart
 dbstart: ${DBDATADIR}/postgresql.conf

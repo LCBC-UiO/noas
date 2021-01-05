@@ -20,9 +20,14 @@
   * Outside TSD: After cloning the repo, run `make prepare_offline`
   * Copy the whole directory into TSD and proceed with the steps above
 
+### updating
+
+  * run `make update` - it will pull changes and it will also place the git hash available for the web UI
+
 ## Requirements
   * build tools (gcc, make, ...)
   * R
+  * git
 
 ## Dev
 
