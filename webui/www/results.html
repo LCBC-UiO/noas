@@ -47,11 +47,22 @@
         <i class="bluehover fas fa-question-circle" aria-hidden="true"></i>
       </a>
     </div>
-    <div id="btnSave" class="button button-minwidth ml-auto">Save selection</div>
+    <div class="button button-minwidth ml-auto" type="button" data-toggle="collapse" data-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">Show filter</div>
+    <div id="btnSave" class="button button-minwidth">Save selection</div>
     <div id="btnDlCsv" class="button button-minwidth">Download CSV</div>
     <div id="btnDlXlsx" class="button button-minwidth">Download Excel</div>
     <div type="button" class="button button-minwidth" data-toggle="modal" data-target="#modalImportR">Import to R</div>
     <div id="btnBack" class="button button-minwidth">Back</div>
+  </div>
+  <div class="collapse" id="filterCollapse">
+    <div class="card card-body bg-light m-3">
+      <div class="form-group row">
+        <label for="filterProj" class="col-sm-2 col-form-label">Project:</label>
+        <div class="col-sm-2">
+          <select id="filterProj" class="form-control"></select>
+        </div>
+      </div>
+    </div>
   </div>
   <div id="noasTable" class="mt-2"></div>
   <div class="mb-5"></div>
@@ -75,6 +86,7 @@
 
   <script>
     var g_table = null;
+    var g_table_data = null;
 
     async function getTableData(selection) {
       async function _getData(url) {
@@ -147,6 +159,16 @@
       }
     }
 
+    function applyFilter() {
+      const f = {
+        project_id: document.getElementById("filterProj").value,
+      };
+      const rows = g_table_data.rows
+        .filter(e => f.project_id == "All" || e.project_id == f.project_id)
+        ;
+      g_table.replaceData(rows);
+    }
+
     async function loadTable() {
       try {
         const sel = getSelection();
@@ -164,11 +186,10 @@
           downloadConfig: {
             columnCalcs: false,
           },
-          data: g_table_data.rows,
           /* replace null elements with empty string */
           downloadDataFormatter:function(data){
             data = JSON.parse(JSON.stringify(data).replace(/null/g, '""'))
-            return data
+            return data;
           }
         });
         const host = window.location.hostname;
@@ -191,9 +212,27 @@
           `  table_str <- substr(pl_str, regexpr('\\n\\n', pl_str)+2, nchar(pl_str)); # skip http header\n` +
           `  return(read.table(text=table_str, header=T, sep='\\t', na.strings='None', stringsAsFactors=F))\n` +
           `})()\n`;
-
-          
-        //document.getElementById("noasTable").innerHTML = `<code style="white-space: pre-line;">${tableJsn}</code>`;
+        
+        // set filter values
+        {
+          // project 
+          let ep = document.getElementById("filterProj");
+          let eo = document.createElement("option");
+          ep.appendChild(eo);
+          eo.value = "All";
+          eo.innerHTML = "All";
+          eo.selected = true;
+          if (g_table_data.rows.length && g_table_data.rows[0].hasOwnProperty("project_id")) {
+            //[...new Set(g_table_data.rows.map(e => e.project_id)).flat()].forEach( (k,v) => {
+              [...new Set(g_table_data.rows.map(e => e.project_id))].forEach( (e) => {
+                let eo = document.createElement("option");
+                ep.appendChild(eo);
+                eo.value = e;
+                eo.innerHTML = e;
+            });
+          }
+        }
+        applyFilter();
       } catch (e) {
         showAlertBox(AlertType.ERROR, ["Unable to get table data.", e.toString()]);
         console.log("err: " + e.toString());
@@ -218,6 +257,7 @@
       g_table.download("xlsx", dlfilename, {sheetName:`NOAS download ${md5} ${did}`});
     });
     document.getElementById("btnBack").addEventListener('click', () => {history.back()});
+    document.getElementById("filterProj").onchange = applyFilter;
     
   </script>
 </body>
