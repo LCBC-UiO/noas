@@ -71,7 +71,7 @@ cat_miss_key <- function(x){
 
 cat_delim_err <- function(x){
   x <- c(paste0("Table", codes()$fail(x$file)), 
-         codes(with_char = FALSE)$note(x$key)
+         codes(FALSE)$note(x$key)
   )
   cat("\n")
   j <- sapply(y, spec_cat)
