@@ -98,25 +98,6 @@ get_data <- function(table_name, db_dir, key_vars, cat_type = "ascii") {
   # remove table name from headers
   ft <- rename_table_headers(ft, key_vars)
   
-  # retrieve meta-data information
-  meta <- get_metadata(ft[[1]], table_name, dir)$columns
-  
-  # assign column types from metadata if they are specified
-  if(!is.null(meta$id)){
-    meta$id <- fix_names(meta$id)
-    meta$func <- type_2_rclass(meta$type)
-    
-    if(length(meta$func) > 0){
-      # match files to assure correct assigning
-      meta <- meta[meta$id %in% names(ft[[1]]), ]
-      
-      # Apply column type change
-      ft <- lapply(ft, change_col_type, meta$id, meta$func)
-    }
-  }else{
-    meta$id <- NULL
-  }
-  
   # Alter subject_id and wave_code back to correct type
   ft <- lapply(ft, function(x){
     x$subject_id <- as.integer(x$subject_id)
