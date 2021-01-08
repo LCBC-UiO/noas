@@ -71,7 +71,7 @@ insert_table <- function(x,
   )
   
   n_after <- get_rows(con, dbtab)
-  n <- sprintf("\\(%5d/%5d omitted\\)", abs(n_after-n_before-nrow(x)), nrow(x))
+  n <- sprintf("(%5d/%5d omitted)", abs(n_after-n_before-nrow(x)), nrow(x))
   
   cat_table_success(j, paste(type, table_name, basename(file_name), n, sep="\t"))
   invisible(j)
@@ -139,16 +139,15 @@ add_cross_table <- function(table_name,
               MoreArgs = list(con = con, 
                               type = "cross",
                               table_name = table_name
-                              )
+              )
   )
   
   # insert meta_data if applicable
   k <- fix_metadata(data$data, 
                     table_name, 
                     file.path(db_dir, table_name), 
-                    con, 
-                    )
-  
+                    con
+  )
   
   invisible(j)
 }
@@ -171,7 +170,7 @@ add_cross_table <- function(table_name,
 add_long_table <- function(table_name, 
                            con, 
                            db_dir
-                           ){
+){
   # retrieve the data
   data <- get_data(table_name, db_dir, c("subject_id",
                                          "project_id", 
@@ -184,7 +183,7 @@ add_long_table <- function(table_name,
               MoreArgs = list(con = con, 
                               type = "long",
                               table_name = table_name
-                              )
+              )
   )
   browser()
   # insert meta_data if applicable
@@ -192,7 +191,7 @@ add_long_table <- function(table_name,
                        table_name, 
                        file.path(db_dir, table_name), 
                        con
-                       )
+  )
   
   invisible(j)
 }
@@ -215,13 +214,13 @@ add_long_table <- function(table_name,
 add_repeated_table <- function(table_name, 
                                con, 
                                db_dir
-                               ){
+){
   
   # retrieve the data
   data <- get_data(table_name, db_dir, c("subject_id",
                                          "project_id", 
-                                         "wave_code"),
-                   )
+                                         "wave_code")
+  )
   
   # forth column should be column making row unique
   # might want to change this later
@@ -241,16 +240,16 @@ add_repeated_table <- function(table_name,
               MoreArgs = list(con = con, 
                               type = "repeated",
                               table_name = table_name,
-                              visit_id_column = visit_id_column_new,
-                              )
+                              visit_id_column = visit_id_column_new
+              )
   )
   
   # insert meta-data if applicable
   k <- fix_metadata(data$data[[1]], 
                     table_name, 
                     file.path(db_dir, table_name), 
-                    con, 
-                    )
+                    con
+  )
   
   invisible(j)
 }
@@ -270,7 +269,7 @@ add_core_tab <- function(tab, db_dir, con){
     
     
     n_after <- get_rows(con, tab)
-    n <- sprintf("\t(%5d/%5d omitted)", abs(n_after-n_before-nrow(x)), nrow(x))
+    n <- sprintf("(%5d/%5d omitted)", abs(n_after-n_before-nrow(x)), nrow(x))
     
     cat_table_success(j, paste(file, n, sep="\t"))
     invisible(j)

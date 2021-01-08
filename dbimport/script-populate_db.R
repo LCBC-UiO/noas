@@ -51,5 +51,5 @@ spent <- (function(){
 
 cat("\n ---------- \n")
 cat_table_success(TRUE,
-                  codes()$bold("Database populated in", spent, "minutes"))
+                  sprintf("Database populated in %s minutes", spent))
 
