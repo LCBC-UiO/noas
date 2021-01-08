@@ -27,8 +27,8 @@ populate_tables <- function(con){
   )
   tabs$tabel <- dirname(tabs$tabel)
 
-  mapply(populate_table,
-         table = gsub(db_dir, "", tabs$tabel),
+  k <- mapply(populate_table,
+         table = basename(tabs$tabel),
          type = tabs$type,
          MoreArgs = list(con = con)
          )
