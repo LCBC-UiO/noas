@@ -7,8 +7,6 @@ source("dbimport/funcs-table.R", echo = FALSE)
 populate_core <- function(con, cat_type = "ascii"){
   db_dir <- file.path(read_config()$TABDIR, "core")
   
-  cat_add_type("core", cat_type = cat_type)
-
   # Add all core tables
   j <- lapply(c("subjects", "projects", "waves", "visits"),
               add_core_tab, con = con, db_dir = db_dir, cat_type = cat_type)
@@ -26,8 +24,7 @@ populate_table <- function(type, con, cat_type = "ascii") {
   tables <- unique(dirname(tables))
 
   if(length(tables)>0){
-    cat_add_type(type, cat_type = cat_type)
-    
+
     func <- paste0("add_", type, "_table")
     
     # loop through all and add

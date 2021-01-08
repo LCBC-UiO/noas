@@ -38,20 +38,6 @@ cat_table_success <- function(success, names, cat_type = "ascii"){
   }
 }
 
-
-cat_add_type <- function(type, cat_type = "ascii") {
-  x <- paste0(codes(cat_type)$table(),
-              codes(cat_type)$bold("Adding", type, "tables "), 
-              codes(cat_type)$table())
-  cat("\n")
-  spec_cat(x)
-}
-
-cat_add_table <- function(cat_type, table_name){
-  cat(codes(cat_type)$bold("\n---", table_name, "---\n"))
-}
-
-
 # validation ----
 
 cat_err_cols <- function(x, cat_type = "ascii"){

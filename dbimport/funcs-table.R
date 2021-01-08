@@ -79,8 +79,6 @@ insert_table <- function(x,
 
 
 get_data <- function(table_name, db_dir, key_vars, cat_type = "ascii") {
-  cat_add_table(cat_type, table_name) 
-  
   dir <- file.path(db_dir, table_name)
   
   ffiles <- list.files(dir, "tsv$", full.names = TRUE)
@@ -265,8 +263,6 @@ add_repeated_table <- function(table_name,
 
 # core tables ----
 add_core_tab <- function(tab, db_dir, con, cat_type = "ascii"){
-  
-  cat_add_table(cat_type, tab) 
   
   filenm <- list.files(db_dir, paste0(tab,".*.tsv"), full.names = TRUE)
   
