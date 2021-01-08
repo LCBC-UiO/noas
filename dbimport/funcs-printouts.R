@@ -42,28 +42,28 @@ cat_table_success <- function(success, names){
 cat_err_cols <- function(x){
   
   miss <- if(length(x$missing) != 0){
-    paste0("is", codes(with_char = FALSE)$note("missing "), "columns: ", 
+    paste0("is", codes(FALSE)$note("missing "), "columns: ",
            paste(sapply(x$missing, wrap_string), collapse = ", "))
   }else{
     ""
   }
   
   extra <- if(length(x$extra) != 0){
-    paste0("has", codes(with_char = FALSE)$note("extra "), "unknown columns: ", 
+    paste0("has", codes(FALSE)$note("extra "), "unknown columns: ",
            paste(sapply(x$extra, wrap_string), collapse = ", "))
   }else{
     ""
   }
   
-  y <- c(paste("Table", codes()$bold(x$file)),
+  y <- c(paste("Table", x$file),
          miss, extra)
   cat("\n")
   j <- sapply(y, spec_cat)
 }
 
 cat_miss_key <- function(x){
-  y <- c(paste0("Table", codes()$bold(x$file)), 
-         paste0("is", codes(with_char = FALSE)$note("missing "), "primary columns: ", 
+  y <- c(paste0("Table", x$file), 
+         paste0("is", codes(FALSE)$note("missing "), "primary columns: ",
                 paste(sapply(x$missing, wrap_string), collapse = ", ")))
   cat("\n")
   j <- sapply(y, spec_cat)
