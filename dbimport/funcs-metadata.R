@@ -62,8 +62,7 @@ get_metadata <- function(data, table_name, dirpath){
   return(meta_info)
 }
 
-#' @param cat_type character. either ascii or unicode (no embelishment)
-fix_metadata <- function(data, table_name, dir, con, cat_type = "ascii") {
+fix_metadata <- function(data, table_name, dir, con) {
   
   # get meta-data
   meta_info <- get_metadata(data, table_name, dir)
@@ -71,7 +70,7 @@ fix_metadata <- function(data, table_name, dir, con, cat_type = "ascii") {
   # add meta-data
   if (!is.null(meta_info)) {
     j <- insert_metadata(con, meta_info)
-    cat_table_success(j, sprintf("%s metadata added", table_name), cat_type)
+    cat_table_success(j, sprintf("%s metadata added", table_name))
   }
   
   data

@@ -3,36 +3,35 @@
 #'
 #' @param success logical vector for successes
 #' @param names character vector of equal length as \code{success}
-#' @param cat_type character. either ascii or unicode (no embelishment)
 #'
 #' @return
 #' @export
 #'
-#' @examples
+#' @examples 
 #' log_vect <- c(TRUE, TRUE, FALSE)
 #' log_name <- c("tab1", "tab2", "tab3")
 #' cat_table_success("tables added", log_vect, log_name)
-cat_table_success <- function(success, names, cat_type = "ascii"){
+cat_table_success <- function(success, names){
   
   if(length(success) != length(names))
     stop("success and names are not of equal length", call. = FALSE)
   
   if(length(success) == 0){
-    spec_cat(paste0(codes(cat_type)$note(), "no tables added"))
+    spec_cat(paste0(codes()$note(), "no tables added"))
   }else{
-
+    
     # if success is TRUE or 0 (adding to existing tables),
     # return green checkmark, else return red x
     j <- lapply(success, function(x) ifelse(x | x == 0, 
-                                            codes(cat_type)$success(), 
-                                            codes(cat_type)$fail()))
+                                            codes()$success(), 
+                                            codes()$fail()))
     j <- unlist(j)
     
     pr <- strsplit(names, "\t")[[1]]
     pr[1] <- basename(pr[1])
-    pr <- paste0(pr, collapse = "\t")
+    pr <- paste0(pr, collapse = "")
     
-    j <- paste(j, pr, sep="\t")
+    j <- paste(j, pr, sep="")
     
     spec_cat(j)
   }
@@ -40,39 +39,39 @@ cat_table_success <- function(success, names, cat_type = "ascii"){
 
 # validation ----
 
-cat_err_cols <- function(x, cat_type = "ascii"){
+cat_err_cols <- function(x){
   
   miss <- if(length(x$missing) != 0){
-    paste0("is", codes(cat_type, with_char = FALSE)$note("missing "), "columns: ", 
+    paste0("is", codes(with_char = FALSE)$note("missing "), "columns: ", 
            paste(sapply(x$missing, wrap_string), collapse = ", "))
   }else{
     ""
   }
   
   extra <- if(length(x$extra) != 0){
-    paste0("has", codes(cat_type, with_char = FALSE)$note("extra "), "unknown columns: ", 
+    paste0("has", codes(with_char = FALSE)$note("extra "), "unknown columns: ", 
            paste(sapply(x$extra, wrap_string), collapse = ", "))
   }else{
     ""
   }
   
-  y <- c(paste("Table", codes(cat_type)$bold(x$file)),
+  y <- c(paste("Table", codes()$bold(x$file)),
          miss, extra)
   cat("\n")
   j <- sapply(y, spec_cat)
 }
 
-cat_miss_key <- function(x,  cat_type = "ascii"){
-  y <- c(paste0("Table", codes(cat_type)$bold(x$file)), 
-         paste0("is", codes(cat_type, with_char = FALSE)$note("missing "), "primary columns: ", 
+cat_miss_key <- function(x){
+  y <- c(paste0("Table", codes()$bold(x$file)), 
+         paste0("is", codes(with_char = FALSE)$note("missing "), "primary columns: ", 
                 paste(sapply(x$missing, wrap_string), collapse = ", ")))
   cat("\n")
   j <- sapply(y, spec_cat)
 }
 
-cat_delim_err <- function(x, cat_type = "ascii"){
-  x <- c(paste0("Table", codes(cat_type)$bold(x$file)), 
-         codes(cat_type, with_char = FALSE)$note(x$key)
+cat_delim_err <- function(x){
+  x <- c(paste0("Table", codes()$fail(x$file)), 
+         codes(with_char = FALSE)$note(x$key)
   )
   cat("\n")
   j <- sapply(y, spec_cat)
@@ -81,7 +80,7 @@ cat_delim_err <- function(x, cat_type = "ascii"){
 
 # special cat display ----
 spec_cat <- function(x){
-  system2("echo", x)
+  cat(x, sep="\n")
 }
 
 #' Printout codes
@@ -94,73 +93,31 @@ spec_cat <- function(x){
 #' certain pre-set printout versions. These
 #' vary depending on the contect to the printout, and
 #' the type of printout.
-#' 
 #'
 #' @param type character. either ascii or unicode (no embelishment)
 #' @param with_char logical. if printout should include default prefixed characters,
 #'
 #' @return list of printouts functions
-codes <- function(type = "ascii", with_char = TRUE){
+codes <- function(with_char = TRUE){
   
-  type = match.arg(type, c("ascii", "unicode"))
-  
-  chars <- switch(type,
-                  "ascii" = list(
-                    success = "\x1B[32m",
-                    fail = "\x1B[31m",
-                    note = "\x1B[33m",
-                    table = "\x1B[35m",
-                    bold = "\x1B[1m",
-                    italic = "\x1B[4m"
-                  ),
-                  "unicode" = list(
-                    success = "",
-                    fail = "",
-                    note = "",
-                    table = "",
-                    bold = "",
-                    italic = ""
-                  ))
-  
+  chars <- list(
+    success = "",
+    fail = "",
+    note = "",
+    table = ""
+  )
   # add chars
-  chars <- if(with_char & type == "ascii"){
+  chars <- if(with_char){
     list(
-      success = paste0(chars$success, "\U2713  "),
-      fail = paste0(chars$fail, "\U10102  "),
-      note = paste0(chars$note, "\U0021  "),
-      table = paste0(chars$table, "\U25C6  "),
-      bold = paste0(chars$bold, "\x1B[1m  "),
-      italic = paste0(chars$italic, "\x1B[4m  ")
-    )
-  }else if(with_char){
-    list(
-      success = paste0(chars$success, "v  "),
-      fail = paste0(chars$fail, "x  "),
-      note = paste0(chars$note, "!  "),
-      table = paste0(chars$table, "---  "),
-      bold = chars$bold,
-      italic = chars$italic
-    )
-  }
-  
-  
-  # reset colours
-  if(type == "ascii"){
-    chars <- list(
-      success = paste0(chars$success, "\x1B[39m"),
-      fail = paste0(chars$fail, "\x1B[39m"),
-      note = paste0(chars$note, "\x1B[39m"),
-      table = paste0(chars$table, "\x1B[39m"),
-      bold = chars$bold, 
-      italic = chars$italic
-    )
+      success = paste0(chars$success, "v\t"),
+      fail = paste0(chars$fail, "x\t"),
+      note = paste0(chars$note, "!\t"),
+      table = paste0(chars$table, "---\t"))
   }
   
   list(success = function(...) paste(chars$success, ...),
        fail = function(...) paste(chars$fail, ...),
        note = function(...) paste(chars$note, ...),
-       table = function(...) paste(chars$table, ...),
-       bold = function(...) paste(...),
-       italic = function(...) paste(...)
+       table = function(...) paste(chars$table, ...)
   )
 }

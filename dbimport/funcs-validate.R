@@ -10,28 +10,27 @@ source("dbimport/funcs-read.R", echo = FALSE)
 #'
 #' @param path path to folder
 #' @param type type of table, one of 'long', 'cross' or 'repeated'
-#' @param cat_type character. either ascii or unicode (no embelishment)
 #'
 #' @export
-validate_tables <- function(path, type, cat_type = "ascii"){
+validate_tables <- function(path, type){
 
   ffiles <- list.files(path, full.names = TRUE)
   ffiles <- ffiles[!grepl("json$", ffiles)]
-  exts <- sapply(ffiles, check_table_ext, cat_type = cat_type) 
+  exts <- sapply(ffiles, check_table_ext) 
 
-  delim <- check_delim(ffiles, cat_type)
+  delim <- check_delim(ffiles)
   # Table type specific checks  
   type <- match.arg(type, c("cross", "long", "repeated"))
   
-  keys <- check_keys(ffiles, type, cat_type = cat_type)
+  keys <- check_keys(ffiles, type)
   
-  cols <- check_cols(ffiles, cat_type = cat_type)
+  cols <- check_cols(ffiles)
   cat("\n")
   if(all(delim, keys, cols)){
-    cat(codes(cat_type)$success("Validation succeess: "), 
+    cat(codes()$success("Validation succeess: "), 
         "Tables can safely be added to the database.\n")
   }else{
-    cat(codes(cat_type)$fail("Validation failed: "), 
+    cat(codes()$fail("Validation failed: "), 
         "Tables cannot be added to the database.\n")
   }
     
@@ -44,8 +43,7 @@ validate_tables <- function(path, type, cat_type = "ascii"){
 #'
 #' @param files vector of file paths
 #' @param type type of table 'cross', 'long', or 'repeated'
-#' @param cat_type character. either ascii or unicode (no embelishment)
-check_keys <- function(files, type, cat_type = "ascii"){
+check_keys <- function(files, type){
   type <- match.arg(type, c("cross", "long", "repeated"))
   
   keys <- eval(parse(text=paste0("prim_keys()$", type)))
@@ -56,7 +54,7 @@ check_keys <- function(files, type, cat_type = "ascii"){
   if(type == "repeated"){
     nns <- sapply(tabs, function(x) names(x)[4])
     if(length(unique(nns)) != 1){
-      cat(codes(cat_type)$fail("Forth column is not the same across tables as required in repeated tables.\n"))
+      cat(codes()$fail("Forth column is not the same across tables as required in repeated tables.\n"))
       return(FALSE)
     }
   }
@@ -66,12 +64,12 @@ check_keys <- function(files, type, cat_type = "ascii"){
   idx <- unlist(lapply(nams, function(x) length(x) !=0 ))
   
   if(any(idx)){
-    cat(codes(cat_type)$fail("Some tables are missing necessary primary columns.\n"))
+    cat(codes()$fail("Some tables are missing necessary primary columns.\n"))
     
     k <- lapply(which(idx), 
                 function(x) list(file = files[x],
                                  missing = prim_keys()$long[nams[[x]]]))
-    j <- lapply(k, cat_miss_key, cat_type = cat_type) 
+    j <- lapply(k, cat_miss_key) 
     return(FALSE)
   }else{
     return(TRUE)
@@ -85,10 +83,9 @@ check_keys <- function(files, type, cat_type = "ascii"){
 #' table extension.
 #'
 #' @param file file path
-#' @param cat_type character. either ascii or unicode (no embelishment)
-check_table_ext <- function(file, cat_type = "ascii"){
+check_table_ext <- function(file){
   if(!grepl("tsv$", file)){
-    cat(codes(cat_type)$fail(), 
+    cat(codes()$fail(), 
         file, "does not have the '.tsv' extension. Files must be tab-separated.\n")
     return(FALSE)
   }else{
@@ -96,7 +93,7 @@ check_table_ext <- function(file, cat_type = "ascii"){
   }
 }
 
-check_delim <- function(files, cat_type = "ascii"){
+check_delim <- function(files){
 
   cont <- lapply(files, readLines, warn = FALSE)
   cont <- lapply(cont, function(x) x[1])
@@ -129,9 +126,9 @@ check_delim <- function(files, cat_type = "ascii"){
     return(TRUE) 
   }
 
-  cat(codes(cat_type,)$fail("Not all tables have tab (\\t) as separator\n"))
+  cat(codes()$fail("Not all tables have tab (\\t) as separator\n"))
   
-  k <- lapply(split(delim, file), cat_delim_err, cat_type = cat_type)
+  k <- lapply(split(delim, file), cat_delim_err)
   return(FALSE)
 }
 
@@ -143,8 +140,7 @@ check_delim <- function(files, cat_type = "ascii"){
 #' same columns
 #'
 #' @param files vector of file paths
-#' @param cat_type character. either ascii or unicode (no embelishment)
-check_cols <- function(files, cat_type = "ascii"){
+check_cols <- function(files){
 
   tabs <- lapply(files, read_dbtable)
   
@@ -159,7 +155,7 @@ check_cols <- function(files, cat_type = "ascii"){
                             stringsAsFactors = FALSE)
     
     if(nrow(k_nams) == length(files)){
-      cat(codes(cat_type)$fail("Files have different number of columns, they cannot be combined.\n"))
+      cat(codes()$fail("Files have different number of columns, they cannot be combined.\n"))
       return(FALSE)
     }
     
@@ -176,8 +172,8 @@ check_cols <- function(files, cat_type = "ascii"){
             file = files[x])
     )
     
-    cat(codes(cat_type)$fail("Files contain different columns.\n"))
-    j <- lapply(diff_names, cat_err_cols, cat_type = cat_type)
+    cat(codes()$fail("Files contain different columns.\n"))
+    j <- lapply(diff_names, cat_err_cols)
     
     return(FALSE)  
   }
