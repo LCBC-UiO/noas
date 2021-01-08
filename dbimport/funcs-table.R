@@ -33,7 +33,7 @@ insert_table <- function(x,
   
   table_name <- gsub("/", "_", table_name)
   template_path <- sql_templates(type)
-
+  
   dbtab <- paste(type, table_name, sep="_")
   n_before <- get_rows(con, dbtab)
   
@@ -90,7 +90,7 @@ get_data <- function(table_name, db_dir, key_vars, cat_type = "ascii") {
   
   # Read in all tables
   ft <- lapply(ffiles, read_dbtable)
-
+  
   # Turn all to character
   ft <- lapply(ft, function(x) as.data.frame(lapply(x, as.character), 
                                              stringsAsFactors = FALSE))
@@ -202,7 +202,7 @@ add_long_table <- function(table_name,
                                          "project_id", 
                                          "wave_code"),
                    cat_type = cat_type)
-
+  
   # insert data to db
   j <- mapply(insert_table, 
               x = data$data, 
@@ -249,7 +249,7 @@ add_repeated_table <- function(table_name,
                                          "project_id", 
                                          "wave_code"),
                    cat_type = cat_type)
-
+  
   # forth column should be column making row unique
   # might want to change this later
   visit_id_column_old <- names(data$data[[1]])[4]
@@ -288,7 +288,7 @@ add_core_tab <- function(tab, db_dir, con, cat_type = "ascii"){
   cat_add_table(cat_type, tab) 
   
   filenm <- list.files(db_dir, paste0(tab,".*.tsv"), full.names = TRUE)
-
+  
   .tbl_add <- function(file){
     x <- read_dbtable(file)
     
