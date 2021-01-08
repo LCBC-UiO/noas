@@ -36,7 +36,6 @@ cat_table_success <- function(success, names, cat_type = "ascii"){
     
     spec_cat(j)
   }
-  cat("\n")
 }
 
 
@@ -46,7 +45,6 @@ cat_add_type <- function(type, cat_type = "ascii") {
               codes(cat_type)$table())
   cat("\n")
   spec_cat(x)
-  cat("\n")
 }
 
 cat_add_table <- function(cat_type, table_name){

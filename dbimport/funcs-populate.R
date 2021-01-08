@@ -8,8 +8,7 @@ populate_core <- function(con, cat_type = "ascii"){
   db_dir <- file.path(read_config()$TABDIR, "core")
   
   cat_add_type("core", cat_type = cat_type)
-  cat("\n")
-  
+
   # Add all core tables
   j <- lapply(c("subjects", "projects", "waves", "visits"),
               add_core_tab, con = con, db_dir = db_dir, cat_type = cat_type)
