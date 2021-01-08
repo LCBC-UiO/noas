@@ -36,9 +36,7 @@ invisible(DBI::dbExecute(con,
 start <- Sys.time()
 
 populate_core(con)
-populate_table("long", con)
-populate_table("repeated", con)
-populate_table("cross", con)
+populate_tables(con)
 
 stopifnot(DBI::dbExecute(con, "UPDATE versions SET import_completed=TRUE WHERE id = $1",
                         params=list(noas_import_id)) == 1)

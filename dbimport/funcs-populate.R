@@ -11,25 +11,40 @@ populate_core <- function(con){
               add_core_tab, con = con, db_dir = db_dir)
 }
 
-populate_table <- function(type, con) {
+populate_tables <- function(con){
+  db_dir <- read_config()$TABDIR
   
-  db_dir <- file.path(read_config()$TABDIR, type)
- 
-  # list all directories in the long db directory
-  # list only dirs with tsv files, and 
-  # list only final full directory with tables in
-  tables <- list.files(db_dir, pattern = ".tsv", recursive = TRUE)
-  tables <- unique(dirname(tables))
+  tabs <- data.frame(
+    tabel = list.files(db_dir, "_noas.json", recursive = TRUE, full.names = TRUE)
+  )
+  
+  types <- lapply(tabs$tabel, jsonlite::read_json)
+  tabs$type <- unlist(types)
+  tabs$type <- sapply(tabs$type, function(x) switch(x, 
+                                       "longitudinal" = "long",
+                                       "cross-sectional" = "cross",
+                                       "repeated" = "repeated")
+  )
+  tabs$tabel <- dirname(tabs$tabel)
 
-  if(length(tables)>0){
+  mapply(populate_table,
+         table = gsub(db_dir, "", tabs$tabel),
+         type = tabs$type,
+         MoreArgs = list(con = con)
+         )
+}
+
+populate_table <- function(table, type, con) {
+
+  if(length(table)>0){
 
     func <- paste0("add_", type, "_table")
     
     # loop through all and add
-    j <- sapply(tables, eval(parse(text=func)), 
-                con = con, db_dir = db_dir) 
+    j <- sapply(table, eval(parse(text=func)), 
+                con = con, db_dir = read_config()$TABDIR) 
   }else{
-    cat(codes()$note(), paste0("No ", type, " tables to add\n"))
+    cat(codes()$note(), paste0("No ", table, " to add\n"))
   }
 }
 

@@ -186,7 +186,7 @@ add_long_table <- function(table_name,
                               table_name = table_name
                               )
   )
-  
+  browser()
   # insert meta_data if applicable
   data <- fix_metadata(data$data[[1]], 
                        table_name, 
