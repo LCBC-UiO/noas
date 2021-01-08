@@ -71,7 +71,7 @@ insert_table <- function(x,
   )
   
   n_after <- get_rows(con, dbtab)
-  n <- sprintf("(%5d|%5d omitted)", abs(n_after-n_before-nrow(x)), nrow(x))
+  n <- sprintf("(%5d/%5d omitted)", abs(n_after-n_before-nrow(x)), nrow(x))
   
   cat_table_success(j, paste(type, table_name, basename(file_name), n, sep="\t"))
   invisible(j)
