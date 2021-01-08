@@ -17,7 +17,7 @@ cat_table_success <- function(success, names){
     stop("success and names are not of equal length", call. = FALSE)
   
   if(length(success) == 0){
-    spec_cat(paste0(codes()$note(), "no tables added"))
+    spec_cat(paste0(codes()$note(), "\t No tables added."))
   }else{
     
     # if success is TRUE or 0 (adding to existing tables),
@@ -25,11 +25,11 @@ cat_table_success <- function(success, names){
     j <- lapply(success, function(x) ifelse(x | x == 0, 
                                             codes()$success(), 
                                             codes()$fail()))
-    j <- unlist(j)
+    j <- unlist(j) 
     
     pr <- strsplit(names, "\t")[[1]]
     pr[1] <- basename(pr[1])
-    pr <- paste0(pr, collapse = "")
+    pr <- paste0(pr, collapse = "\t")
     
     j <- paste(j, pr, sep="")
     
