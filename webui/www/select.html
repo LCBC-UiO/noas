@@ -22,7 +22,7 @@ NOAS - Query selector
 <body>
   
   <nav class="navbar navbar-expand navbar-dark">
-    <a class="navbar-brand font-weight-bold" href="./select.html">
+    <a class="navbar-brand font-weight-bold" href="./index.html">
       <script language="JavaScript">
         var request = new XMLHttpRequest()
         request.open('GET', './static_info.json', false); 
@@ -34,6 +34,10 @@ NOAS - Query selector
     </a>
     <span class="navbar-text" id="version-label">&nbsp;</span>
     <span class="hidden" id="version-id">.</span>
+    <a class="ml-auto" href="./index.html">
+      <span class="navbar-text">Project:</span>
+      <span class="navbar-text ml-1" id="spPrj"></span>
+    </a>
   </nav>
 
   <div class="container">
@@ -71,6 +75,15 @@ NOAS - Query selector
   var g_cfg = {
     get_meta_url: '/dbmeta.php'
   };
+
+  const g_prj = (function() {
+    const prj = (new URLSearchParams(window.location.search)).get("prj");
+    if (!prj) {
+      window.location.href = './index.html';
+    }
+    document.getElementById("spPrj").innerHTML = prj;
+    return prj;
+  })();
 
   async function getMetaData() {
     async function _getData(url) {
@@ -279,6 +292,7 @@ NOAS - Query selector
       }
       sel.columns.push({table_id: e.noasTableId, column_id: e.noasColId});
     });
+    sel.project = g_prj;
     // query options
     sel.set_op = document.querySelector('input[name="setOps"]:checked').value;
     return sel;
@@ -334,7 +348,7 @@ NOAS - Query selector
     // save inside browser session to pass it to next page
     window.sessionStorage.setItem('selection', JSON.stringify(sel));
     // open result page
-    window.location.href = './results.html';
+    window.location.href = `./results.html?prj=${g_prj}`;
   }
 
   document.getElementById("btnClear").addEventListener('click', clearSelection);
