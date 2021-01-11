@@ -15,7 +15,6 @@ source('dbimport/funcs-populate.R')
 args <- commandArgs(trailingOnly = TRUE)
 if(length(args) > 0) args <- match.arg(args, c("unicode", "ascii"))
 
-cat_type <- if(!isatty(stdout())||length(args) == 0||args == "unicode"){ "unicode" }else{ "ascii" }
 curr_date <- date()
 noas_import_id <- .get_env("NOAS_IMPORT_ID", sprintf("undefined (%s)", as.character(curr_date)))
 
@@ -36,10 +35,10 @@ invisible(DBI::dbExecute(con,
 
 start <- Sys.time()
 
-populate_core(con, cat_type = cat_type)
-populate_table("long", con, cat_type = cat_type)
-populate_table("repeated", con, cat_type = cat_type)
-populate_table("cross", con, cat_type = cat_type)
+populate_core(con)
+populate_table("long", con)
+populate_table("repeated", con)
+populate_table("cross", con)
 
 stopifnot(DBI::dbExecute(con, "UPDATE versions SET import_completed=TRUE WHERE id = $1",
                         params=list(noas_import_id)) == 1)
@@ -47,13 +46,12 @@ stopifnot(DBI::dbExecute(con, "UPDATE versions SET import_completed=TRUE WHERE i
 spent <- round(as.numeric(Sys.time() - start, units="mins"), 3)
 
 spent <- (function(){
-  if (spent < 5)  return(codes(cat_type, FALSE)$success(spent))
-  if (spent > 10) return(codes(cat_type, FALSE)$fail(spent))
-  return(codes(cat_type, FALSE)$note(spent))
+  if (spent < 5)  return(codes(FALSE)$success(spent))
+  if (spent > 10) return(codes(FALSE)$fail(spent))
+  return(codes(FALSE)$note(spent))
 })()
 
 cat("\n ---------- \n")
 cat_table_success(TRUE,
-                  codes(cat_type)$bold("Database populated in", spent, "minutes"),
-                  cat_type = cat_type)
+                  sprintf("Database populated in %s minutes", spent))
 

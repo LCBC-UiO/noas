@@ -71,14 +71,14 @@ insert_table <- function(x,
   )
   
   n_after <- get_rows(con, dbtab)
-  n <- sprintf("\\(%5d/%5d omitted\\)", abs(n_after-n_before-nrow(x)), nrow(x))
+  n <- sprintf("(%5d/%5d omitted)", abs(n_after-n_before-nrow(x)), nrow(x))
   
-  cat_table_success(j, paste(file_name, n, sep="\t"), cat_type)
+  cat_table_success(j, paste(type, table_name, basename(file_name), n, sep="\t"))
   invisible(j)
 }
 
 
-get_data <- function(table_name, db_dir, key_vars, cat_type = "ascii") {
+get_data <- function(table_name, db_dir, key_vars) {
   dir <- file.path(db_dir, table_name)
   
   ffiles <- list.files(dir, "tsv$", full.names = TRUE)
@@ -106,7 +106,6 @@ get_data <- function(table_name, db_dir, key_vars, cat_type = "ascii") {
     x
   })
   
-  
   return(list(data = ft, files = ffiles))
 }
 
@@ -123,18 +122,15 @@ get_data <- function(table_name, db_dir, key_vars, cat_type = "ascii") {
 #' @param table_name name of the table 
 #' @param con database connection
 #' @param db_dir directory for the databse
-#' @param cat_type character. either ascii or unicode (no embelishment)
 #'
 #' @return success of adding, invisible
 #' @export
 add_cross_table <- function(table_name, 
                             con, 
-                            db_dir,
-                            cat_type = "ascii"){
-  
+                            db_dir){
   
   # retrieve the data
-  data <- get_data(table_name, db_dir, c("subject_id"), cat_type)
+  data <- get_data(table_name, db_dir, c("subject_id"))
   
   # insert data to db
   j <- mapply(insert_table, 
@@ -142,17 +138,16 @@ add_cross_table <- function(table_name,
               file_name = data$files,
               MoreArgs = list(con = con, 
                               type = "cross",
-                              table_name = table_name,
-                              cat_type = cat_type)
+                              table_name = table_name
+              )
   )
   
   # insert meta_data if applicable
   k <- fix_metadata(data$data, 
                     table_name, 
                     file.path(db_dir, table_name), 
-                    con, 
-                    cat_type = cat_type)
-  
+                    con
+  )
   
   invisible(j)
 }
@@ -174,13 +169,12 @@ add_cross_table <- function(table_name,
 #' @export
 add_long_table <- function(table_name, 
                            con, 
-                           db_dir, 
-                           cat_type = "ascii"){
+                           db_dir
+){
   # retrieve the data
   data <- get_data(table_name, db_dir, c("subject_id",
                                          "project_id", 
-                                         "wave_code"),
-                   cat_type = cat_type)
+                                         "wave_code"))
   
   # insert data to db
   j <- mapply(insert_table, 
@@ -188,16 +182,16 @@ add_long_table <- function(table_name,
               file_name = data$files,
               MoreArgs = list(con = con, 
                               type = "long",
-                              table_name = table_name,
-                              cat_type = cat_type)
+                              table_name = table_name
+              )
   )
   
   # insert meta_data if applicable
   data <- fix_metadata(data$data[[1]], 
                        table_name, 
                        file.path(db_dir, table_name), 
-                       con, 
-                       cat_type = cat_type)
+                       con
+  )
   
   invisible(j)
 }
@@ -214,26 +208,25 @@ add_long_table <- function(table_name,
 #' @param table_name name of the table 
 #' @param con database connection
 #' @param db_dir directory for the database
-#' @param cat_type character. either ascii or unicode (no embelishment)
 #'
 #' @return success of adding, invisible
 #' @export
 add_repeated_table <- function(table_name, 
                                con, 
-                               db_dir,
-                               cat_type = "ascii"){
+                               db_dir
+){
   
   # retrieve the data
   data <- get_data(table_name, db_dir, c("subject_id",
                                          "project_id", 
-                                         "wave_code"),
-                   cat_type = cat_type)
+                                         "wave_code")
+  )
   
   # forth column should be column making row unique
   # might want to change this later
   visit_id_column_old <- names(data$data[[1]])[4]
   visit_id_column_new <- paste0("_", visit_id_column_old)
-  # cat(codes(cat_type)$note(), "Forth column is ", codes(cat_type)$italic(visit_id_column_old), "\n")
+  # cat(codes()$note(), "Forth column is ", codes()$italic(visit_id_column_old), "\n")
   data$data <- lapply(data$data, 
                       function(x) {
                         names(x) <- gsub(visit_id_column_old, visit_id_column_new, names(x))
@@ -247,22 +240,22 @@ add_repeated_table <- function(table_name,
               MoreArgs = list(con = con, 
                               type = "repeated",
                               table_name = table_name,
-                              visit_id_column = visit_id_column_new,
-                              cat_type = cat_type)
+                              visit_id_column = visit_id_column_new
+              )
   )
   
   # insert meta-data if applicable
   k <- fix_metadata(data$data[[1]], 
                     table_name, 
                     file.path(db_dir, table_name), 
-                    con, 
-                    cat_type = cat_type)
+                    con
+  )
   
   invisible(j)
 }
 
 # core tables ----
-add_core_tab <- function(tab, db_dir, con, cat_type = "ascii"){
+add_core_tab <- function(tab, db_dir, con){
   
   filenm <- list.files(db_dir, paste0(tab,".*.tsv"), full.names = TRUE)
   
@@ -276,9 +269,9 @@ add_core_tab <- function(tab, db_dir, con, cat_type = "ascii"){
     
     
     n_after <- get_rows(con, tab)
-    n <- sprintf("\\(%5d/%5d omitted\\)", abs(n_after-n_before-nrow(x)), nrow(x))
+    n <- sprintf("(%5d/%5d omitted)", abs(n_after-n_before-nrow(x)), nrow(x))
     
-    cat_table_success(j, paste(file, n, sep="\t"), cat_type)
+    cat_table_success(j, paste(file, n, sep="\t"))
     invisible(j)
   }
   
