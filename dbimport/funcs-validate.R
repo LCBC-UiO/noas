@@ -1,5 +1,6 @@
 source("dbimport/funcs-utils.R", echo = FALSE)
 source("dbimport/funcs-printouts.R", echo = FALSE)
+source("dbimport/funcs-populate.R", echo = FALSE)
 source("dbimport/funcs-read.R", echo = FALSE)
 
 #' Validate NOAS table
@@ -14,14 +15,20 @@ source("dbimport/funcs-read.R", echo = FALSE)
 #' @export
 validate_tables <- function(path, type){
 
+  # Run first verifications, but not actual population of table
+  suppressMessages(
+    populate_table(path, con = NULL)
+  )
+  
   ffiles <- list.files(path, full.names = TRUE)
   ffiles <- ffiles[!grepl("json$", ffiles)]
   exts <- sapply(ffiles, check_table_ext) 
 
   delim <- check_delim(ffiles)
-  # Table type specific checks  
-  type <- match.arg(type, c("cross", "long", "repeated"))
   
+  type <- read_noas_json(path)
+  type <- table_type(type$table_type)
+
   keys <- check_keys(ffiles, type)
   
   cols <- check_cols(ffiles)
