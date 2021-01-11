@@ -17,42 +17,26 @@ populate_tables <- function(con){
   # Find top-level folders
   tabs <- list.dirs(db_dir, recursive = FALSE, full.names = TRUE)
   tabs <- tabs[!grepl("core", tabs)]
-  
-  # find if _noas.json is there
-  noas <- sapply(tabs, list.files, pattern="_noas.json", full.names = TRUE)
-
-  # find type of data from json
-  types <- lapply(noas, function(x){
-    if(length(x)>0){ 
-      j <- jsonlite::read_json(normalizePath(x[[1]])) 
-      j[[1]]$table_type
-    } else {
-      NA_character_
-    }
-  })
-  types <- unname(unlist(types))
-  
-  tabs <- data.frame(
-    tabel = basename(tabs),
-    noas = sapply(noas, function(x) ifelse(length(x) > 0, TRUE, FALSE), simplify = TRUE),
-    type = unname(unlist(types))
-  )
-
-  k <- mapply(populate_table,
-         table = tabs$tabel,
-         type = tabs$type,
-         noas = tabs$noas,
-         MoreArgs = list(con = con)
-         )
+ 
+  # Loop through and populate
+  k <- sapply(tabs, populate_table, con = con)
 }
 
-populate_table <- function(table, type, noas, con) {
+populate_table <- function(table, con) {
   
-  if(!noas)
+  table_path <- normalizePath(table)
+  table <- basename(table)
+
+  # find if _noas.json is there
+  noas <- list.files(table_path, pattern="_noas.json", full.names = TRUE)
+  
+  if(length(noas) < 1)
     stop("Table '", table, "' does not have a '_noas.json' file, and cannot be added",
          call. = FALSE)
   
-  type <- switch(type, 
+  # find type of data from json
+  type <- jsonlite::read_json(noas, simplifyVector = TRUE) 
+  type <- switch(type$table_type, 
                  "longitudinal" = "long",
                  "cross-sectional" = "cross",
                  "repeated" = "repeated",
@@ -67,7 +51,7 @@ populate_table <- function(table, type, noas, con) {
 
     func <- sprintf("add_%s_table", type)
     
-    # loop through all and add
+    # loop through all table .tsv and add
     j <- sapply(table, eval(parse(text=func)), 
                 con = con, db_dir = read_config()$TABDIR) 
   }else{
