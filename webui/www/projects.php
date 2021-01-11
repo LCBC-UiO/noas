@@ -1,7 +1,6 @@
 <?php 
 
 require '../dbconn.php';
-require '../sql_get_dbmeta.php';
 
 header("Content-Type: application/json; charset=UTF-8");
 
@@ -20,13 +19,12 @@ function exit_error($code, $response, $msg) {
 
 try {
   $db = dbconnect();
-  $stmt = $db->prepare($sql_getdbmeta);
+  $stmt = $db->prepare("SELECT id FROM projects ORDER BY id;");
   $stmt->execute();
   $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  $meta_json = json_decode($results[0]["meta_json"]);
   $response['status_ok'] = true;
   $response['status_msg'] = "ok";
-  $response['data'] = $meta_json;
+  $response['data'] = array_column($results, 'id');
 } catch (PDOException $e) {
   exit_error(400, $response, htmlentities($e->getMessage()));
 }

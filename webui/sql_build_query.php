@@ -61,7 +61,13 @@ function sql_build_query($dbmeta, $sel) {
     }
     return join("\n", $r);
   }
-  function _get_sql_where($dbmeta, $sel_tabs, $set_op) {
+  function _get_sql_where_prj($project) {
+    if ($project == "all") {
+      return "core.subject_shareable = 1";
+    }
+    return "core.project_id = '{$project}'";
+  }
+  function _get_sql_where($dbmeta, $sel_tabs, $set_op, $project) {
     if ($set_op == "all") {
       return "TRUE";
     }
@@ -94,7 +100,8 @@ function sql_build_query($dbmeta, $sel) {
       }
     }
     $sql_conjunction_conditions = join("\n", $r);
-    return "(\n{$b}\n{$sql_conjunction_conditions}\n)";
+    $sql_where_prj = _get_sql_where_prj($project);
+    return "(\n{$b}\n{$sql_conjunction_conditions}\n) AND {$sql_where_prj}";
   }
 
   // prepare selection
@@ -110,7 +117,7 @@ function sql_build_query($dbmeta, $sel) {
 
   $sql_select = _get_sql_select($dbmeta, $sel_tabs, $sel_cols);
   $sql_join   = _get_sql_join($dbmeta, $sel_tabs);
-  $sql_where  = _get_sql_where($dbmeta, $sel_tabs, $sel->{"set_op"});
+  $sql_where  = _get_sql_where($dbmeta, $sel_tabs, $sel->{"set_op"}, $sel->{"project"});
   
   $sql = "
 SELECT
