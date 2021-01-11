@@ -1,7 +1,7 @@
 <?php 
 
 require '../dbconn.php';
-require '../sql_getdbmeta.php';
+require '../sql_get_dbmeta.php';
 require '../sql_build_query.php';
 
 header("Content-Type: text/plain; charset=UTF-8");
