@@ -18,12 +18,12 @@ if(length(args) > 0) args <- match.arg(args, c("unicode", "ascii"))
 curr_date <- date()
 noas_import_id <- .get_env("NOAS_IMPORT_ID", sprintf("undefined (%s)", as.character(curr_date)))
 
-
 # establish connection
 con <- moasdb_connect()
 
 j <- DBI::dbExecute(con, 
                     read_sql("dbimport/sql/init_db.sql"))
+
 # NOTE: convert these parameters to positional command line arguments?
 invisible(DBI::dbExecute(con, 
               "INSERT INTO versions (id, label, ts) VALUES ($1, $2, $3)",
