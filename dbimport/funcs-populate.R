@@ -13,32 +13,59 @@ populate_core <- function(con){
 
 populate_tables <- function(con){
   db_dir <- read_config()$TABDIR
+
+  # Find top-level folders
+  tabs <- list.dirs(db_dir, recursive = FALSE, full.names = TRUE)
+  tabs <- tabs[!grepl("core", tabs)]
+  
+  # find if _noas.json is there
+  noas <- sapply(tabs, list.files, pattern="_noas.json", full.names = TRUE)
+
+  # find type of data from json
+  types <- lapply(noas, function(x){
+    if(length(x)>0){ 
+      j <- jsonlite::read_json(normalizePath(x[[1]])) 
+      j[[1]]$table_type
+    } else {
+      NA_character_
+    }
+  })
+  types <- unname(unlist(types))
   
   tabs <- data.frame(
-    tabel = list.files(db_dir, "_noas.json", recursive = TRUE, full.names = TRUE)
+    tabel = basename(tabs),
+    noas = sapply(noas, function(x) ifelse(length(x) > 0, TRUE, FALSE), simplify = TRUE),
+    type = unname(unlist(types))
   )
-  
-  types <- lapply(tabs$tabel, jsonlite::read_json)
-  tabs$type <- unlist(types)
-  tabs$type <- sapply(tabs$type, function(x) switch(x, 
-                                       "longitudinal" = "long",
-                                       "cross-sectional" = "cross",
-                                       "repeated" = "repeated")
-  )
-  tabs$tabel <- dirname(tabs$tabel)
 
   k <- mapply(populate_table,
-         table = basename(tabs$tabel),
+         table = tabs$tabel,
          type = tabs$type,
+         noas = tabs$noas,
          MoreArgs = list(con = con)
          )
 }
 
-populate_table <- function(table, type, con) {
+populate_table <- function(table, type, noas, con) {
+  
+  if(!noas)
+    stop("Table '", table, "' does not have a '_noas.json' file, and cannot be added",
+         call. = FALSE)
+  
+  type <- switch(type, 
+                 "longitudinal" = "long",
+                 "cross-sectional" = "cross",
+                 "repeated" = "repeated",
+                 NA_character_) 
+  
+  if(is.na(type))
+    stop("Table '", table, "' does not have a correctly specified 'table_type' in the' _noas.json'",
+         call. = FALSE)
+  
+  
+  if(length(table) > 0){
 
-  if(length(table)>0){
-
-    func <- paste0("add_", type, "_table")
+    func <- sprintf("add_%s_table", type)
     
     # loop through all and add
     j <- sapply(table, eval(parse(text=func)), 
