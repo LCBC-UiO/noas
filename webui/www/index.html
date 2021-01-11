@@ -3,10 +3,76 @@
 <head>
 <meta charset="utf-8"/>
 <link rel="shortcut icon" href="./img/favicon.ico">
+<link rel="stylesheet" href="./css/bootstrap.min.css" type="text/css"/>
+<link rel="stylesheet" href="./css/bootstrap.css" type="text/css"/>
+<script type="text/javascript" src="./js/jquery.min.js"></script>
+<script type="text/javascript" src="./js//popper.min.js"></script>
+<script type="text/javascript" src="./js/bootstrap.min.js"></script>
+<script type="text/javascript" src="./js/lcalerts.js"></script>
 <title>
 NOAS
 </title>
 </head>
 <body>
-  <a href="./select.html">NOAS</a>
+  <div id="main" class="cover-container d-flex w-100 h-100 p-5 my-lg-5 mx-auto flex-column">
+    <div id="alerts"></div>
+    <section class="py-5 text-center container">
+      <div class="row py-lg-5 my-md-5">
+        <div class="col-auto mx-auto form-group">
+          <label for="exampleFormControlSelect1">Select a project</label>
+          <select id="selProject" class="form-control" id="exampleFormControlSelect1" disabled>
+            <option>loading...</option>
+          </select>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+    // get data
+    (async function(){
+      try {
+        const r = await fetch("./projects.php", {
+          method: "GET"
+        });
+        if (!r.ok) {
+          throw new Error(r.statusText);
+        }
+        const jsn = await r.json();
+        if (!jsn.status_ok) {
+          throw Error(jsn.status_msg);
+        }
+        let es = document.getElementById("selProject");
+        es.innerHTML = "";
+        {
+          let eo = document.createElement("option");
+          eo.innerHTML = "-";
+          eo.value = '-';
+          eo.selected = true;
+          es.appendChild(eo);
+        }
+        {
+          let eo = document.createElement("option");
+          eo.innerHTML = "All";
+          eo.value = 'all';
+          es.appendChild(eo);
+        }
+        jsn.data.forEach(e => {
+          let eo = document.createElement("option");
+          eo.innerHTML = e;
+          eo.value = e;
+          es.appendChild(eo);
+        });
+        es.disabled = false;
+      } catch (e) {
+        console.log("err: " + e.toString());
+        showAlertBox(AlertType.ERROR, ["Unable to load project IDs.", e.toString()]);
+      };
+    })();
+
+    document.getElementById("selProject").onchange = (e) => {
+      if (e.target.value != "-") {
+        window.location.href = `./select.html?prj=${e.target.value}`;
+      }
+    }
+  </script>
 </body>
