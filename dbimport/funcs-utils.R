@@ -168,3 +168,7 @@ str_count <- function(char, s) {
   return (nchar(s) - nchar(s2))
 }
 
+
+# convenience function to assign "default" value if 
+# input value is NA
+`%||%` <- function(a, b) if(!is.na(a)) a else b
