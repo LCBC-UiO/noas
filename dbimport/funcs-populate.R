@@ -22,30 +22,22 @@ populate_tables <- function(con){
   k <- sapply(tabs, populate_table, con = con)
 }
 
-populate_table <- function(table, con) {
+populate_table <- function(table, con = NULL) {
   
   table_path <- normalizePath(table)
   table <- basename(table)
 
-  # find if _noas.json is there
-  noas <- list.files(table_path, pattern="_noas.json", full.names = TRUE)
-  
-  if(length(noas) < 1)
-    stop("Table '", table, "' does not have a '_noas.json' file, and cannot be added",
-         call. = FALSE)
-  
-  # find type of data from json
-  type <- jsonlite::read_json(noas, simplifyVector = TRUE) 
-  type <- switch(type$table_type, 
-                 "longitudinal" = "long",
-                 "cross-sectional" = "cross",
-                 "repeated" = "repeated",
-                 NA_character_) 
+  type <- read_noas_json(table_path)
+  type <- table_type(type$table_type)
   
   if(is.na(type))
     stop("Table '", table, "' does not have a correctly specified 'table_type' in the' _noas.json'",
          call. = FALSE)
   
+  if(is.null(con)){
+    message("Database connection not supplied, table not populated.")
+    return()
+  }
   
   if(length(table) > 0){
 
