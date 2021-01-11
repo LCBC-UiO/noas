@@ -106,10 +106,10 @@ codes <- function(with_char = TRUE){
   # add chars
   chars <- if(with_char){
     list(
-      success = paste0(chars$success, "v\t"),
-      fail = paste0(chars$fail, "x\t"),
-      note = paste0(chars$note, "!\t"),
-      table = paste0(chars$table, "---\t"))
+      success = sprintf("%s%s  ", chars$success, "v"),
+      fail    = sprintf("%s%s  ", chars$fail,    "x"),
+      note    = sprintf("%s%s  ", chars$note,    "!"),
+      table   = sprintf("%s%s  ", chars$table,    "---"))
   }
   
   list(success = function(...) paste(chars$success, ...),
