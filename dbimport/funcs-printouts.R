@@ -118,3 +118,5 @@ codes <- function(with_char = TRUE){
        table = function(...) paste(chars$table, ...)
   )
 }
+
+
