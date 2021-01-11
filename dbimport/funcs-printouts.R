@@ -17,7 +17,7 @@ cat_table_success <- function(success, names){
     stop("success and names are not of equal length", call. = FALSE)
   
   if(length(success) == 0){
-    spec_cat(paste0(codes()$note(), "\t No tables added."))
+    spec_cat(sprintf("%2s No tables addes", codes()$note()))
   }else{
     
     # if success is TRUE or 0 (adding to existing tables),
@@ -28,12 +28,15 @@ cat_table_success <- function(success, names){
     j <- unlist(j) 
     
     pr <- strsplit(names, "\t")[[1]]
-    pr[1] <- basename(pr[1])
-    pr <- paste0(pr, collapse = "\t")
+    if(length(pr) == 3){ 
+      pr[2] <- basename(pr[2])
+      pr <- c(pr[1], "", basename(pr[2]), pr[3])
+    }
     
-    j <- paste(j, pr, sep="")
+    pr <- sprintf("%s %8s %20s %20s %30s", j, pr[1] , 
+                  pr[2] %||% "", pr[3] %||% "", pr[4] %||% "")    
     
-    spec_cat(j)
+    spec_cat(pr)
   }
 }
 
@@ -42,38 +45,32 @@ cat_table_success <- function(success, names){
 cat_err_cols <- function(x){
   
   miss <- if(length(x$missing) != 0){
-    paste0("is", codes(with_char = FALSE)$note("missing "), "columns: ", 
+    sprintf("is missing columns:\n, %s",  
            paste(sapply(x$missing, wrap_string), collapse = ", "))
   }else{
     ""
   }
   
   extra <- if(length(x$extra) != 0){
-    paste0("has", codes(with_char = FALSE)$note("extra "), "unknown columns: ", 
+    sprintf("has extra unknown columns:\n%s", 
            paste(sapply(x$extra, wrap_string), collapse = ", "))
   }else{
     ""
   }
   
-  y <- c(paste("Table", codes()$bold(x$file)),
-         miss, extra)
-  cat("\n")
+  y <- sprintf("\nTable %s\n%s\n%s", x$file, miss, extra)
   j <- sapply(y, spec_cat)
 }
 
 cat_miss_key <- function(x){
-  y <- c(paste0("Table", codes()$bold(x$file)), 
-         paste0("is", codes(with_char = FALSE)$note("missing "), "primary columns: ", 
-                paste(sapply(x$missing, wrap_string), collapse = ", ")))
-  cat("\n")
+  y <- sprintf("\nTable %s is missing primary columns:\n%s", 
+               x$file,
+              paste(sapply(x$missing, wrap_string), collapse = ", "))
   j <- sapply(y, spec_cat)
 }
 
 cat_delim_err <- function(x){
-  x <- c(paste0("Table", codes()$fail(x$file)), 
-         codes(with_char = FALSE)$note(x$key)
-  )
-  cat("\n")
+  y <- sprintf("\n%s Table %s", codes()$fail, x$file, x$key)
   j <- sapply(y, spec_cat)
 }
 
