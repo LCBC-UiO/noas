@@ -38,6 +38,9 @@
 
 ## bugs
   * mri/repeated: double underscore (`__`) before "site_name" column name
+  * project merge:
+    * error when loading selection with mismatching prj
+    * show coverage by project
 
     
 ## potential problems
