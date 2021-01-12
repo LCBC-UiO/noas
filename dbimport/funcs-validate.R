@@ -65,19 +65,17 @@ check_keys <- function(files, type){
   if(type == "repeated"){
     nns <- sapply(tabs, function(x) names(x)[4])
     if(length(unique(nns)) != 1){
-      cat(codes()$fail("Forth column is not the same across tables as required in repeated tables.\n"))
+      warning("Forth column is not the same across tables as required in repeated tables.\n", call. = FALSE)
       return(FALSE)
     }
   }
   
-  tabs <- lapply(tabs, function(x) x[,1:length(keys)])
-  nams <- lapply(tabs, function(x) which(!keys %in% names(x)))
-  idx <- unlist(lapply(nams, function(x) length(x) !=0 ))
-  
-  if(any(idx)){
-    cat(codes()$fail("Some tables are missing necessary primary columns.\n"))
+  tabs <- !sapply(tabs, function(x) all((names(x) %in% keys)[1:length(keys)]))
+
+  if(any(tabs)){
+    warning("Some tables are missing necessary primary columns.\n", call. = FALSE)
     
-    k <- lapply(which(idx), 
+    k <- lapply(which(!tabs), 
                 function(x) list(file = files[x],
                                  missing = prim_keys()$long[nams[[x]]]))
     j <- lapply(k, cat_miss_key) 
