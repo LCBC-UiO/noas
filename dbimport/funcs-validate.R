@@ -13,12 +13,19 @@ source("dbimport/funcs-read.R", echo = FALSE)
 #' @param type type of table, one of 'long', 'cross' or 'repeated'
 #'
 #' @export
-validate_tables <- function(path, type){
-
-  # Run first verifications, but not actual population of table
-  suppressMessages(
-    populate_table(path, con = NULL)
-  )
+validate_table <- function(path){
+  table <- basename(path)
+  
+  type <- read_noas_json(path)
+  type <- table_type(type$table_type)
+  
+  if(is.na(type)){
+    warning("Table '", table, "' does not have a correctly specified 'table_type' in the' _noas.json'",
+         call. = FALSE)
+    type_check = FALSE
+  }else{
+    type_check = TRUE
+  }
   
   ffiles <- list.files(path, full.names = TRUE)
   ffiles <- ffiles[!grepl("json$", ffiles)]
