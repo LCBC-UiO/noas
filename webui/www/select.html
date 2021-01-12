@@ -72,9 +72,6 @@ NOAS - Query selector
   });
 </script>
 <script>
-  var g_cfg = {
-    get_meta_url: '/dbmeta.php'
-  };
 
   const g_prj = (function() {
     const prj = (new URLSearchParams(window.location.search)).get("prj");
@@ -96,7 +93,7 @@ NOAS - Query selector
       return response.json();
     }
     try {
-      let jsn = await _getData(g_cfg.get_meta_url);
+      let jsn = await _getData(`./dbmeta.php?prj=${g_prj}`);
       if (!jsn.status_ok) {
         throw Error(jsn.status_msg);
       }

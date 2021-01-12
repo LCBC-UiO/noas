@@ -43,15 +43,30 @@ CREATE TYPE e_sampletype AS enum (
 
 -- Define functions
 
--- Count number of rows for a table 
--- (this is similart to "count(*)"" but works with a parameter of type "text")
-CREATE OR REPLACE FUNCTION row_count (metatable_sampletype e_sampletype, metatable_id text)
+-- Count number of rows for a table by project similar to "count(*)"
+CREATE OR REPLACE FUNCTION row_count (metatable_sampletype e_sampletype, metatable_id text, project_id text)
 RETURNS integer AS $total$
 DECLARE
 	total integer;
 BEGIN
-   EXECUTE format('select count(*) from %I', metatable_sampletype || '_' || metatable_id) INTO total;
-   RETURN total;
+  if ( project_id = 'all' ) then
+    EXECUTE format(
+      $ex$
+        select count(*) from %I t 
+          left outer join core_core c on t.subject_id = c.subject_id 
+          where c.subject_shareable = 1
+      $ex$, metatable_sampletype || '_' || metatable_id
+    ) INTO total;
+  else
+    EXECUTE format(
+      $ex$
+        select count(*) from %I t 
+          left outer join core_core c on t.subject_id = c.subject_id 
+          where c.project_id = '%s'
+      $ex$, metatable_sampletype || '_' || metatable_id, project_id
+    ) INTO total;
+  end if;
+  RETURN total;
 END;
 $total$ LANGUAGE plpgsql;
 
@@ -193,7 +208,7 @@ INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_code',           2, 'Wave code');
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_sex',         3, 'Sex');
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_birthdate',   4, 'Birth date');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_shareable',   5, 'Sharable');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_shareable',   5, 'Shareable');
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'visit_visitdate',     6, 'Visit date');
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'visit_visitage',      7, 'Age at visit');
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_name',        8, 'Project name');

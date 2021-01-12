@@ -1,6 +1,6 @@
 <?php
-
-$sql_getdbmeta = "
+function sql_getdbmeta($prj) {
+return "
 with vers as ( select * from versions limit 1)
 select
   jsonb_build_object(
@@ -22,7 +22,7 @@ from (
     mt.title,
     mt.idx,
     (
-			select row_count(mt.sampletype, mt.id)
+			select row_count(mt.sampletype, mt.id, '{$prj}')
 		) as n,
     (
     select 
@@ -49,5 +49,6 @@ from (
     mt.title
 ) t
 ";
+}
 
 ?>
