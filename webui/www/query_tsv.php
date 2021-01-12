@@ -24,7 +24,7 @@ try {
   }
   // get noas meta
   $db = dbconnect();
-  $stmt = $db->prepare($sql_getdbmeta);
+  $stmt = $db->prepare(sql_getdbmeta($selection->project));
   $stmt->execute();
   $dbmeta = $stmt->fetchAll(PDO::FETCH_ASSOC);
   $dbmeta = json_decode($dbmeta[0]["meta_json"]);
