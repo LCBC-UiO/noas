@@ -1,5 +1,4 @@
-source("dbimport/funcs-read.R", echo = FALSE)
-source("dbimport/funcs-utils.R", echo = FALSE)
+source("dbimport/funcs-validate.R", echo = FALSE)
 source("dbimport/funcs-table.R", echo = FALSE)
 
 # populate functions ----

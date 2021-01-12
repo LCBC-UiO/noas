@@ -1,6 +1,5 @@
 source("dbimport/funcs-utils.R", echo = FALSE)
 source("dbimport/funcs-printouts.R", echo = FALSE)
-source("dbimport/funcs-populate.R", echo = FALSE)
 source("dbimport/funcs-read.R", echo = FALSE)
 
 #' Validate NOAS table
