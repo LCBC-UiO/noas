@@ -63,10 +63,9 @@ cat_err_cols <- function(x){
 }
 
 cat_miss_key <- function(x){
-  y <- sprintf("\nTable %s is missing primary columns:\n%s", 
-               x$file,
+  y <- sprintf("\nMissing primary columns:\t%s", 
               paste(sapply(x$missing, wrap_string), collapse = ", "))
-  j <- sapply(y, spec_cat)
+  warning(y, call. = FALSE)
 }
 
 cat_delim_err <- function(x){

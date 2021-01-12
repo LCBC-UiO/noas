@@ -47,7 +47,7 @@ populate_table <- function(table, con = NULL) {
     j <- sapply(table, eval(parse(text=func)), 
                 con = con, db_dir = read_config()$TABDIR) 
   }else{
-    cat(codes()$note(), paste0("No ", table, " to add\n"))
+    stop("There are no tables in", table, call. = FALSE)
   }
 }
 

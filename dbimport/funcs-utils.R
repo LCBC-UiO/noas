@@ -155,9 +155,9 @@ change_col_type <- function(data, column, func){
 # find if _noas.json is there
 # Read it in 
 read_noas_json <- function(dir_path){
-  noas <- list.files(dir_path, pattern="_noas.json", full.names = TRUE)
+  noas <- file.path(dir_path, "_noas.json")
   
-  if(length(noas) < 1)
+  if(!file.exists(noas))
     stop("Table '", basename(dir_path), "' does not have a '_noas.json' file, and cannot be added",
          call. = FALSE)
   

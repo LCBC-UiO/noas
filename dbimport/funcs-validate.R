@@ -26,19 +26,17 @@ validate_tables <- function(path, type){
 
   delim <- check_delim(ffiles)
   
-  type <- read_noas_json(path)
-  type <- table_type(type$table_type)
-
   keys <- check_keys(ffiles, type)
   
   cols <- check_cols(ffiles)
-  cat("\n")
-  if(all(delim, keys, cols)){
-    cat(codes()$success("Validation succeess: "), 
+
+  if(all(delim, keys, cols, type_check)){
+    message("Validation succeess: ", 
         "Tables can safely be added to the database.\n")
-  }else{
-    cat(codes()$fail("Validation failed: "), 
-        "Tables cannot be added to the database.\n")
+    invisible(TRUE)
+  } else {
+    stop("Validation failed: ", 
+        "Tables cannot be added to the database.\n", call. = FALSE)
   }
     
 }
@@ -92,8 +90,7 @@ check_keys <- function(files, type){
 #' @param file file path
 check_table_ext <- function(file){
   if(!grepl("tsv$", file)){
-    cat(codes()$fail(), 
-        file, "does not have the '.tsv' extension. Files must be tab-separated.\n")
+    warning(file, "does not have the '.tsv' extension. Files must be tab-separated.\n", call. = FALSE)
     return(FALSE)
   }else{
     return(TRUE)
@@ -133,7 +130,7 @@ check_delim <- function(files){
     return(TRUE) 
   }
 
-  cat(codes()$fail("Not all tables have tab (\\t) as separator\n"))
+  warning("Not all tables have tab (\\t) as separator\n", call. = FALSE)
   
   k <- lapply(split(delim, file), cat_delim_err)
   return(FALSE)
@@ -162,7 +159,7 @@ check_cols <- function(files){
                             stringsAsFactors = FALSE)
     
     if(nrow(k_nams) == length(files)){
-      cat(codes()$fail("Files have different number of columns, they cannot be combined.\n"))
+      warning("Files have different number of columns, they cannot be combined.\n", call. = FALSE)
       return(FALSE)
     }
     
@@ -179,7 +176,7 @@ check_cols <- function(files){
             file = files[x])
     )
     
-    cat(codes()$fail("Files contain different columns.\n"))
+    warning("Files contain different columns.\n", call. = FALSE)
     j <- lapply(diff_names, cat_err_cols)
     
     return(FALSE)  
