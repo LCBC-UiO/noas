@@ -1,5 +1,4 @@
-source("dbimport/funcs-read.R", echo = FALSE)
-source("dbimport/funcs-utils.R", echo = FALSE)
+source("dbimport/funcs-validate.R", echo = FALSE)
 source("dbimport/funcs-table.R", echo = FALSE)
 
 # populate functions ----
@@ -11,25 +10,42 @@ populate_core <- function(con){
               add_core_tab, con = con, db_dir = db_dir)
 }
 
-populate_table <- function(type, con) {
-  
-  db_dir <- file.path(read_config()$TABDIR, type)
+populate_tables <- function(con){
+  db_dir <- read_config()$TABDIR
+
+  # Find top-level folders
+  tabs <- list.dirs(db_dir, recursive = FALSE, full.names = TRUE)
+  tabs <- tabs[!grepl("core", tabs)]
  
-  # list all directories in the long db directory
-  # list only dirs with tsv files, and 
-  # list only final full directory with tables in
-  tables <- list.files(db_dir, pattern = ".tsv", recursive = TRUE)
-  tables <- unique(dirname(tables))
+  # Loop through and populate
+  k <- sapply(tabs, populate_table, con = con)
+}
 
-  if(length(tables)>0){
+populate_table <- function(table, con = NULL) {
+  table_path <- normalizePath(table)
+  table <- basename(table)
 
-    func <- paste0("add_", type, "_table")
+  suppressMessages(
+    validate_table(table_path)
+  )
+  
+  type <- read_noas_json(table_path)
+  type <- table_type(type$table_type)
+
+  if(is.null(con)){
+    message("Database connection not supplied, table not populated.")
+    return()
+  }
+  
+  if(length(table) > 0){
+
+    func <- sprintf("add_%s_table", type)
     
-    # loop through all and add
-    j <- sapply(tables, eval(parse(text=func)), 
-                con = con, db_dir = db_dir) 
+    # loop through all table .tsv and add
+    j <- sapply(table, eval(parse(text=func)), 
+                con = con, db_dir = read_config()$TABDIR) 
   }else{
-    cat(codes()$note(), paste0("No ", type, " tables to add\n"))
+    stop("There are no tables in", table, call. = FALSE)
   }
 }
 

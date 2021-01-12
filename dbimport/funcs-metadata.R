@@ -69,8 +69,8 @@ fix_metadata <- function(data, table_name, dir, con) {
   
   # add meta-data
   if (!is.null(meta_info)) {
-    j <- insert_metadata(con, meta_info)
-    cat_table_success(j, sprintf("%s metadata added", table_name))
+    j <- insert_metadata(con, meta_info) 
+    cat_table_success(j, sprintf("metadata\t%s\tadded\t ", table_name))
   }
   
   data

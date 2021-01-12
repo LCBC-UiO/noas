@@ -12,26 +12,37 @@ source("dbimport/funcs-read.R", echo = FALSE)
 #' @param type type of table, one of 'long', 'cross' or 'repeated'
 #'
 #' @export
-validate_tables <- function(path, type){
-
+validate_table <- function(path){
+  table <- basename(path)
+  
+  type <- read_noas_json(path)
+  type <- table_type(type$table_type)
+  
+  if(is.na(type)){
+    warning("Table '", table, "' does not have a correctly specified 'table_type' in the' _noas.json'",
+         call. = FALSE)
+    type_check = FALSE
+  }else{
+    type_check = TRUE
+  }
+  
   ffiles <- list.files(path, full.names = TRUE)
   ffiles <- ffiles[!grepl("json$", ffiles)]
   exts <- sapply(ffiles, check_table_ext) 
 
   delim <- check_delim(ffiles)
-  # Table type specific checks  
-  type <- match.arg(type, c("cross", "long", "repeated"))
   
   keys <- check_keys(ffiles, type)
   
   cols <- check_cols(ffiles)
-  cat("\n")
-  if(all(delim, keys, cols)){
-    cat(codes()$success("Validation succeess: "), 
+
+  if(all(delim, keys, cols, type_check)){
+    message("Validation succeess: ", 
         "Tables can safely be added to the database.\n")
-  }else{
-    cat(codes()$fail("Validation failed: "), 
-        "Tables cannot be added to the database.\n")
+    invisible(TRUE)
+  } else {
+    stop("Validation failed: ", 
+        "Tables cannot be added to the database.\n", call. = FALSE)
   }
     
 }
@@ -54,19 +65,17 @@ check_keys <- function(files, type){
   if(type == "repeated"){
     nns <- sapply(tabs, function(x) names(x)[4])
     if(length(unique(nns)) != 1){
-      cat(codes()$fail("Forth column is not the same across tables as required in repeated tables.\n"))
+      warning("Forth column is not the same across tables as required in repeated tables.\n", call. = FALSE)
       return(FALSE)
     }
   }
   
-  tabs <- lapply(tabs, function(x) x[,1:length(keys)])
-  nams <- lapply(tabs, function(x) which(!keys %in% names(x)))
-  idx <- unlist(lapply(nams, function(x) length(x) !=0 ))
-  
-  if(any(idx)){
-    cat(codes()$fail("Some tables are missing necessary primary columns.\n"))
+  tabs <- !sapply(tabs, function(x) all((names(x) %in% keys)[1:length(keys)]))
+
+  if(any(tabs)){
+    warning("Some tables are missing necessary primary columns.\n", call. = FALSE)
     
-    k <- lapply(which(idx), 
+    k <- lapply(which(!tabs), 
                 function(x) list(file = files[x],
                                  missing = prim_keys()$long[nams[[x]]]))
     j <- lapply(k, cat_miss_key) 
@@ -85,8 +94,7 @@ check_keys <- function(files, type){
 #' @param file file path
 check_table_ext <- function(file){
   if(!grepl("tsv$", file)){
-    cat(codes()$fail(), 
-        file, "does not have the '.tsv' extension. Files must be tab-separated.\n")
+    warning(file, "does not have the '.tsv' extension. Files must be tab-separated.\n", call. = FALSE)
     return(FALSE)
   }else{
     return(TRUE)
@@ -126,7 +134,7 @@ check_delim <- function(files){
     return(TRUE) 
   }
 
-  cat(codes()$fail("Not all tables have tab (\\t) as separator\n"))
+  warning("Not all tables have tab (\\t) as separator\n", call. = FALSE)
   
   k <- lapply(split(delim, file), cat_delim_err)
   return(FALSE)
@@ -155,7 +163,7 @@ check_cols <- function(files){
                             stringsAsFactors = FALSE)
     
     if(nrow(k_nams) == length(files)){
-      cat(codes()$fail("Files have different number of columns, they cannot be combined.\n"))
+      warning("Files have different number of columns, they cannot be combined.\n", call. = FALSE)
       return(FALSE)
     }
     
@@ -172,7 +180,7 @@ check_cols <- function(files){
             file = files[x])
     )
     
-    cat(codes()$fail("Files contain different columns.\n"))
+    warning("Files contain different columns.\n", call. = FALSE)
     j <- lapply(diff_names, cat_err_cols)
     
     return(FALSE)  

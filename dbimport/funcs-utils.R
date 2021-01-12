@@ -152,6 +152,27 @@ change_col_type <- function(data, column, func){
   )
 }
 
+# find if _noas.json is there
+# Read it in 
+read_noas_json <- function(dir_path){
+  noas <- file.path(dir_path, "_noas.json")
+  
+  if(!file.exists(noas))
+    stop("Table '", basename(dir_path), "' does not have a '_noas.json' file, and cannot be added",
+         call. = FALSE)
+  
+  # find type of data from json
+  jsonlite::read_json(noas, simplifyVector = TRUE) 
+}
+
+
+table_type <- function(x){
+  switch(x, 
+         "longitudinal" = "long",
+         "cross-sectional" = "cross",
+         "repeated" = "repeated",
+         NA_character_) 
+}
 
 
 #' Count characters in string
@@ -168,3 +189,7 @@ str_count <- function(char, s) {
   return (nchar(s) - nchar(s2))
 }
 
+
+# convenience function to assign "default" value if 
+# input value is NA
+`%||%` <- function(a, b) if(!is.na(a)) a else b
