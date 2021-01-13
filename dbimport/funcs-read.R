@@ -89,6 +89,6 @@ read_metadata <- function(dirpath){
                                 simplifyVector = TRUE)
     return(meta)
   }else(
-    return(NULL)
+    return(list())
   )
 }
