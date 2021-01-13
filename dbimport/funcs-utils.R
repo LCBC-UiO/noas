@@ -165,6 +165,10 @@ read_noas_json <- function(dir_path){
   jsonlite::read_json(noas, simplifyVector = TRUE) 
 }
 
+noas_table_type <- function(dir_path){
+  type <- read_noas_json(dir_path)
+  table_type(type$table_type)
+}
 
 table_type <- function(x){
   switch(x, 

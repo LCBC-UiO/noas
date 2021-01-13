@@ -19,22 +19,22 @@ source("dbimport/funcs-metadata.R", echo = FALSE)
 #'
 #' @param x data.frame table to add
 #' @param con database connection
-#' @param table_name name to give the table
+#' @param table_dir name to give the table
 #' @param template_path path to the SQL template to apply
 #' @param ... additional arguments to \code{\link[DBI]{dbWriteTable}}
 insert_table <- function(x, 
                          con, 
                          type,
-                         table_name, 
+                         table_dir, 
                          file_name, 
                          visit_id_column = NULL,
                          ...){
   stopifnot(is.data.frame(x))
-  
-  table_name <- gsub("/", "_", table_name)
+
+  table_name <- basename(table_dir)
   template_path <- sql_templates(type)
   
-  dbtab <- paste(type, table_name, sep="_")
+  dbtab <- sprintf("%s_%s", type, table_name)
   n_before <- get_rows(con, dbtab)
   
   tryCatch({
@@ -78,10 +78,9 @@ insert_table <- function(x,
 }
 
 
-get_data <- function(table_name, db_dir, key_vars) {
-  dir <- file.path(db_dir, table_name)
-  
-  ffiles <- list.files(dir, "tsv$", full.names = TRUE)
+get_data <- function(table_dir, key_vars) {
+
+  ffiles <- list.files(table_dir, "tsv$", full.names = TRUE)
   
   # remove tables with "unknown" project, these are for record keeping
   ffiles <- ffiles[!grepl("unknown|NA|00.0", ffiles)]
@@ -119,18 +118,16 @@ get_data <- function(table_name, db_dir, key_vars) {
 #' headers for cleaner representation in the 
 #' data base.
 #'
-#' @param table_name name of the table 
+#' @param table_dir name of the table 
 #' @param con database connection
-#' @param db_dir directory for the databse
 #'
 #' @return success of adding, invisible
 #' @export
-add_cross_table <- function(table_name, 
-                            con, 
-                            db_dir){
+add_cross_table <- function(table_dir, 
+                            con){
   
   # retrieve the data
-  data <- get_data(table_name, db_dir, c("subject_id"))
+  data <- get_data(table_dir, prim_keys()$cross)
   
   # insert data to db
   j <- mapply(insert_table, 
@@ -138,14 +135,13 @@ add_cross_table <- function(table_name,
               file_name = data$files,
               MoreArgs = list(con = con, 
                               type = "cross",
-                              table_name = table_name
+                              table_dir = table_dir
               )
   )
   
   # insert meta_data if applicable
   k <- fix_metadata(data$data, 
-                    table_name, 
-                    file.path(db_dir, table_name), 
+                    table_dir, 
                     con
   )
   
@@ -161,20 +157,16 @@ add_cross_table <- function(table_name,
 #' headers for cleaner representation in the 
 #' data base.
 #'
-#' @param table_name name of the table 
+#' @param table_dir name of the table 
 #' @param con database connection
-#' @param db_dir directory for the databse
 #'
 #' @return success of adding, invisible
 #' @export
-add_long_table <- function(table_name, 
-                           con, 
-                           db_dir
+add_long_table <- function(table_dir, 
+                           con
 ){
   # retrieve the data
-  data <- get_data(table_name, db_dir, c("subject_id",
-                                         "project_id", 
-                                         "wave_code"))
+  data <- get_data(table_dir, prim_keys()$long)
   
   # insert data to db
   j <- mapply(insert_table, 
@@ -182,14 +174,13 @@ add_long_table <- function(table_name,
               file_name = data$files,
               MoreArgs = list(con = con, 
                               type = "long",
-                              table_name = table_name
+                              table_dir = table_dir
               )
   )
 
   # insert meta_data if applicable
   data <- fix_metadata(data$data[[1]], 
-                       table_name, 
-                       file.path(db_dir, table_name), 
+                       table_dir, 
                        con
   )
   
@@ -205,22 +196,17 @@ add_long_table <- function(table_name,
 #' headers for cleaner representation in the 
 #' data base.
 #'
-#' @param table_name name of the table 
+#' @param table_dir name of the table 
 #' @param con database connection
-#' @param db_dir directory for the database
 #'
 #' @return success of adding, invisible
 #' @export
-add_repeated_table <- function(table_name, 
-                               con, 
-                               db_dir
+add_repeated_table <- function(table_dir, 
+                               con
 ){
   
   # retrieve the data
-  data <- get_data(table_name, db_dir, c("subject_id",
-                                         "project_id", 
-                                         "wave_code")
-  )
+  data <- get_data(table_dir, prim_keys()$repeated)
   
   # forth column should be column making row unique
   # might want to change this later
@@ -239,15 +225,14 @@ add_repeated_table <- function(table_name,
               file_name = data$files,
               MoreArgs = list(con = con, 
                               type = "repeated",
-                              table_name = table_name,
+                              table_dir = table_dir,
                               visit_id_column = visit_id_column_new
               )
   )
   
   # insert meta-data if applicable
   k <- fix_metadata(data$data[[1]], 
-                    table_name, 
-                    file.path(db_dir, table_name), 
+                    table_dir, 
                     con
   )
   
@@ -255,7 +240,9 @@ add_repeated_table <- function(table_name,
 }
 
 # core tables ----
-add_core_tab <- function(tab, db_dir, con){
+add_core_tab <- function(tab, con){
+  
+  db_dir <- file.path(read_config()$TABDIR, "core")
   
   filenm <- list.files(db_dir, paste0(tab,".*.tsv"), full.names = TRUE)
   
