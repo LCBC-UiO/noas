@@ -140,8 +140,7 @@ add_cross_table <- function(table_dir,
   )
   
   # insert meta_data if applicable
-  k <- fix_metadata(data$data, 
-                    table_dir, 
+  k <- fix_metadata(table_dir, 
                     con
   )
   
@@ -179,8 +178,7 @@ add_long_table <- function(table_dir,
   )
 
   # insert meta_data if applicable
-  data <- fix_metadata(data$data[[1]], 
-                       table_dir, 
+  data <- fix_metadata(table_dir, 
                        con
   )
   
@@ -231,10 +229,7 @@ add_repeated_table <- function(table_dir,
   )
   
   # insert meta-data if applicable
-  k <- fix_metadata(data$data[[1]], 
-                    table_dir, 
-                    con
-  )
+  k <- fix_metadata(table_dir, con)
   
   invisible(j)
 }
