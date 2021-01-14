@@ -73,24 +73,6 @@
       "id": "10",
       "type": "int",
       "idx": 12
-    },
-    {
-      "longname": "ehi lq",
-      "id": "lq",
-      "type": "float",
-      "idx": 13
-    },
-    {
-      "longname": "ehi lq cat",
-      "id": "lq_cat",
-      "type": "text",
-      "idx": 14
-    },
-    {
-      "longname": "ehi lqa cat",
-      "id": "lqa_cat",
-      "type": "text",
-      "idx": 15
     }
   ]
 }

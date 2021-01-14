@@ -4,14 +4,13 @@ source("dbimport/funcs-utils.R", echo = FALSE)
 # meta data ----
 #' Inserts meta-information to the DB
 #' 
-#' Inserte meta-information provided
+#' Insert meta-information provided
 #' into the meta-information tables
 #' in the database.
 #' 
 #' @param con database connection
 #' @param meta_info information from \code{\link{get_metadata}}
-insert_metadata <- function(con, 
-                            meta_info){
+insert_metadata <- function(meta_info, con){
   sql = paste(
     "UPDATE metatables",
     "SET title = $1",
@@ -27,11 +26,45 @@ insert_metadata <- function(con,
     meta_info$category,
     meta_info$id
   )
+
+  k <- DBI::dbExecute(con, sql, params=params)
+  k <- ifelse(k == 1, TRUE, FALSE)
   
-  DBI::dbExecute(con, sql, params=params)
-  invisible(TRUE)
+  if(all(c(!is.null(meta_info$columns), 
+           nrow(meta_info$columns) > 0))){
+    j <- alter_cols(meta_info, con)
+  }else{
+    j <- TRUE
+  }
+  
+  invisible(!any(c(k, j)))
 }
 
+alter_cols <- function(meta_info, con){
+  sql_tab = sprintf("ALTER TABLE %s_%s", 
+                    meta_info$table_type, meta_info$id)
+  
+  sql_cols <- mapply(
+    sprintf, 
+    meta_info$columns$id,
+    meta_info$columns$type,
+    meta_info$columns$id,
+    meta_info$columns$type,
+    MoreArgs = list(
+      # Need the USING part because all columns are imported as string at first
+      # https://stackoverflow.com/questions/13170570/change-type-of-varchar-field-to-integer-cannot-be-cast-automatically-to-type-i
+      fmt = 'ALTER COLUMN "_%s" TYPE %s USING (_%s::%s)'
+    )
+  )
+  
+  sql_cmd <- paste(sql_tab, 
+                   paste(sql_cols, collapse = ", "), 
+                   ";", sep = " ")
+  
+  k <- DBI::dbExecute(con, sql_cmd)
+  k <- ifelse(k == 1, TRUE, FALSE)
+  invisible(k)
+}
 
 #' Get meta-data information
 #' 
@@ -42,27 +75,18 @@ insert_metadata <- function(con,
 #'
 #' @param data data to base missing information on
 #' @param table_dir table directory path
-get_metadata <- function(data, table_dir){
+get_metadata <- function(table_dir){
   meta_info <- read_metadata(table_dir)
-  
-  # Generate some information based on file location
-  meta_info$id <- basename(table_dir)
-  meta_info$raw_data <- table_dir
-  meta_info$table_type <- noas_table_type(table_dir)
   
   return(meta_info)
 }
 
-fix_metadata <- function(data, table_dir, con) {
-
+fix_metadata <- function(table_dir, con) {
+  
   # get meta-data
-  meta_info <- get_metadata(data, table_dir)
+  meta_info <- get_metadata(table_dir)
   
   # add meta-data
-  if (!is.null(meta_info)) {
-    j <- insert_metadata(con, meta_info) 
-    cat_table_success(j, sprintf("metadata\t%s\tadded\t ", basename(table_dir)))
-  }
-  
-  data
+  j <- insert_metadata(meta_info, con) 
+  cat_table_success(j, sprintf("metadata\t%s\tadded\t ", basename(table_dir)))
 }

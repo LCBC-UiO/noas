@@ -196,4 +196,6 @@ str_count <- function(char, s) {
 
 # convenience function to assign "default" value if 
 # input value is NA
-`%||%` <- function(a, b) if(!is.na(a)) a else b
+`%||%` <- function(a, b){
+  if( !any(c(is.null(a), is.na(a)))) a else b
+}
