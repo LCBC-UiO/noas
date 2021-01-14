@@ -4,14 +4,13 @@ source("dbimport/funcs-utils.R", echo = FALSE)
 # meta data ----
 #' Inserts meta-information to the DB
 #' 
-#' Inserte meta-information provided
+#' Insert meta-information provided
 #' into the meta-information tables
 #' in the database.
 #' 
 #' @param con database connection
 #' @param meta_info information from \code{\link{get_metadata}}
-insert_metadata <- function(con, 
-                            meta_info){
+insert_metadata <- function(meta_info, con){
   sql = paste(
     "UPDATE metatables",
     "SET title = $1",
@@ -27,11 +26,47 @@ insert_metadata <- function(con,
     meta_info$category,
     meta_info$id
   )
+
+  k <- DBI::dbExecute(con, sql, params=params)
+  k <- ifelse(k == 1, TRUE, FALSE)
   
-  DBI::dbExecute(con, sql, params=params)
-  invisible(TRUE)
+  if(all(c(!is.null(meta_info$columns), 
+           nrow(meta_info$columns) > 0))){
+    j <- alter_cols(meta_info, con)
+  }else{
+    j <- TRUE
+  }
+  
+  invisible(!any(c(k, j)))
 }
 
+alter_cols <- function(meta_info, con){
+  # browser()
+  sql_tab = sprintf("ALTER TABLE %s_%s", 
+                    meta_info$table_type, meta_info$id)
+  
+  sql_cols <- mapply(
+    sprintf, 
+    meta_info$columns$id,
+    meta_info$columns$type,
+    meta_info$columns$id,
+    meta_info$columns$type,
+    MoreArgs = list(
+      # Getting casting errors because everything is string and SQL 
+      # does not know how to autocast from string to numeric of any type
+      # https://stackoverflow.com/questions/13170570/change-type-of-varchar-field-to-integer-cannot-be-cast-automatically-to-type-i
+      fmt = 'ALTER COLUMN "_%s" TYPE %s USING (_%s::%s)'
+    )
+  )
+  
+  sql_cmd <- paste(sql_tab, 
+                   paste(sql_cols, collapse = ", "), 
+                   ";", sep = " ")
+  
+  k <- DBI::dbExecute(con, sql_cmd)
+  k <- ifelse(k == 1, TRUE, FALSE)
+  invisible(k)
+}
 
 #' Get meta-data information
 #' 
