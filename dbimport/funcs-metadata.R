@@ -41,7 +41,6 @@ insert_metadata <- function(meta_info, con){
 }
 
 alter_cols <- function(meta_info, con){
-  # browser()
   sql_tab = sprintf("ALTER TABLE %s_%s", 
                     meta_info$table_type, meta_info$id)
   
