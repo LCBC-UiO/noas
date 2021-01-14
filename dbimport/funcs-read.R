@@ -87,8 +87,17 @@ read_metadata <- function(dirpath){
   if(file.exists(ffile)){
     meta <- jsonlite::read_json(ffile, 
                                 simplifyVector = TRUE)
-    return(meta)
   }else(
-    return(list())
+    meta <- list(
+      title = basename(dirpath)
+      )
   )
+
+  # Generate some information based on file location
+  meta$id <- basename(dirpath)
+  meta$raw_data <- dirpath
+  meta$table_type <- noas_table_type(dirpath)
+  meta$category <- meta$category %||% "uncategorized"
+
+  return(meta)
 }
