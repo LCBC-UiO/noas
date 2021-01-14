@@ -98,7 +98,6 @@ read_metadata <- function(dirpath){
   meta$raw_data <- dirpath
   meta$table_type <- noas_table_type(dirpath)
   meta$category <- meta$category %||% "uncategorized"
-  meta$category <- tolower(meta$category)
-  
+
   return(meta)
 }
