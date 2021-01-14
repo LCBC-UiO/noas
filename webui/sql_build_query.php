@@ -69,7 +69,7 @@ function sql_build_query($dbmeta, $sel) {
   }
   function _get_sql_where($dbmeta, $sel_tabs, $set_op, $project) {
     if ($set_op == "all") {
-      return "TRUE";
+      return "core.project_id = '{$project}'";
     }
     $b    = $set_op == "intersect" ? "TRUE" : "FALSE";
     $conj = $set_op == "intersect" ? "AND" :  "OR";
