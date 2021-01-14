@@ -51,8 +51,7 @@ alter_cols <- function(meta_info, con){
     meta_info$columns$id,
     meta_info$columns$type,
     MoreArgs = list(
-      # Getting casting errors because everything is string and SQL 
-      # does not know how to autocast from string to numeric of any type
+      # Need the USING part because all columns are imported as string at first
       # https://stackoverflow.com/questions/13170570/change-type-of-varchar-field-to-integer-cannot-be-cast-automatically-to-type-i
       fmt = 'ALTER COLUMN "_%s" TYPE %s USING (_%s::%s)'
     )
