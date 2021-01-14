@@ -120,13 +120,13 @@ function sql_build_query($dbmeta, $sel) {
   $sql_where  = _get_sql_where($dbmeta, $sel_tabs, $sel->{"set_op"}, $sel->{"project"});
   
   $sql = "
-SELECT
+SELECT DISTINCT 
 {$sql_select}
 FROM core_core AS core
 {$sql_join}
 WHERE TRUE AND 
 {$sql_where}
-ORDER BY core.subject_id, core.project_id, core.wave_code
+ORDER BY core.subject_id
 ";
 
   return $sql;
