@@ -1,5 +1,5 @@
 subject_id	project_id	wave_code	FID	IID	batch	trusted	gwas_qc_pass	ewas_qc_pass	duplicated	genetic_duplicate	european	sample_type	content	date	comment
-9901137	MemP	3	QQ1137	QQ1137	1	1	1	1			1	Extcd PREPIT-LP2	DNA	06/02/2015	
+9900006	MemP	3	QQ1137	QQ1137	1	1	1	1			1	Extcd PREPIT-LP2	DNA	06/02/2015	
 9900775	MemP	3	QQ775	QQ775	1	1	1	1			1	Extcd PREPIT-LP2	DNA	27/08/2014	
 9901439	MemP	3	QQ1439	QQ1439	1	1	1	1			1	Extcd PREPIT-LP2	DNA	06/09/2015	
 9901349	MemP	3	QQ1349	QQ1349	1	1	1	1			1	Extcd PREPIT-LP2	DNA	13/10/2015	
