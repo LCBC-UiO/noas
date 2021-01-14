@@ -53,18 +53,27 @@ BEGIN
     EXECUTE format(
       $ex$
         select count(*) from %I t 
-          left outer join core_core c on t.subject_id = c.subject_id 
-          where c.subject_shareable = 1
+          where t.subject_id in 
+          ( select c.subject_id from core_core c where c.subject_shareable = 1 )
       $ex$, metatable_sampletype || '_' || metatable_id
     ) INTO total;
   else
-    EXECUTE format(
-      $ex$
-        select count(*) from %I t 
-          left outer join core_core c on t.subject_id = c.subject_id 
-          where c.project_id = '%s'
-      $ex$, metatable_sampletype || '_' || metatable_id, project_id
-    ) INTO total;
+    if ( metatable_sampletype = 'long' or metatable_sampletype = 'repeated' ) then
+      EXECUTE format(
+        $ex$
+          select count(*) from %I t 
+            where t.project_id = '%s'
+        $ex$, metatable_sampletype || '_' || metatable_id, project_id
+      ) INTO total;
+    else
+      EXECUTE format(
+        $ex$
+          select count(*) from %I t
+            where t.subject_id in 
+            ( select c.subject_id from core_core c where c.project_id = '%s' )
+        $ex$, metatable_sampletype || '_' || metatable_id, project_id
+      ) INTO total;
+    end if;
   end if;
   RETURN total;
 END;
