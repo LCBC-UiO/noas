@@ -126,6 +126,10 @@ NOAS - Query selector
       let eOptbox = document.createElement('div');
       eNoasTables.appendChild(eOptbox);
       eOptbox.classList.add("optbox");
+      // hide box if n=0
+      if (!e.n) {
+        eOptbox.classList.add("hidden");
+      }
       eOptbox.id = `noasTable_${e.id}`;
       // box header
       let eOpthead = document.createElement('div');
