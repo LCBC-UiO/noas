@@ -77,27 +77,18 @@ alter_cols <- function(meta_info, con){
 #'
 #' @param data data to base missing information on
 #' @param table_dir table directory path
-get_metadata <- function(data, table_dir){
+get_metadata <- function(table_dir){
   meta_info <- read_metadata(table_dir)
-  
-  # Generate some information based on file location
-  meta_info$id <- basename(table_dir)
-  meta_info$raw_data <- table_dir
-  meta_info$table_type <- noas_table_type(table_dir)
   
   return(meta_info)
 }
 
-fix_metadata <- function(data, table_dir, con) {
-
+fix_metadata <- function(table_dir, con) {
+  
   # get meta-data
-  meta_info <- get_metadata(data, table_dir)
+  meta_info <- get_metadata(table_dir)
   
   # add meta-data
-  if (!is.null(meta_info)) {
-    j <- insert_metadata(con, meta_info) 
-    cat_table_success(j, sprintf("metadata\t%s\tadded\t ", basename(table_dir)))
-  }
-  
-  data
+  j <- insert_metadata(meta_info, con) 
+  cat_table_success(j, sprintf("metadata\t%s\tadded\t ", basename(table_dir)))
 }
