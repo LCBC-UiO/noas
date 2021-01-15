@@ -36,6 +36,7 @@ invisible(DBI::dbExecute(con,
 start <- Sys.time()
 
 populate_core(con)
+cat(" ----------\n")
 populate_tables(con)
 
 stopifnot(DBI::dbExecute(con, "UPDATE versions SET import_completed=TRUE WHERE id = $1",
