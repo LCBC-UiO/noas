@@ -58,7 +58,7 @@ BEGIN
       $ex$, metatable_sampletype || '_' || metatable_id
     ) INTO total;
   else
-    if ( metatable_sampletype = 'long' or metatable_sampletype = 'repeated' ) then
+    if ( metatable_sampletype = 'long' or metatable_sampletype = 'repeated'  or metatable_sampletype = 'core' ) then
       EXECUTE format(
         $ex$
           select count(*) from %I t 
