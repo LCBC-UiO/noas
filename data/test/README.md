@@ -41,8 +41,33 @@ This file has 100 observations, of which 5 are omitted upon import for not exist
 The fourth column identifying repeating within wave observations is `site_name`. 
 
 There are 70 observations for `Proj1` and 25 for `Proj2`. 
-62 observations are shareable, 20 are not, and 18 are `NA`.
+60 observations are shareable, 19 are not, and 16 are `NA`.
 
 
 ## Import
-![Expected output when `make run_dbimport` is run](readme-exp-imp.png)
+
+Expected output.
+
+```sh
+v       core                           subjects_w1.tsv          (    0/   50 omitted)
+v       core                           subjects_w2.tsv          (    0/   50 omitted)
+v       core                              projects.tsv          (    0/    2 omitted)
+v       core                                 waves.tsv          (    0/    3 omitted)
+v       core                             visits_w1.tsv          (    0/   92 omitted)
+v       core                             visits_w2.tsv          (    0/   68 omitted)
+ ----------
+v       long                 cvlt        MemC_01.0.tsv          (    0/   50 omitted)
+v       long                 cvlt        MemP_01.0.tsv          (    0/   50 omitted)
+v       long                 cvlt        MemP_02.0.tsv          (    0/   50 omitted)
+v   metadata                 cvlt                added                               
+v       long                  ehi        MemP_01.0.tsv          (    5/   10 omitted)
+v       long                  ehi        MemP_02.0.tsv          (    5/   10 omitted)
+v   metadata                  ehi                added                               
+v   repeated            mri_aparc        mri_aparc.tsv          (    5/  100 omitted)
+v   metadata            mri_aparc                added                               
+v      cross               pgs_ad           pgs_ad.tsv          (    5/   40 omitted)
+v   metadata               pgs_ad                added                               
+
+ ---------- 
+v   Database populated in  0.012 minutes 
+```
