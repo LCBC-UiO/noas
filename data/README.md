@@ -6,11 +6,11 @@ If the dbimport diagnostic printouts indicate that there is core data being omit
 
 ### subjects
 Main list of unique participants in the data-base.
-This is the primary look-up table for futher import of data, a subject must exist in this table for other data to be imported.
+This is the primary look-up table for further import of data, a subject must exist in this table for other data to be imported.
 
 Table must include:
 - `id`  - a column with the 7-digit LCBC participant identifiers
-- `shareable` - a column specifyin how the participants data may be handled (`1`, `0`, `NA`)
+- `shareable` - a column specifying how the participants data may be handled (`1`, `0`, `NA`)
 
 Should include:
 - `sex`  - biological sex of participant
@@ -26,7 +26,7 @@ Table must include:
 - `code` - a column with the project number
 
 Future data might include:
-- `name`  - Full name of project
+- `name`  - full name of project
 
 ### waves
 A secondary project overview, specifying the longitudinal collection times (waves) for each project.
