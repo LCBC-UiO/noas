@@ -19,7 +19,7 @@ if(args == "--help"){
   if(!dir.exists(path)){
     cat("Directory does not exist:\t" , path)
   }else{
-    validate_tables(path)
+    validate_table(path)
   }
 }
 
