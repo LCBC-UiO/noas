@@ -269,6 +269,11 @@ NOAS - Query selector
     // open default boxes
     document.querySelector("#noasTable_core td").click();
     document.querySelector("#queryOpts td").click();
+    // enable buttons
+    document.getElementById("btnClear").addEventListener('click', clearSelection);
+    document.getElementById("btnLoad").addEventListener('change', loadSelection);
+    document.getElementById("btnSubmit").addEventListener('click', submitSelection);
+    document.getElementById("btnSubmitTop").addEventListener('click', submitSelection);
   }
 
   // clear selection
@@ -354,11 +359,6 @@ NOAS - Query selector
     // open result page
     window.location.href = `./results.html?prj=${g_prj}`;
   }
-
-  document.getElementById("btnClear").addEventListener('click', clearSelection);
-  document.getElementById("btnLoad").addEventListener('change', loadSelection);
-  document.getElementById("btnSubmit").addEventListener('click', submitSelection);
-  document.getElementById("btnSubmitTop").addEventListener('click', submitSelection);
   
   start();
 
