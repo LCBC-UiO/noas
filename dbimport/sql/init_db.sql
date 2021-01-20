@@ -65,7 +65,7 @@ BEGIN
             where t.project_id = '%s'
         $ex$, metatable_sampletype || '_' || metatable_id, project_id
       ) INTO total;
-    else
+    else -- this is for cross-sectional data:
       EXECUTE format(
         $ex$
           select count(*) from %I t
