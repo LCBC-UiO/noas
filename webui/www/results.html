@@ -154,8 +154,8 @@
     async function loadTable() {
       try {
         const sel = getSelection();
+        lcProgressInit("noasTable");
         // make db query
-        document.getElementById("noasTable").innerHTML = '<br><br><h4>loading data...</h4>';
         g_table_data = await getTableData(sel);
         document.getElementById("noasTable").innerHTML = '<br><br><h4>preparing table...</h4>';
         document.getElementById("spPrj").innerHTML = sel.project;

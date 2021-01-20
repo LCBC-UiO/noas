@@ -32,3 +32,26 @@ function lcGetSelHash(sel) {
 function lcGetDataVersionFnStr(sel) {
   return sel.version.replace(/[^a-z0-9]/gi, '_').toLowerCase().substr(0,7);
 }
+
+function lcProgressInit(parentId) {
+  let ep = document.getElementById(parentId);
+  {
+    let el = document.createElement("h4");
+    ep.appendChild(el);
+    el.classList.add("pt-lg-5");
+    el.innerHTML = "Loading...";
+  }
+  {
+    let es = document.createElement("div");
+    ep.appendChild(es);
+    es.id = "noasProgressText";
+    es.classList.add("progress");
+    let e = document.createElement("div");
+    es.appendChild(e);
+    e.id = "noasProgress";
+    e.classList.add("progress-bar");
+    e.classList.add("progress-bar-striped");
+    e.classList.add("progress-bar-animated");
+    e.style.width = "100%";
+  }
+}
