@@ -11,5 +11,3 @@ cd ${BASEDIR}
 # Rscript ${BASEDIR}/dbimport/script-validate.R "${folder_to_validate}" $2 $3
 Rscript ${BASEDIR}/dbimport/script-validate.R $1
 
-# go back to original path
-cd -
