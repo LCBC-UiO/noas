@@ -147,6 +147,7 @@ CREATE TABLE subjects (
   shareable int NULL,
   CONSTRAINT subject_pk PRIMARY KEY (id)
 );
+CREATE INDEX subjects_idx_shr ON subjects (shareable);
 
 
 -- Create visit table

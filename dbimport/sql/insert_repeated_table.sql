@@ -27,11 +27,8 @@ INSERT INTO metatables (id, sampletype, title)
   ON conflict (id) do nothing;
 
 
--- add meta data (columns)
+-- add default meta data (columns)
 
--- TODO: Replace the code below.
---       This data in meatacolumns will have to come from some meta-data files
---       For now is just some auto-generated stuff.
 DO
 $do$
 DECLARE
@@ -49,3 +46,7 @@ LOOP
 END LOOP;
 END
 $do$;
+
+-- indexes
+
+CREATE INDEX IF NOT EXISTS repeated_{table_name}_idx_p ON repeated_{table_name} (project_id);
