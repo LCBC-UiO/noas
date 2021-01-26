@@ -187,6 +187,22 @@ NOAS - Query selector
         eCheck.noasColId = ec.id;
         eCheck.value = "1";
         eLabel.insertAdjacentHTML('beforeend', ec.title)
+        // column descr tooltip
+        if (ec.descr) {
+          eLabel.insertAdjacentHTML('beforeend', "&nbsp;")
+          let eDescr = document.createElement('span');
+          eLabel.appendChild(eDescr);
+          eDescr.setAttribute("data-toggle", "tooltip");
+          eDescr.setAttribute("title", ec.descr);
+          {
+            let eIcon = document.createElement('span');
+            eDescr.appendChild(eIcon);
+            eIcon.classList.add("fas");
+            eIcon.classList.add("fa-info-circle");
+            eIcon.classList.add("text-muted");
+            eIcon.classList.add("small");
+          }
+        }
       });
       // select all button
       if (i > 0) {
@@ -274,6 +290,8 @@ NOAS - Query selector
     document.getElementById("btnLoad").addEventListener('change', loadSelection);
     document.getElementById("btnSubmit").addEventListener('click', submitSelection);
     document.getElementById("btnSubmitTop").addEventListener('click', submitSelection);
+    // enable bs tooltips
+    $('[data-toggle="tooltip"]').tooltip();
   }
 
   // clear selection

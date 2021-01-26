@@ -176,13 +176,14 @@ CREATE TABLE metatables (
 );
 
 
--- Create table of table comlumns
+-- Create table of table columns
 
 CREATE TABLE metacolumns (
   metatable_id text,
   id    text,
   idx   integer DEFAULT 1,
   title text,
+  descr text DEFAULT NULL,
   CONSTRAINT metacolumns_pk PRIMARY KEY (metatable_id, id),
   CONSTRAINT metacolumns_fk FOREIGN KEY (metatable_id) REFERENCES metatables(id)
 );
@@ -229,18 +230,18 @@ CREATE VIEW core_core AS
 -- Add metadata for core table
 
 INSERT INTO metatables (id, sampletype, idx, title) VALUES ('core', 'core', 0, 'Core data');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_id',          0, 'Subject ID');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_id',          1, 'Project ID');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_code',           2, 'Wave code');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_sex',         3, 'Sex');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_birthdate',   4, 'Birth date');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_shareable',   5, 'Shareable');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'visit_visitdate',     6, 'Visit date');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'visit_visitage',      7, 'Age at visit');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_name',        8, 'Project name');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_code',        9, 'Project code');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_description',10, 'Project description');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_description',   11, 'Wave description');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_reknr',         12, 'Wave REK Nr.');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_id',           0, 'Subject ID');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_id',           1, 'Project ID');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_code',            2, 'Wave code');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_sex',          3, 'Sex');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_birthdate',    4, 'Birth date');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_shareable',    5, 'Shareable');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'visit_visitdate',      6, 'Visit date');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'visit_visitage',       7, 'Age at visit');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_name',         8, 'Project name');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_code',         9, 'Project code');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_description', 10, 'Project description');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_description',    11, 'Wave description');
+INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_reknr',          12, 'Wave REK Nr.');
 
-
+UPDATE metacolumns SET descr = '(visitdate - birthdate); #Y+(#M*365/12+#D)/365' where id = 'visit_visitage';
