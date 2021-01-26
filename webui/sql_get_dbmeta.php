@@ -21,6 +21,7 @@ from (
     mt.sampletype,
     mt.title,
     mt.idx,
+    mt.descr,
     (
 			select row_count(mt.sampletype, mt.id, '{$prj}')
 		) as n,

@@ -135,25 +135,36 @@ NOAS - Query selector
       let eOpthead = document.createElement('div');
       eOptbox.appendChild(eOpthead);
       eOpthead.classList.add("opthead");
-      let eOptheadTable = document.createElement('table');
-      eOpthead.appendChild(eOptheadTable);
-      let eOptheadTableTr = document.createElement('tr');
-      eOptheadTable.appendChild(eOptheadTableTr);
-      let eOptheadTableTd = document.createElement('td');
-      eOptheadTableTr.appendChild(eOptheadTableTd);
-      eOptheadTableTd.classList.add("optopener");
+      let eOptheadSpan = document.createElement('span');
+      eOpthead.appendChild(eOptheadSpan);
+      eOptheadSpan.classList.add("optopener");
       let eArrow = document.createElement('i');
-      eOptheadTableTd.append(eArrow);
+      eOptheadSpan.append(eArrow);
       eArrow.classList.add("ddarrow");
       const strCategory = e.category ? `[${e.category}] ` : '';
-      eOptheadTableTd.insertAdjacentHTML('beforeend',
+      eOptheadSpan.insertAdjacentHTML('beforeend',
         `${strCategory}${e.title} (${e.id}; n=${e.n})`
       );
       // open / close
-      eOptheadTableTd.addEventListener('click', () => {
+      eOptheadSpan.addEventListener('click', () => {
         eOptbody.classList.toggle('openoptbody');
         eArrow.classList.toggle('openddarrow');
       });
+      // tooltip
+      if (e.descr) {
+        let eDescr = document.createElement('span');
+        eOpthead.appendChild(eDescr);
+        eDescr.classList.add("ml-3");
+        eDescr.setAttribute("data-toggle", "tooltip");
+        eDescr.setAttribute("title", e.descr);
+        {
+          let eIcon = document.createElement('span');
+          eDescr.appendChild(eIcon);
+          eIcon.classList.add("fas");
+          eIcon.classList.add("fa-info-circle");
+          eIcon.classList.add("small");
+        }
+      }
       // box body (columns)
       let eOptbody = document.createElement('div');
       eOptbox.appendChild(eOptbody);
@@ -231,19 +242,15 @@ NOAS - Query selector
     let eOpthead = document.createElement('div');
     eOptbox.appendChild(eOpthead);
     eOpthead.classList.add("opthead");
-    let eOptheadTable = document.createElement('table');
-    eOpthead.appendChild(eOptheadTable);
-    let eOptheadTableTr = document.createElement('tr');
-    eOptheadTable.appendChild(eOptheadTableTr);
-    let eOptheadTableTd = document.createElement('td');
-    eOptheadTableTr.appendChild(eOptheadTableTd);
-    eOptheadTableTd.classList.add("optopener");
+    let eOptheadSpan = document.createElement('span');
+    eOpthead.appendChild(eOptheadSpan);
+    eOptheadSpan.classList.add("optopener");
     let eArrow = document.createElement('i');
-    eOptheadTableTd.append(eArrow);
+    eOptheadSpan.append(eArrow);
     eArrow.classList.add("ddarrow");
-    eOptheadTableTd.insertAdjacentHTML('beforeend', "Query Options");
+    eOptheadSpan.insertAdjacentHTML('beforeend', "Query Options");
     // query options open / close
-    eOptheadTableTd.addEventListener('click', () => {
+    eOptheadSpan.addEventListener('click', () => {
       eOptbody.classList.toggle('openoptbody');
       eArrow.classList.toggle('openddarrow');
     });
@@ -283,8 +290,8 @@ NOAS - Query selector
     document.querySelector("#colcheck_core_wave_code").checked = true;
     document.querySelector("#colcheck_core_subject_sex").checked  = true;
     // open default boxes
-    document.querySelector("#noasTable_core td").click();
-    document.querySelector("#queryOpts td").click();
+    document.querySelector("#noasTable_core span").click();
+    document.querySelector("#queryOpts span").click();
     // enable buttons
     document.getElementById("btnClear").addEventListener('click', clearSelection);
     document.getElementById("btnLoad").addEventListener('change', loadSelection);

@@ -172,6 +172,7 @@ CREATE TABLE metatables (
   category   text,
   idx        integer DEFAULT 1,
   title      text,
+  descr text DEFAULT NULL,
   CONSTRAINT metatables_pk PRIMARY KEY(id)
 );
 
@@ -230,6 +231,8 @@ CREATE VIEW core_core AS
 -- Add metadata for core table
 
 INSERT INTO metatables (id, sampletype, idx, title) VALUES ('core', 'core', 0, 'Core data');
+UPDATE metatables SET descr = 'Basic data for any participant' where id = 'core';
+
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_id',           0, 'Subject ID');
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_id',           1, 'Project ID');
 INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_code',            2, 'Wave code');
