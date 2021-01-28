@@ -50,3 +50,7 @@ LOOP
 END LOOP;
 END
 $do$;
+
+-- indexes
+
+CREATE INDEX IF NOT EXISTS long_{table_name}_idx_p ON long_{table_name} (project_id);

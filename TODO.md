@@ -1,20 +1,12 @@
 
 ## features
-  * r/db/webui: support query with snapshots
-    * Idea - git-hash as db-namespace:
-      * supply git-hash as argument for import script
-      * import script writes to namespace (use "latest" as default) 
-      * in webui: show list of git-hashes + possibility to select hash for query 
-        * select git-hash before showing available columns/tables
-      * whenever data is exported, include git-hash (for example as part of filename)
   * support PGS data: should be dynamically computed for 
   * write metadata: set column "id" and "type" in json 
     * no "idx" and "title"
   * reading metadata: setting types in db 
     * expand types, currently only int, float, text and date
     * time is imported as integer currently
-    * "duration" type => "as.character" fo now?
-    * move metadata setting to SQL instead
+    * "duration" type => "as.character" for now?
   * r/sql: how to handle undefined visits for long/repeated?
     * currently, rows are silently discarded if (subj_id, project_id, wave_code) is not defined in core
   * compute derived data
@@ -28,24 +20,13 @@
   * other core-like tables
     * table with project_id and wave_code information (like test versions etc)
     * table with information on MRI scanners
-  * add db connection info to "show sql query"
-    * add read-only user?
-  * webui
-    * revive table filter in results.html?
-  * r/db: split import and data type setting
-    * import all data as strings (except key vars)
-    * set types based on meta-data information by R calling SQL commands
-
+ 
 ## bugs
-  * mri/repeated: double underscore (`__`) before "site_name" column name
-  * project merge:
-    * show coverage by project
-
     
 ## potential problems
   * r/sql: how to connect multiple repeated tables?
     * problem: without referencing each others visit_id, the query will split their data into separate rows
   * name conflicts
     * sql: if table id is used more than once (for example in long and repeated)
-    * sql: if table name is sql keyowrd?
+    * sql: if table name is sql keyword?
 

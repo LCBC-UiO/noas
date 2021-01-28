@@ -23,6 +23,22 @@ $do$;
 DROP TYPE IF EXISTS e_sex CASCADE;
 DROP TYPE IF EXISTS e_sampletype CASCADE;
 
+
+DO
+$do$
+DECLARE
+   _idx text;
+BEGIN
+FOR _idx  IN
+  SELECT indexname
+  FROM pg_indexes
+  WHERE schemaname = 'public'
+LOOP
+  EXECUTE 'DROP INDEX ' || _idx;
+END LOOP;
+END
+$do$;
+
 --------------------------------------------------------------------------------
 
 -- Define Types
@@ -131,6 +147,7 @@ CREATE TABLE subjects (
   shareable int NULL,
   CONSTRAINT subject_pk PRIMARY KEY (id)
 );
+CREATE INDEX subjects_idx_shr ON subjects (shareable);
 
 
 -- Create visit table
