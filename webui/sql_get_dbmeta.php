@@ -21,6 +21,7 @@ from (
     mt.sampletype,
     mt.title,
     mt.idx,
+    mt.descr,
     (
 			select row_count(mt.sampletype, mt.id, '{$prj}')
 		) as n,
@@ -32,7 +33,8 @@ from (
         -- skip '_'-prefix in column ID for all non-core tables
         (case when mt.idx = 0 then mc.id else substr(mc.id, 2) end) as id,
         mc.title,
-        mc.idx
+        mc.idx,
+        mc.descr
       from
         metacolumns mc
       where
