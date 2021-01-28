@@ -9,7 +9,7 @@ if(args == "--help"){
   cat("\n\nCommand to validate NOAS tables\n\n",
       "Requires a path to a folder containing table(s) for validation, where tables should be tab separated, have the same number of columns etc.\n",
       "Use: sh bin/validate_table [path/to/dir]\n",
-      "example: bin/validate_table test_data/long/ehi\n\n")
+      "example: bin/validate_table test_data/ehi\n\n")
   
 }else if(ll == 0){
   cat("Path to a folder must be provided\n use --help if you are uncertain about the arguments.\n")

@@ -36,8 +36,8 @@ validate_table <- function(path){
   
   cols <- check_cols(ffiles)
 
-  if(all(delim, keys, cols, type_check)){
-    message("Validation succeess: ", 
+  if(all(c(delim, keys, cols, type_check))){
+    message("\nValidation succeess: ", 
         "Tables can safely be added to the database.\n")
     invisible(TRUE)
   } else {
@@ -191,6 +191,6 @@ check_cols <- function(files){
   
   if(nrow(nams) == 1) return(TRUE)
   
-  return("uncaught state")
+  return(TRUE)
 }
 
