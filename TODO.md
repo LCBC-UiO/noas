@@ -20,13 +20,18 @@
   * other core-like tables
     * table with project_id and wave_code information (like test versions etc)
     * table with information on MRI scanners
+  * meta-data: add checks for validation of cell values within known correct values
  
 ## bugs
-    
+  * r/sql: columns need to be in same order for all tables of a specific type
+    * alter insert_table.R to check for this before import
+    * currently fails on meta-data setting, cause data of different type are in the same cols
+  * data/import: remove quotes from strings 
 ## potential problems
   * r/sql: how to connect multiple repeated tables?
     * problem: without referencing each others visit_id, the query will split their data into separate rows
   * name conflicts
     * sql: if table id is used more than once (for example in long and repeated)
     * sql: if table name is sql keyword?
-
+  * data: remove pgs from the git data history
+    * and symlink pgs like mri
