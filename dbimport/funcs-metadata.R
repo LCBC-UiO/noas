@@ -20,11 +20,11 @@ insert_metadata <- function(meta_info, con){
       # add metatables
       valid_jsn_fields <- c("title", "category", "descr")
       for (field in valid_jsn_fields) {
-        sql <- sprintf("UPDATE metatables SET %s = $1 WHERE id = $2", field)
         # has field?
         if (is.null(meta_info$jsn[[field]])) {
           next()
         }
+        sql <- sprintf("UPDATE metatables SET %s = $1 WHERE id = $2", field)
         params <- list(
           meta_info$jsn[[field]],
           meta_info$id
@@ -53,10 +53,19 @@ insert_metadata <- function(meta_info, con){
         if (!is.null(mc[["type"]])) {
           alter_col(con, meta_info$id, meta_info$table_type, mc$id, mc$type)
         }
+        # set any of these fields in metacolumns
+        valid_set_fields <- c("title", "descr")
+        for (mc_key in valid_set_fields) {
+          # has field?
+          if (is.null(mc[[mc_key]])) {
+            next()
+          }
+          set_metacol(con, meta_info$id, mc[["id"]], mc_key, mc[[mc_key]])
+        }
       }
       invisible(T)
     }, error=function(e) {
-      cat(sprintf("error: %s", e))
+      cat(sprintf("error: %s", mc[["id"]], field))
       invisible(F)
     }
   )
@@ -77,6 +86,21 @@ alter_col <- function(con, table_id, table_type, col_id, col_type){
   k <- DBI::dbExecute(con, sql_cmd)
   k <- ifelse(k == 0, TRUE, FALSE) # the alter statement seems to update 0 rows
   invisible(k)
+}
+
+set_metacol <- function(con, table_id, col_id, key, value) {
+  sql <- sprintf("UPDATE metacolumns SET %s = $1 WHERE metatable_id = $2 AND id = $3", key)
+  if (DBI::dbExecute(con, sql, params=list(value, table_id, paste0("_", col_id))) != 1) {
+    stop(
+      sprintf("insert_metadata metacolumns table=%s column=%s key=%s value=%s",
+        table_id,
+        col_id,
+        key,
+        value
+      )
+    )
+  }
+  invisible(T)
 }
 
 fix_metadata <- function(table_dir, con) {
