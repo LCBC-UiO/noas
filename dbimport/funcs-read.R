@@ -83,9 +83,10 @@ read_sql <- function(path, ...){
 #'
 #' @param dirpath dir where _metadata.json lives
 read_metadata <- function(dirpath){
+  meta <- list()
   ffile <- file.path(dirpath, "_metadata.json")
   if(file.exists(ffile)){
-    meta <- jsonlite::read_json(ffile, 
+    meta$jsn <- jsonlite::read_json(ffile, 
                                 simplifyVector = TRUE)
   }else(
     meta <- list(
@@ -97,7 +98,7 @@ read_metadata <- function(dirpath){
   meta$id <- basename(dirpath)
   meta$raw_data <- dirpath
   meta$table_type <- noas_table_type(dirpath)
-  meta$category <- meta$category %||% "uncategorized"
+  meta$jsn$category <- meta$jsn$category %||% "uncategorized"
 
   return(meta)
 }

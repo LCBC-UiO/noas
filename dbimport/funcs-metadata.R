@@ -11,26 +11,37 @@ source("dbimport/funcs-utils.R", echo = FALSE)
 #' @param con database connection
 #' @param meta_info information from \code{\link{get_metadata}}
 insert_metadata <- function(meta_info, con){
-  sql = paste(
-    "UPDATE metatables",
-    "SET title = $1",
-    # workaround for 'NULL' (text) being inserted
-    #   force NULL when input is 'NULL'
-    #   https://github.com/r-dbi/RPostgres/issues/95
-    ", category = NULLIF($2, 'NULL')::text", 
-    "WHERE id = $3"
-  )
-  
-  params <- list(
-    meta_info$title,
-    meta_info$category,
-    meta_info$id
-  )
+  ok <- T
+  # has metadata?
+  if (is.null(meta_info$jsn)) {
+    return(ok);
+  }
+  # add metatables
+  valid_jsn_fields <- c("title", "category", "descr")
+  for (field in valid_jsn_fields) {
+    sql <- sprintf("UPDATE metatables SET %s = $1 WHERE id = $2", field)
+    # has field?
+    if (is.null(meta_info$jsn[[field]])) {
+      next()
+    }
+    params <- list(
+      meta_info$jsn[[field]],
+      meta_info$id
+    )
+    if (DBI::dbExecute(con, sql, params=params) != 1) {
+      throw(
+        sprintf("insert_metadata metatables table=%s field=%s value=%s",
+          meta_info$id,
+          field,
+          meta_info$jsn[[field]]
+        )
+      )
+    }
+  }
 
-  ok <- ifelse(DBI::dbExecute(con, sql, params=params) == 1, TRUE, FALSE)
-  
-  if(all(c(!is.null(meta_info$columns), 
-           nrow(meta_info$columns) > 0))){
+  # add metacolumns
+  if(all(c(!is.null(meta_info$jsn$columns), 
+           nrow(meta_info$jsn$columns) > 0))){
     ok <- all(ok, alter_cols(meta_info, con))
   }
   
@@ -43,10 +54,10 @@ alter_cols <- function(meta_info, con){
   
   sql_cols <- mapply(
     sprintf, 
-    meta_info$columns$id,
-    meta_info$columns$type,
-    meta_info$columns$id,
-    meta_info$columns$type,
+    meta_info$jsn$columns$id,
+    meta_info$jsn$columns$type,
+    meta_info$jsn$columns$id,
+    meta_info$jsn$columns$type,
     MoreArgs = list(
       # Need the USING part because all columns are imported as string at first
       # https://stackoverflow.com/questions/13170570/change-type-of-varchar-field-to-integer-cannot-be-cast-automatically-to-type-i
