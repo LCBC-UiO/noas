@@ -98,7 +98,6 @@ read_metadata <- function(dirpath){
   meta$id <- basename(dirpath)
   meta$raw_data <- dirpath
   meta$table_type <- noas_table_type(dirpath)
-  meta$jsn$category <- meta$jsn$category %||% "uncategorized"
 
   return(meta)
 }
