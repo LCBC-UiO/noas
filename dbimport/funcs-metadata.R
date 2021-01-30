@@ -31,12 +31,10 @@ insert_metadata <- function(meta_info, con){
   
   if(all(c(!is.null(meta_info$columns), 
            nrow(meta_info$columns) > 0))){
-    j <- alter_cols(meta_info, con)
-  }else{
-    j <- TRUE
+    ok <- all(ok, alter_cols(meta_info, con))
   }
   
-  invisible(all(c(ok, j)))
+  invisible(ok)
 }
 
 alter_cols <- function(meta_info, con){
