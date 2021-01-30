@@ -27,8 +27,7 @@ insert_metadata <- function(meta_info, con){
     meta_info$id
   )
 
-  k <- DBI::dbExecute(con, sql, params=params)
-  k <- ifelse(k == 1, TRUE, FALSE)
+  ok <- ifelse(DBI::dbExecute(con, sql, params=params) == 1, TRUE, FALSE)
   
   if(all(c(!is.null(meta_info$columns), 
            nrow(meta_info$columns) > 0))){
@@ -37,7 +36,7 @@ insert_metadata <- function(meta_info, con){
     j <- TRUE
   }
   
-  invisible(!any(c(k, j)))
+  invisible(!any(c(ok, j)))
 }
 
 alter_cols <- function(meta_info, con){
