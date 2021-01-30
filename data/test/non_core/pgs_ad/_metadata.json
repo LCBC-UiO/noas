@@ -1,4 +1,11 @@
 {
   "category": "Genetics",
-  "title": "Polygenic Scores"
+  "title": "Polygenic Scores",
+  "descr": "Some description how scores were computed",
+  "columns": [
+    {
+      "id": "score",
+      "descr": "Some description how interpret the scores"
+    }
+  ]
 }
