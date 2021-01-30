@@ -87,7 +87,7 @@ read_metadata <- function(dirpath){
   ffile <- file.path(dirpath, "_metadata.json")
   if(file.exists(ffile)){
     meta$jsn <- jsonlite::read_json(ffile, 
-                                simplifyVector = TRUE)
+                                simplifyVector = FALSE)
   }else(
     meta <- list(
       title = basename(dirpath)
