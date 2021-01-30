@@ -29,7 +29,7 @@ insert_metadata <- function(meta_info, con){
       meta_info$id
     )
     if (DBI::dbExecute(con, sql, params=params) != 1) {
-      throw(
+      stop(
         sprintf("insert_metadata metatables table=%s field=%s value=%s",
           meta_info$id,
           field,
