@@ -36,7 +36,7 @@ insert_metadata <- function(meta_info, con){
     j <- TRUE
   }
   
-  invisible(!any(c(ok, j)))
+  invisible(all(c(ok, j)))
 }
 
 alter_cols <- function(meta_info, con){
