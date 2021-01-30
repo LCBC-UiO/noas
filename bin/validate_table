@@ -2,15 +2,12 @@
 
 declare  BASEDIR; BASEDIR="$( cd "$( dirname $0 )/.." && pwd )"
 
-# takes a two or three arguments.
+# takes a single argument.
 # 1. path to data folder to validate
-# 2. type of data to validate (cross, long, repeated)
-# 3. either unicode or ascii for output formatting (optional)
-
-# keep track of input file (in case it's a relative path)
-# folder_to_validate="$( readlink -f $1 )"
 
 # R script is sourcing with relative path - we need to cd as workaround
 cd ${BASEDIR}
+
 # Rscript ${BASEDIR}/dbimport/script-validate.R "${folder_to_validate}" $2 $3
-Rscript ${BASEDIR}/dbimport/script-validate.R $1 $2 $3
+Rscript ${BASEDIR}/dbimport/script-validate.R $1
+

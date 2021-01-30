@@ -205,17 +205,10 @@ add_repeated_table <- function(table_dir,
   
   # retrieve the data
   data <- get_data(table_dir, prim_keys()$repeated)
+  fourth_key <- sapply(data$data, function(x) names(x)[4])
+  fourth_key <- unique(fourth_key)
   
-  # forth column should be column making row unique
-  # might want to change this later
-  visit_id_column_old <- names(data$data[[1]])[4]
-  visit_id_column_new <- paste0("_", visit_id_column_old)
-  # cat(codes()$note(), "Forth column is ", codes()$italic(visit_id_column_old), "\n")
-  data$data <- lapply(data$data, 
-                      function(x) {
-                        names(x) <- gsub(visit_id_column_old, visit_id_column_new, names(x))
-                        x
-                      })
+  stopifnot(length(fourth_key) == 1)
   
   # insert data to db
   j <- mapply(insert_table, 
@@ -224,7 +217,7 @@ add_repeated_table <- function(table_dir,
               MoreArgs = list(con = con, 
                               type = "repeated",
                               table_dir = table_dir,
-                              visit_id_column = visit_id_column_new
+                              visit_id_column = fourth_key
               )
   )
   

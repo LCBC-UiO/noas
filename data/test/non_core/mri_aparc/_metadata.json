@@ -1,0 +1,12 @@
+{
+  "title": "Desikan-Killiany cortical atlas",
+  "category": "mri",
+  "columns": [
+    {
+      "longname": "site name",
+      "id": "site_name",
+      "type": "text",
+      "idx": 1
+    }
+  ]
+}
