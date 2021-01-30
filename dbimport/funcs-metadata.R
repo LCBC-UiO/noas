@@ -71,13 +71,12 @@ alter_cols <- function(meta_info, con){
       fmt = 'ALTER COLUMN "_%s" TYPE %s USING (_%s::%s)'
     )
   )
-  
   sql_cmd <- paste(sql_tab, 
                    paste(sql_cols, collapse = ", "), 
                    ";", sep = " ")
-  
+
   k <- DBI::dbExecute(con, sql_cmd)
-  k <- ifelse(k == 1, TRUE, FALSE)
+  k <- ifelse(k == 0, TRUE, FALSE) # the alter statement seems to update 0 rows
   invisible(k)
 }
 
