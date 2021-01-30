@@ -46,10 +46,10 @@ insert_metadata <- function(meta_info, con){
           stop("insert_metadata column type");
         }
       }
-      return(T)
+      invisible(T)
     }, error=function(e) {
       cat(sprintf("error: %s", e))
-      return(F)
+      invisible(F)
     }
   )
   invisible(ok)
