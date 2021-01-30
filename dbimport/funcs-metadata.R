@@ -63,25 +63,10 @@ alter_cols <- function(meta_info, con){
   invisible(k)
 }
 
-#' Get meta-data information
-#' 
-#' Based both on file location, and
-#' any information in the _metadata.json
-#' file, will generate a list for adding
-#' meta-information to the data-base.
-#'
-#' @param data data to base missing information on
-#' @param table_dir table directory path
-get_metadata <- function(table_dir){
-  meta_info <- read_metadata(table_dir)
-  
-  return(meta_info)
-}
-
 fix_metadata <- function(table_dir, con) {
   
   # get meta-data
-  meta_info <- get_metadata(table_dir)
+  meta_info <- read_metadata(table_dir)
   
   # add meta-data
   j <- insert_metadata(meta_info, con) 
