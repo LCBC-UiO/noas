@@ -11,40 +11,47 @@ source("dbimport/funcs-utils.R", echo = FALSE)
 #' @param con database connection
 #' @param meta_info information from \code{\link{get_metadata}}
 insert_metadata <- function(meta_info, con){
-  ok <- T
   # has metadata?
   if (is.null(meta_info$jsn)) {
-    return(ok);
+    return(T);
   }
-  # add metatables
-  valid_jsn_fields <- c("title", "category", "descr")
-  for (field in valid_jsn_fields) {
-    sql <- sprintf("UPDATE metatables SET %s = $1 WHERE id = $2", field)
-    # has field?
-    if (is.null(meta_info$jsn[[field]])) {
-      next()
-    }
-    params <- list(
-      meta_info$jsn[[field]],
-      meta_info$id
-    )
-    if (DBI::dbExecute(con, sql, params=params) != 1) {
-      stop(
-        sprintf("insert_metadata metatables table=%s field=%s value=%s",
-          meta_info$id,
-          field,
-          meta_info$jsn[[field]]
+  ok <- tryCatch(
+    {
+      # add metatables
+      valid_jsn_fields <- c("title", "category", "descr")
+      for (field in valid_jsn_fields) {
+        sql <- sprintf("UPDATE metatables SET %s = $1 WHERE id = $2", field)
+        # has field?
+        if (is.null(meta_info$jsn[[field]])) {
+          next()
+        }
+        params <- list(
+          meta_info$jsn[[field]],
+          meta_info$id
         )
-      )
+        if (DBI::dbExecute(con, sql, params=params) != 1) {
+          stop(
+            sprintf("insert_metadata metatables table=%s field=%s value=%s",
+              meta_info$id,
+              field,
+              meta_info$jsn[[field]]
+            )
+          )
+        }
+      }
+      # add metacolumns
+      if(all(c(!is.null(meta_info$jsn$columns), 
+              nrow(meta_info$jsn$columns) > 0))){
+        if (!alter_cols(meta_info, con)) {
+          stop("insert_metadata column type");
+        }
+      }
+      return(T)
+    }, error=function(e) {
+      cat(sprintf("error: %s", e))
+      return(F)
     }
-  }
-
-  # add metacolumns
-  if(all(c(!is.null(meta_info$jsn$columns), 
-           nrow(meta_info$jsn$columns) > 0))){
-    ok <- all(ok, alter_cols(meta_info, con))
-  }
-  
+  )
   invisible(ok)
 }
 
