@@ -65,7 +65,7 @@ insert_metadata <- function(meta_info, con){
       }
       invisible(T)
     }, error=function(e) {
-      cat(sprintf("error: %s", mc[["id"]], field))
+      cat(sprintf("error: %s\n", e$message))
       invisible(F)
     }
   )
