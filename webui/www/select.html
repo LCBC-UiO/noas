@@ -156,6 +156,7 @@ NOAS - Query selector
         eOpthead.appendChild(eDescr);
         eDescr.classList.add("ml-3");
         eDescr.setAttribute("data-toggle", "tooltip");
+        eDescr.setAttribute("data-placement", "top");
         eDescr.setAttribute("title", e.descr);
         {
           let eIcon = document.createElement('span');
@@ -204,6 +205,7 @@ NOAS - Query selector
           let eDescr = document.createElement('span');
           eLabel.appendChild(eDescr);
           eDescr.setAttribute("data-toggle", "tooltip");
+          eDescr.setAttribute("data-placement", "top");
           eDescr.setAttribute("title", ec.descr);
           {
             let eIcon = document.createElement('span');
@@ -298,7 +300,7 @@ NOAS - Query selector
     document.getElementById("btnSubmit").addEventListener('click', submitSelection);
     document.getElementById("btnSubmitTop").addEventListener('click', submitSelection);
     // enable bs tooltips
-    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="tooltip"]').tooltip({ boundary: 'window' });
   }
 
   // clear selection
