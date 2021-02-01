@@ -74,7 +74,7 @@ BEGIN
       $ex$, metatable_sampletype || '_' || metatable_id
     ) INTO total;
   else
-    if ( metatable_sampletype = 'long' or metatable_sampletype = 'repeated'  or metatable_sampletype = 'core' ) then
+    if ( metatable_sampletype = 'long' or metatable_sampletype = 'repeated' or metatable_sampletype = 'core' ) then
       EXECUTE format(
         $ex$
           select count(*) from %I t 
@@ -164,7 +164,7 @@ CREATE TABLE visits (
 
 --------------------------------------------------------------------------------
 
--- Create table of tables
+-- metadata for tables
 
 CREATE TABLE metatables (
   id text,
@@ -176,8 +176,7 @@ CREATE TABLE metatables (
   CONSTRAINT metatables_pk PRIMARY KEY(id)
 );
 
-
--- Create table of table columns
+-- metadata for table columns
 
 CREATE TABLE metacolumns (
   metatable_id text,
@@ -188,6 +187,8 @@ CREATE TABLE metacolumns (
   CONSTRAINT metacolumns_pk PRIMARY KEY (metatable_id, id),
   CONSTRAINT metacolumns_fk FOREIGN KEY (metatable_id) REFERENCES metatables(id)
 );
+
+-- metadata for data version
 
 CREATE TABLE versions (
   id               text,

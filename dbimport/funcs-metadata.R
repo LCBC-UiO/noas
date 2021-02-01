@@ -11,80 +11,102 @@ source("dbimport/funcs-utils.R", echo = FALSE)
 #' @param con database connection
 #' @param meta_info information from \code{\link{get_metadata}}
 insert_metadata <- function(meta_info, con){
-  sql = paste(
-    "UPDATE metatables",
-    "SET title = $1",
-    # workaround for 'NULL' (text) being inserted
-    #   force NULL when input is 'NULL'
-    #   https://github.com/r-dbi/RPostgres/issues/95
-    ", category = NULLIF($2, 'NULL')::text", 
-    "WHERE id = $3"
-  )
-  
-  params <- list(
-    meta_info$title,
-    meta_info$category,
-    meta_info$id
-  )
-
-  k <- DBI::dbExecute(con, sql, params=params)
-  k <- ifelse(k == 1, TRUE, FALSE)
-  
-  if(all(c(!is.null(meta_info$columns), 
-           nrow(meta_info$columns) > 0))){
-    j <- alter_cols(meta_info, con)
-  }else{
-    j <- TRUE
+  # has metadata?
+  if (is.null(meta_info$jsn)) {
+    return(T);
   }
-  
-  invisible(!any(c(k, j)))
+  ok <- tryCatch(
+    {
+      # add metatables
+      valid_jsn_fields <- c("title", "category", "descr")
+      for (field in valid_jsn_fields) {
+        # has field?
+        if (is.null(meta_info$jsn[[field]])) {
+          next()
+        }
+        sql <- sprintf("UPDATE metatables SET %s = $1 WHERE id = $2", field)
+        params <- list(
+          meta_info$jsn[[field]],
+          meta_info$id
+        )
+        if (DBI::dbExecute(con, sql, params=params) != 1) {
+          stop(
+            sprintf("insert_metadata metatables table=%s field=%s value=%s",
+              meta_info$id,
+              field,
+              meta_info$jsn[[field]]
+            )
+          )
+        }
+      }
+      # loop over all columns - if columns is NULL, this will do nothing
+      for (i in 1:length(meta_info$jsn$columns)) {
+        mc <- meta_info$jsn$columns[[i]]
+        # needs id
+        if (is.null(mc[["id"]])) {
+          stop(sprintf("insert_metadata table=%s missing id in column=%d",
+            meta_info$id,
+            i
+          ))
+        }
+        # set column type?
+        if (!is.null(mc[["type"]])) {
+          alter_col(con, meta_info$id, meta_info$table_type, mc$id, mc$type)
+        }
+        # set any of these fields in metacolumns
+        valid_set_fields <- c("title", "descr")
+        for (mc_key in valid_set_fields) {
+          # has field?
+          if (is.null(mc[[mc_key]])) {
+            next()
+          }
+          set_metacol(con, meta_info$id, mc[["id"]], mc_key, mc[[mc_key]])
+        }
+      }
+      invisible(T)
+    }, error=function(e) {
+      cat(sprintf("error: %s\n", e$message))
+      invisible(F)
+    }
+  )
+  invisible(ok)
 }
 
-alter_cols <- function(meta_info, con){
-  sql_tab = sprintf("ALTER TABLE %s_%s", 
-                    meta_info$table_type, meta_info$id)
-  
-  sql_cols <- mapply(
-    sprintf, 
-    meta_info$columns$id,
-    meta_info$columns$type,
-    meta_info$columns$id,
-    meta_info$columns$type,
-    MoreArgs = list(
-      # Need the USING part because all columns are imported as string at first
-      # https://stackoverflow.com/questions/13170570/change-type-of-varchar-field-to-integer-cannot-be-cast-automatically-to-type-i
-      fmt = 'ALTER COLUMN "_%s" TYPE %s USING (_%s::%s)'
-    )
+alter_col <- function(con, table_id, table_type, col_id, col_type){
+  # Need the USING part because all columns are imported as string at first
+  # https://stackoverflow.com/questions/13170570/change-type-of-varchar-field-to-integer-cannot-be-cast-automatically-to-type-i
+  sql_cmd <- sprintf('ALTER TABLE %s_%s ALTER COLUMN "_%s" TYPE %s USING (_%s::%s);',
+    table_type,
+    table_id,
+    col_id,
+    col_type,
+    col_id,
+    col_type
   )
-  
-  sql_cmd <- paste(sql_tab, 
-                   paste(sql_cols, collapse = ", "), 
-                   ";", sep = " ")
-  
   k <- DBI::dbExecute(con, sql_cmd)
-  k <- ifelse(k == 1, TRUE, FALSE)
+  k <- ifelse(k == 0, TRUE, FALSE) # the alter statement seems to update 0 rows
   invisible(k)
 }
 
-#' Get meta-data information
-#' 
-#' Based both on file location, and
-#' any information in the _metadata.json
-#' file, will generate a list for adding
-#' meta-information to the data-base.
-#'
-#' @param data data to base missing information on
-#' @param table_dir table directory path
-get_metadata <- function(table_dir){
-  meta_info <- read_metadata(table_dir)
-  
-  return(meta_info)
+set_metacol <- function(con, table_id, col_id, key, value) {
+  sql <- sprintf("UPDATE metacolumns SET %s = $1 WHERE metatable_id = $2 AND id = $3", key)
+  if (DBI::dbExecute(con, sql, params=list(value, table_id, paste0("_", col_id))) != 1) {
+    stop(
+      sprintf("insert_metadata metacolumns table=%s column=%s key=%s value=%s",
+        table_id,
+        col_id,
+        key,
+        value
+      )
+    )
+  }
+  invisible(T)
 }
 
 fix_metadata <- function(table_dir, con) {
   
   # get meta-data
-  meta_info <- get_metadata(table_dir)
+  meta_info <- read_metadata(table_dir)
   
   # add meta-data
   j <- insert_metadata(meta_info, con) 
