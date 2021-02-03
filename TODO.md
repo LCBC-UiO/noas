@@ -25,6 +25,7 @@
     * number of omitted rows
     * exceptions when importing metadata
     * show warnings for each table in web UI
+  * dbimport/sql: maybe a `???_noas_data_src` field for every non_core table (`???`)? 
 
 ## cleanup/refactoring
   * dbimport: use tryCatch for error handling?
