@@ -33,6 +33,7 @@
   * data/import: remove quotes from strings 
   * data: remove pgs from the git data history
     * and symlink pgs like mri
+  * `_noas.json` is an array of a single object - array can be removed?
 
 ## bugs
   * dbimport/sql: columns need to be in same order for all tables of a specific type
