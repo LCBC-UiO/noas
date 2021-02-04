@@ -4,6 +4,7 @@ require '../dbconn.php';
 require '../sql_get_dbmeta.php';
 require '../sql_build_query.php';
 
+ini_set('memory_limit', '1024M');
 header("Content-Type: application/json; charset=UTF-8");
 
 $response = array(
