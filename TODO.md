@@ -26,6 +26,7 @@
     * exceptions when importing metadata
     * show warnings for each table in web UI
   * dbimport/sql: maybe a `???_noas_data_src` field for every non_core table (`???`)? 
+  * dbimport: import the folders by modification date (instead alphabetically) to fail early on breaking changes
 
 ## cleanup/refactoring
   * dbimport: use tryCatch for error handling?
