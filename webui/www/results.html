@@ -182,7 +182,7 @@
           `d_noas <- (function(){\n` +
           `  selection <- '{ "columns": [\n` +
           sel.columns.map(e => `    { "table_id": "${e.table_id}", "column_id": "${e.column_id}" }`).join(",\n") + "\n" +
-          `   ], "set_op": "intersect", "project": "${sel.project}"\n` +
+          `   ], "set_op": "${sel.set_op}", "project": "${sel.project}"\n` +
           `   , "version": "${sel.version}" }'\n` +
           `  header <- paste0(c(NULL\n` +
           `    ,'POST /query_tsv.php HTTP/1.0'\n` +
