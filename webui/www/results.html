@@ -15,6 +15,8 @@
 <script type="text/javascript" src="./js/jquery.min.js"></script>
 <script type="text/javascript" src="./js//popper.min.js"></script>
 <script type="text/javascript" src="./js//bootstrap.min.js"></script>
+<script type="text/javascript" src="./js/solid.min.js" ></script>
+<script type="text/javascript" src="./js/fontawesome.min.js"></script>
 
 <title>
   NOAS - Query results
@@ -61,10 +63,12 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Copy&paste into R</h4>
+          <button id="btnCopyR" type="button" class="ml-4 btn" data-dismiss="modal">
+            <span class="fas fa-copy fa-lg"></span> 
+          </button>
           <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
-        <div class="modal-body"><code id="codeImportR" style="white-space: pre-wrap;">
-        </code></div>
+        <div class="modal-body"><code id="codeImportR" style="white-space: pre-wrap;"></code></div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
         </div>
@@ -219,6 +223,10 @@
       const dlfilename = `noas_query_${lcGetDateFnStr(Date.parse(g_table_data.date))}_${md5}_${did}.xlsx`;
       g_table.download("xlsx", dlfilename, {sheetName:`NOAS download ${md5} ${did}`});
     });
+    document.getElementById("btnCopyR").onclick = (e) => {
+      let ec = document.getElementById("codeImportR");
+      navigator.clipboard.writeText(ec.innerText);
+    }
     document.getElementById("btnBack").addEventListener('click', () => {history.back()});
     
   </script>
