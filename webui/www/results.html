@@ -63,9 +63,11 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Copy&paste into R</h4>
-          <button id="btnCopyR" type="button" class="ml-4 btn" data-dismiss="modal">
-            <span class="fas fa-copy fa-lg"></span> 
-          </button>
+          <span data-toggle="tooltip" data-placement="top" title="Copy to clipboard">
+            <button id="btnCopyR" type="button" class="ml-4 btn" data-dismiss="modal">
+              <span class="fas fa-copy fa-lg"></span> 
+            </button>
+          </span>
           <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body"><code id="codeImportR" style="white-space: pre-wrap;"></code></div>
@@ -229,5 +231,7 @@
     }
     document.getElementById("btnBack").addEventListener('click', () => {history.back()});
     
+    // enable bs tooltips
+    $('[data-toggle="tooltip"]').tooltip({ boundary: 'window' });
   </script>
 </body>
