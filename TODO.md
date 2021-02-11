@@ -35,13 +35,14 @@
   * data/import: remove quotes from strings 
   * data: remove pgs from the git data history
     * and symlink pgs like mri
-  * `_noas.json` is an array of a single object - array can be removed?
+  * dbimport: log verbosity when adding large number of repeated tables
+    * would be convenient to add time series data like MRI (i.e. linked)
+    * and the data are already in single subject/wave files, so adding them this way to the DB would be convenient
+    * this floods the import log though.
 
 ## bugs
-  * dbimport/sql: columns need to be in same order for all tables of a specific type
-    * alter insert_table.R to check for this before import
-    * currently fails on meta-data setting, cause data of different type are in the same cols
- 
+  * webui: fourth column for repeated tables should appear as the first column.
+  
 ## potential problems
   * dbimport/sql: how to connect multiple repeated tables?
     * problem: without referencing each others visit_id, the query will split their data into separate rows
