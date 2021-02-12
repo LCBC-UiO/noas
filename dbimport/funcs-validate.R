@@ -157,7 +157,7 @@ check_cols <- function(files){
   
   n_nams <- unlist(lapply(nams, length))
   nn_nams <- length(unique(n_nams))
-  
+
   if(nn_nams != 1){
     k_nams <- as.data.frame(table(n_nams), 
                             stringsAsFactors = FALSE)
@@ -166,7 +166,7 @@ check_cols <- function(files){
       warning("Files have different number of columns, they cannot be combined.\n", call. = FALSE)
       return(FALSE)
     }
-    
+
     common <- k_nams$n_nams[k_nams$n == max(k_nams$n)]
     common_nams <- nams[[grep(common, n_nams)[[1]]]]
     
@@ -189,8 +189,12 @@ check_cols <- function(files){
   nams <- do.call(rbind, nams)
   nams <- unique(nams)
   
-  if(nrow(nams) == 1) return(TRUE)
+  if(nrow(nams) != 1){
+    warning("File columns in differing order. Make sure all files present the columns in the same sequence.\n", call. = FALSE)
+    return(FALSE)
+  } 
   
   return(TRUE)
+
 }
 
