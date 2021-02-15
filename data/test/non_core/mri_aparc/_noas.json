@@ -1,5 +1,3 @@
-[
-  {
-    "table_type": "repeated"
-  }
-]
+{
+  "table_type": "repeated"
+}
