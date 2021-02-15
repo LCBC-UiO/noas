@@ -13,6 +13,8 @@ select
     )
     ,'tables'
     , array_to_json(array_agg(row_to_json(t)))
+    ,'project'
+    , (select '{$prj}')
   ) as meta_json
 from (
   select
