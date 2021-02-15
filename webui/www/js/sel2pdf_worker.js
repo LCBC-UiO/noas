@@ -15,6 +15,9 @@ console.log("createPdf");
   doc.moveDown();
   // tables
   m.tables.forEach(et => {
+    if (et.n == 0) {
+      return;
+    }
     doc.moveDown();
     doc.fontSize(16);
     doc
