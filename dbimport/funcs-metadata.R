@@ -54,7 +54,7 @@ insert_metadata <- function(meta_info, con){
           alter_col(con, meta_info$id, meta_info$table_type, mc$id, mc$type)
         }
         # set any of these fields in metacolumns
-        valid_set_fields <- c("title", "descr")
+        valid_set_fields <- c("title", "descr", "type")
         for (mc_key in valid_set_fields) {
           # has field?
           if (is.null(mc[[mc_key]])) {
