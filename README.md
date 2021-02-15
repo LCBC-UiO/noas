@@ -37,6 +37,6 @@ These data types are supported as NOAS table columns (in metadata, DB and web UI
 
   * `text`
   * `float`
-  * `int`
+  * `integer`
   * `date`
 
