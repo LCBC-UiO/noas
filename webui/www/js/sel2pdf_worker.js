@@ -11,7 +11,7 @@ console.log("createPdf");
     .fontSize(24).font('Helvetica').text('NOAS data documentation', {align: 'center'})
   doc
     .fontSize(12).text(`Version: ${m.version.label} (${m.version.ts})`, {align: 'center'})
-    .fontSize(12).text(`Project: ${m.version.project}`, {align: 'center'})
+    .fontSize(12).text(`Project: ${m.project}`, {align: 'center'})
   doc.moveDown();
   // tables
   m.tables.forEach(et => {
