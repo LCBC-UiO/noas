@@ -4,7 +4,8 @@
   * write metadata: set column "id" and "type" in json 
     * no "idx" and "title"
   * reading metadata: setting types in db 
-    * expand types, currently only int, float, text and date
+    * expand types, currently only integer, float, text and date
+      * bool?
     * time is imported as integer currently
     * "duration" type => "as.character" for now?
   * dbimport/sql: how to handle undefined visits for long/repeated?
@@ -48,4 +49,4 @@
   * name conflicts
     * sql: if table id is used more than once (for example in long and repeated)
     * sql: if table name is sql keyword?
- 
+
