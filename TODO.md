@@ -1,4 +1,15 @@
 
+## priority list  
+  * fixing long table names
+  * fix old data so they pass new validation
+  * alt_subj_id
+  * reduce underscores in tables names
+  * data/import: remove quotes from strings 
+  * dbimport: check if metadata fields are known; error on unknown keys
+  * data/import: remove quotes from strings 
+    * also force read to quote = FALSE
+  * look at import warnings - maybe error on warning setting for import
+
 ## features
   * support PGS data: should be dynamically computed for 
   * write metadata: set column "id" and "type" in json 
@@ -14,10 +25,10 @@
     * currently some MOAS data is derived from raw data based on r-functions in two packages:
       * https://github.com/LCBC-UiO/Questionnaires
       * https://github.com/LCBC-UiO/Conversions
-    * can we refractor them to use let DB run them? <-- ie translate to sql?
+    * can we refractor them to use let DB run them?
   * visits table:
     * timepoint: column of computed sequential visit number
-    * original_id: column of id assigned at time of collection, as subject_id is not what people will find in old documents and data. Important for matching older, currently not harmonised data to correct data in the db.
+    * alt_subj_id: column of id assigned at time of collection, as subject_id is not what people will find in old documents and data. Important for matching older, currently not harmonised data to correct data in the db. Give `NA` if it doesnt have any.
   * other core-like tables
     * table with project_id and wave_code information (like test versions etc)
     * table with information on MRI scanners
@@ -37,8 +48,7 @@
   * data: remove pgs from the git data history
     * and symlink pgs like mri
   * dbimport: log verbosity when adding large number of repeated tables
-    * would be convenient to add time series data like MRI (i.e. linked)
-    * and the data are already in single subject/wave files, so adding them this way to the DB would be convenient
+    * the data are already in single subject/wave files, so adding them this way to the DB would be convenient
     * this floods the import log though.
 
 ## bugs
