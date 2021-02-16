@@ -164,7 +164,8 @@ CREATE TABLE visits (
   subject_id int NOT NULL,
   project_id text,
   wave_code float,
-  visitdate date,
+  visitdate  date,
+  visitnumber int,
   CONSTRAINT visit_pk PRIMARY KEY(subject_id, wave_code, project_id),
   CONSTRAINT visit_subject_fk FOREIGN KEY (subject_id) REFERENCES subjects(id),
   CONSTRAINT visit_wave_fk FOREIGN KEY (wave_code, project_id) REFERENCES waves(code, project_id)
@@ -209,6 +210,41 @@ CREATE TABLE versions (
 
 --------------------------------------------------------------------------------
 
+-- Triggers
+
+CREATE OR REPLACE FUNCTION tfun_visitnumber()
+  RETURNS trigger 
+  LANGUAGE PLPGSQL
+  AS
+$$
+BEGIN
+	UPDATE visits v1
+  SET visitnumber = (
+    with t as (
+      select *
+        , row_number() over ( 
+          partition by v2.subject_id order by v2.visitdate
+        ) as vn 
+      from visits v2
+    )
+    select t.vn
+    from t
+    where v1.subject_id=t.subject_id 
+      and v1.wave_code=t.wave_code 
+      and v1.project_id=t.project_id
+  );
+  RETURN NULL;
+END;
+$$;
+
+CREATE TRIGGER trigger_visitnumber
+  AFTER INSERT
+  ON visits
+  FOR EACH STATEMENT
+  EXECUTE PROCEDURE tfun_visitnumber();
+
+--------------------------------------------------------------------------------
+
 -- Combine core tables
 
 CREATE VIEW core_core AS
@@ -218,6 +254,7 @@ CREATE VIEW core_core AS
     subjects.sex       AS subject_sex,
     subjects.shareable AS subject_shareable,
     visits.visitdate   AS visit_visitdate,
+    visits.visitnumber AS visit_visitnumber,
     waves.reknr        AS wave_reknr,
     waves.description  AS wave_description,
     waves.code         AS wave_code,
@@ -251,10 +288,12 @@ INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'su
 INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'subject_shareable',    5, 'integer', 'Shareable');
 INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_visitdate',      6, 'date',    'Visit date');
 INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_visitage',       7, 'float',   'Age at visit');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_name',         8, 'text',    'Project name');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_code',         9, 'integer', 'Project code');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_description', 10, 'text',    'Project description');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_description',    11, 'text',    'Wave description');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_reknr',          12, 'integer', 'Wave REK Nr.');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_visitnumber',    8, 'integer', 'Visit number');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_name',         9, 'text',    'Project name');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_code',        10, 'integer', 'Project code');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_description', 11, 'text',    'Project description');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_description',    12, 'text',    'Wave description');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_reknr',          13, 'integer', 'Wave REK Nr.');
 
 UPDATE metacolumns SET descr = '(visitdate - birthdate); #Y+(#M*365/12+#D)/365' where id = 'visit_visitage';
+UPDATE metacolumns SET descr = 'A counter per subject which is strictly increasing with visit date.' where id = 'visit_visinumber';
