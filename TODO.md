@@ -36,8 +36,7 @@
   * data: remove pgs from the git data history
     * and symlink pgs like mri
   * dbimport: log verbosity when adding large number of repeated tables
-    * would be convenient to add time series data like MRI (i.e. linked)
-    * and the data are already in single subject/wave files, so adding them this way to the DB would be convenient
+    * the data are already in single subject/wave files, so adding them this way to the DB would be convenient
     * this floods the import log though.
 
 ## bugs
