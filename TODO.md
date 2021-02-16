@@ -27,7 +27,6 @@
       * https://github.com/LCBC-UiO/Conversions
     * can we refractor them to use let DB run them?
   * visits table:
-    * timepoint: column of computed sequential visit number
     * alt_subj_id: column of id assigned at time of collection, as subject_id is not what people will find in old documents and data. Important for matching older, currently not harmonised data to correct data in the db. Give `NA` if it doesnt have any.
   * other core-like tables
     * table with project_id and wave_code information (like test versions etc)
