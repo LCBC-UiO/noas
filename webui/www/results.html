@@ -178,30 +178,20 @@
             return data
           }
         });
-        const host = window.location.hostname;
-        const port = window.location.port != "" ? window.location.port : 80
-        document.getElementById("codeImportR").innerHTML = 
-          `d_noas <- (function(){\n` +
-          `  selection <- '{ "columns": [\n` +
-          sel.columns.map(e => `    { "table_id": "${e.table_id}", "column_id": "${e.column_id}" }`).join(",\n") + "\n" +
-          `   ], "set_op": "${sel.set_op}", "project": "${sel.project}"\n` +
-          `   , "version": "${sel.version}" }'\n` +
-          `  header <- paste0(c(NULL\n` +
-          `    ,'POST /query_tsv.php HTTP/1.0'\n` +
-          `    ,'Content-Type: application/json'\n` +
-          `    ,sprintf('Content-Length: %d', nchar(selection))\n` +
-          `    ,'Connection: close'\n` +
-          `  ), collapse='\\r\\n')\n` + 
-          `  con <- socketConnection(host='${host}', port=${port}, blocking=T, server=F, open='r+')\n` +
-          `  on.exit(close(con))\n` +
-          `  write(sprintf('%s\\r\\n\\r\\n%s', header, selection), con);\n` +
-          `  pl_str <- paste0(readLines(con), collapse='\\n'); # receive data\n` +
-          `  table_str <- substr(pl_str, regexpr('\\n\\n', pl_str)+2, nchar(pl_str)); # skip http header\n` +
-          `  return(read.table(text=table_str, header=T, sep='\\t', na.strings='None', stringsAsFactors=F))\n` +
-          `})()\n`;
-
-          
-        //document.getElementById("noasTable").innerHTML = `<code style="white-space: pre-line;">${tableJsn}</code>`;
+        // load "import to r" code
+        document.getElementById("codeImportR").innerHTML = await (async function() {
+          r = await fetch("./r_import_txt.php", { 
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(sel),
+          });
+          if (!r.ok) {
+            throw `error loading from r_import_txt.php`;
+          }
+          return await r.text();
+        })();
       } catch (e) {
         showAlertBox(AlertType.ERROR, ["Unable to get table data.", e.toString()]);
         console.log("err: " + e.toString());
