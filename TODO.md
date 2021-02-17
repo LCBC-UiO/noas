@@ -2,13 +2,6 @@
 ## priority list  
   * fixing long table names
   * fix old data so they pass new validation
-  * alt_subj_id
-  * reduce underscores in tables names
-  * data/import: remove quotes from strings 
-  * dbimport: check if metadata fields are known; error on unknown keys
-  * data/import: remove quotes from strings 
-    * also force read to quote = FALSE
-  * look at import warnings - maybe error on warning setting for import
 
 ## features
   * support PGS data: should be dynamically computed for 
@@ -28,7 +21,6 @@
     * can we refractor them to use let DB run them?
   * visits table:
     * timepoint: column of computed sequential visit number
-    * alt_subj_id: column of id assigned at time of collection, as subject_id is not what people will find in old documents and data. Important for matching older, currently not harmonised data to correct data in the db. Give `NA` if it doesnt have any.
   * other core-like tables
     * table with project_id and wave_code information (like test versions etc)
     * table with information on MRI scanners
@@ -58,6 +50,5 @@
   * dbimport/sql: how to connect multiple repeated tables?
     * problem: without referencing each others visit_id, the query will split their data into separate rows
   * name conflicts
-    * sql: if table id is used more than once (for example in long and repeated)
     * sql: if table name is sql keyword?
 
