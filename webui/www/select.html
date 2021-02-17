@@ -51,6 +51,7 @@ NOAS - Query selector
     <label id="btnLoad" class="button button-minwidth">
       Load selection<input id="fileLoad" name="file" type="file" style="display: none;">
     </label>
+    <div id="btnGetDocPdf" class="button button-minwidth">Download docu</div>
     <div id="btnSubmitTop" class="button button-minwidth">Submit</div>
   </div>
   <div id="noasTables">
@@ -288,6 +289,7 @@ NOAS - Query selector
     document.getElementById("btnLoad").addEventListener('change', loadSelection);
     document.getElementById("btnSubmit").addEventListener('click', submitSelection);
     document.getElementById("btnSubmitTop").addEventListener('click', submitSelection);
+    document.getElementById("btnGetDocPdf").addEventListener('click', () => downloadPdf(meta));
     // enable bs tooltips
     $('[data-toggle="tooltip"]').tooltip({ boundary: 'window' });
   }
@@ -374,6 +376,18 @@ NOAS - Query selector
     window.sessionStorage.setItem('selection', JSON.stringify(sel));
     // open result page
     window.location.href = `./results.html?prj=${g_prj}`;
+  }
+
+  function downloadPdf(metadata) {
+    var wrk = new Worker("./js/sel2pdf_worker.js");
+    wrk.postMessage({type: "init", value: {metadata: metadata }});
+    wrk.onmessage = function(msg) {
+      if (msg.data.type == "done") {
+        window.location.assign(msg.data.value);
+      } else {
+        console.log(msg);
+      }
+    }
   }
   
   start();

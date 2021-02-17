@@ -22,6 +22,7 @@ END
 $do$;
 DROP TYPE IF EXISTS e_sex CASCADE;
 DROP TYPE IF EXISTS e_sampletype CASCADE;
+DROP TYPE IF EXISTS e_columntype CASCADE;
 
 
 DO
@@ -53,6 +54,13 @@ CREATE TYPE e_sampletype AS enum (
   ,'cross'
   ,'long'
   ,'repeated'
+);
+
+CREATE TYPE e_columntype AS enum (
+  'text'
+  ,'float'
+  ,'integer'
+  ,'date'
 );
 
 --------------------------------------------------------------------------------
@@ -184,6 +192,7 @@ CREATE TABLE metacolumns (
   idx   integer DEFAULT 1,
   title text,
   descr text DEFAULT NULL,
+  type  e_columntype,
   CONSTRAINT metacolumns_pk PRIMARY KEY (metatable_id, id),
   CONSTRAINT metacolumns_fk FOREIGN KEY (metatable_id) REFERENCES metatables(id)
 );
@@ -234,18 +243,18 @@ CREATE VIEW core_core AS
 INSERT INTO metatables (id, sampletype, idx, title) VALUES ('core', 'core', 0, 'Core data');
 UPDATE metatables SET descr = 'Basic data for any participant' where id = 'core';
 
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_id',           0, 'Subject ID');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_id',           1, 'Project ID');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_code',            2, 'Wave code');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_sex',          3, 'Sex');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_birthdate',    4, 'Birth date');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'subject_shareable',    5, 'Shareable');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'visit_visitdate',      6, 'Visit date');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'visit_visitage',       7, 'Age at visit');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_name',         8, 'Project name');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_code',         9, 'Project code');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'project_description', 10, 'Project description');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_description',    11, 'Wave description');
-INSERT INTO metacolumns (metatable_id, id, idx, title) VALUES ('core', 'wave_reknr',          12, 'Wave REK Nr.');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'subject_id',           0, 'integer', 'Subject ID');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_id',           1, 'text',    'Project ID');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_code',            2, 'float',   'Wave code');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'subject_sex',          3, 'text',    'Sex');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'subject_birthdate',    4, 'date',    'Birth date');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'subject_shareable',    5, 'integer', 'Shareable');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_visitdate',      6, 'date',    'Visit date');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_visitage',       7, 'float',   'Age at visit');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_name',         8, 'text',    'Project name');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_code',         9, 'integer', 'Project code');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_description', 10, 'text',    'Project description');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_description',    11, 'text',    'Wave description');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_reknr',          12, 'integer', 'Wave REK Nr.');
 
 UPDATE metacolumns SET descr = '(visitdate - birthdate); #Y+(#M*365/12+#D)/365' where id = 'visit_visitage';

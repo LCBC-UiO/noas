@@ -13,6 +13,8 @@ select
     )
     ,'tables'
     , array_to_json(array_agg(row_to_json(t)))
+    ,'project'
+    , (select '{$prj}')
   ) as meta_json
 from (
   select
@@ -34,7 +36,8 @@ from (
         (case when mt.idx = 0 then mc.id else substr(mc.id, 2) end) as id,
         mc.title,
         mc.idx,
-        mc.descr
+        mc.descr,
+        mc.type
       from
         metacolumns mc
       where

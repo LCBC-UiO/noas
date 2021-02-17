@@ -17,61 +17,61 @@
     {
       "descr": "ehi 01",
       "id": "01",
-      "type": "int",
+      "type": "integer",
       "idx": 3
     },
     {
       "descr": "ehi 02",
       "id": "02",
-      "type": "int",
+      "type": "integer",
       "idx": 4
     },
     {
       "descr": "ehi 03",
       "id": "03",
-      "type": "int",
+      "type": "integer",
       "idx": 5
     },
     {
       "descr": "ehi 04",
       "id": "04",
-      "type": "int",
+      "type": "integer",
       "idx": 6
     },
     {
       "descr": "ehi 05",
       "id": "05",
-      "type": "int",
+      "type": "integer",
       "idx": 7
     },
     {
       "descr": "ehi 06",
       "id": "06",
-      "type": "int",
+      "type": "integer",
       "idx": 8
     },
     {
       "descr": "ehi 07",
       "id": "07",
-      "type": "int",
+      "type": "integer",
       "idx": 9
     },
     {
       "descr": "ehi 08",
       "id": "08",
-      "type": "int",
+      "type": "integer",
       "idx": 10
     },
     {
       "descr": "ehi 09",
       "id": "09",
-      "type": "int",
+      "type": "integer",
       "idx": 11
     },
     {
       "descr": "ehi 10",
       "id": "10",
-      "type": "int",
+      "type": "integer",
       "idx": 12
     }
   ]

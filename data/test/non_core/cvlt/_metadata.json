@@ -1,167 +1,143 @@
 {
   "title": "California Verbal Learning Task",
   "category": "cognitive test",
-  "raw_data": "data/long/cvlt",
   "columns": [
     {
       "title": "cvlt a1",
       "id": "a1",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 1
     },
     {
       "title": "cvlt a2",
       "id": "a2",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 2
     },
     {
       "title": "cvlt a3",
       "id": "a3",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 3
     },
     {
       "title": "cvlt a4",
       "id": "a4",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 4
     },
     {
       "title": "cvlt a5",
       "id": "a5",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 5
     },
     {
       "title": "cvlt a total intrusions",
       "id": "a_total_intrusions",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 6
     },
     {
       "title": "cvlt a total",
       "id": "a_total",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 7
     },
     {
       "title": "cvlt a total t",
       "id": "a_total_t",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 8
     },
     {
       "title": "cvlt listb",
       "id": "listb",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 9
     },
     {
       "title": "cvlt listb intrusions",
       "id": "listb_intrusions",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 10
     },
     {
       "title": "cvlt 5min free",
       "id": "5min_free",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 11
     },
     {
       "title": "cvlt 5min free scaled",
       "id": "5min_free_scaled",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 12
     },
     {
       "title": "cvlt 5min intrusions",
       "id": "5min_intrusions",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 13
     },
     {
       "title": "cvlt 5min cued",
       "id": "5min_cued",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 14
     },
     {
       "title": "cvlt 5min cued intrusions",
       "id": "5min_cued_intrusions",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 15
     },
     {
       "title": "cvlt 30min free",
       "id": "30min_free",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 16
     },
     {
       "title": "cvlt 30min free scaled",
       "id": "30min_free_scaled",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 17
     },
     {
       "title": "cvlt 30min intrusions",
       "id": "30min_intrusions",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 18
     },
     {
       "title": "cvlt 30min cued",
       "id": "30min_cued",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 19
     },
     {
       "title": "cvlt 30min cued intrusions",
       "id": "30min_cued_intrusions",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 20
     },
     {
       "title": "cvlt recog hits",
       "id": "recog_hits",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 21
     },
     {
       "title": "cvlt recog fp",
       "id": "recog_fp",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 22
     },
     {
       "title": "cvlt recog forced",
       "id": "recog_forced",
-      "type": "int",
-      "category": "cognitive test",
+      "type": "integer",
       "idx": 23
     }
   ]
