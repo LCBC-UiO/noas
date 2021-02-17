@@ -111,3 +111,20 @@ fix_metadata <- function(table_dir, con) {
   j <- insert_metadata(meta_info, con) 
   cat_table_success(j, sprintf("metadata\t%s\tadded\t ", basename(table_dir)))
 }
+
+valid_json_fields <- function(type = NULL, subset = NULL){
+  x <- list(
+    table = list(
+      all = c("title", "category", "descr", "columns"),
+      metatable = c("title", "category", "descr")
+    ),
+    columns = list(
+      all = c("title", "descr", "type", "id", "idx"),
+      metatable = c("title", "descr", "type")
+    )
+  )
+  
+  if(is.null(type)) return(x)
+  if(is.null(subset)) return(x[[type]])
+  x[[type]][[subset]]
+}
