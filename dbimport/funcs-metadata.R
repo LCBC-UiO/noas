@@ -62,25 +62,50 @@ insert_metadata <- function(meta_info, con){
           set_metacol(con, meta_info$id, mc[["id"]], mc_key, mc[[mc_key]])
         }
       }
-      invisible(T)
+      invisible(TRUE)
     }, error=function(e) {
       cat(sprintf("error: %s\n", e$message))
-      invisible(F)
+      invisible(FALSE)
     }
   )
+
+  # abort on error
+  if(!ok) stop(call. = FALSE)
+  
   invisible(ok)
+}
+
+validate_metadata <- function(meta_info){
+  
+  tab_fields <- which(!names(meta_info) %in% valid_json_fields("table", "all"))
+  if(length(tab_fields) > 0){
+    stop("There are unsupported fields in the meta-data: ",
+         paste0(names(meta_info)[tab_fields], collapse=", "),
+         call. = FALSE)
+  }
+  
+  if("columns" %in% names(meta_info)){
+    col_fields <- unique(unlist(lapply(meta_info$columns, names)))
+    col_idx <- which(!col_fields %in% valid_json_fields("columns", "all"))
+    
+    if(length(col_idx) > 0){
+      stop("There are unsupported fields in the meta-data for columns: ",
+           paste0(col_fields[col_idx], collapse=", "),
+           call. = FALSE)
+    }
+  }
 }
 
 alter_col <- function(con, table_id, table_type, col_id, col_type){
   # Need the USING part because all columns are imported as string at first
   # https://stackoverflow.com/questions/13170570/change-type-of-varchar-field-to-integer-cannot-be-cast-automatically-to-type-i
   sql_cmd <- sprintf('ALTER TABLE %s_%s ALTER COLUMN "_%s" TYPE %s USING (_%s::%s);',
-    table_type,
-    table_id,
-    col_id,
-    col_type,
-    col_id,
-    col_type
+                     table_type,
+                     table_id,
+                     col_id,
+                     col_type,
+                     col_id,
+                     col_type
   )
   k <- DBI::dbExecute(con, sql_cmd)
   k <- ifelse(k == 0, TRUE, FALSE) # the alter statement seems to update 0 rows
