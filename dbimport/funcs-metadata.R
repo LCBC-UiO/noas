@@ -11,19 +11,19 @@ source("dbimport/funcs-utils.R", echo = FALSE)
 #' @param con database connection
 #' @param meta_info information from \code{\link{get_metadata}}
 insert_metadata <- function(meta_info, con){
-  # has metadata?
-  if (is.null(meta_info$jsn)) {
-    return(T);
-  }
+  # if no meta-data return with success
+  if (is.null(meta_info$jsn)) return(TRUE)
+  
   ok <- tryCatch(
     {
+      # Check if meta-data are correctly formatted
+      validate_metadata(meta_info$jsn)
+      
       # add metatables
-      valid_jsn_fields <- c("title", "category", "descr")
-      for (field in valid_jsn_fields) {
-        # has field?
-        if (is.null(meta_info$jsn[[field]])) {
-          next()
-        }
+      for (field in valid_json_fields("table", "metatable")) {
+        # if no field, skip iteration
+        if (is.null(meta_info$jsn[[field]])) next() 
+        
         sql <- sprintf("UPDATE metatables SET %s = $1 WHERE id = $2", field)
         params <- list(
           meta_info$jsn[[field]],
@@ -32,10 +32,10 @@ insert_metadata <- function(meta_info, con){
         if (DBI::dbExecute(con, sql, params=params) != 1) {
           stop(
             sprintf("insert_metadata metatables table=%s field=%s value=%s",
-              meta_info$id,
-              field,
-              meta_info$jsn[[field]]
-            )
+                    meta_info$id,
+                    field,
+                    meta_info$jsn[[field]]
+            ), call. = FALSE
           )
         }
       }
@@ -45,17 +45,16 @@ insert_metadata <- function(meta_info, con){
         # needs id
         if (is.null(mc[["id"]])) {
           stop(sprintf("insert_metadata table=%s missing id in column=%d",
-            meta_info$id,
-            i
-          ))
+                       meta_info$id,
+                       i
+          ), call. = FALSE)
         }
         # set column type?
         if (!is.null(mc[["type"]])) {
           alter_col(con, meta_info$id, meta_info$table_type, mc$id, mc$type)
         }
         # set any of these fields in metacolumns
-        valid_set_fields <- c("title", "descr", "type")
-        for (mc_key in valid_set_fields) {
+        for (mc_key in valid_json_fields("column", "metatable")) {
           # has field?
           if (is.null(mc[[mc_key]])) {
             next()
@@ -93,14 +92,14 @@ set_metacol <- function(con, table_id, col_id, key, value) {
   if (DBI::dbExecute(con, sql, params=list(value, table_id, paste0("_", col_id))) != 1) {
     stop(
       sprintf("insert_metadata metacolumns table=%s column=%s key=%s value=%s",
-        table_id,
-        col_id,
-        key,
-        value
-      )
+              table_id,
+              col_id,
+              key,
+              value
+      ), call. = FALSE
     )
   }
-  invisible(T)
+  invisible(TRUE)
 }
 
 fix_metadata <- function(table_dir, con) {
