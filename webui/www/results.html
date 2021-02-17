@@ -180,7 +180,7 @@
         });
         // load "import to r" code
         document.getElementById("codeImportR").innerHTML = await (async function() {
-          r = await fetch("./r_import_txt.php", { 
+          r = await fetch("./r_import.php", { 
             method: "POST",
             headers: {
               'Content-Type': 'application/json'
