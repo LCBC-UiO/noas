@@ -165,6 +165,7 @@ CREATE TABLE visits (
   project_id text,
   wave_code float,
   visitdate date,
+  alt_subj_id text,
   CONSTRAINT visit_pk PRIMARY KEY(subject_id, wave_code, project_id),
   CONSTRAINT visit_subject_fk FOREIGN KEY (subject_id) REFERENCES subjects(id),
   CONSTRAINT visit_wave_fk FOREIGN KEY (wave_code, project_id) REFERENCES waves(code, project_id)
@@ -249,12 +250,14 @@ INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wa
 INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'subject_sex',          3, 'text',    'Sex');
 INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'subject_birthdate',    4, 'date',    'Birth date');
 INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'subject_shareable',    5, 'integer', 'Shareable');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_visitdate',      6, 'date',    'Visit date');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_visitage',       7, 'float',   'Age at visit');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_name',         8, 'text',    'Project name');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_code',         9, 'integer', 'Project code');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_description', 10, 'text',    'Project description');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_description',    11, 'text',    'Wave description');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_reknr',          12, 'integer', 'Wave REK Nr.');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_alt_subj_id',    6, 'text',    'Alternate Subject ID');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_visitdate',      7, 'date',    'Visit date');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_visitage',       8, 'float',   'Age at visit');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_name',         9, 'text',    'Project name');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_code',        10, 'integer', 'Project code');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_description', 11, 'text',    'Project description');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_description',    12, 'text',    'Wave description');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_reknr',          13, 'integer', 'Wave REK Nr.');
 
 UPDATE metacolumns SET descr = '(visitdate - birthdate); #Y+(#M*365/12+#D)/365' where id = 'visit_visitage';
+UPDATE metacolumns SET descr = 'Subject id at the time of data collection for older projects with different ID systems than now, and participants that have joined several projects under different IDs.' where id = 'visit_alt_subj_id';
