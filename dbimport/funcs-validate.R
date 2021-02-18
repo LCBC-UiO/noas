@@ -56,9 +56,7 @@ validate_table <- function(path){
 #' @param files vector of file paths
 #' @param type type of table 'cross', 'long', or 'repeated'
 check_keys <- function(files, type){
-  type <- match.arg(type, c("cross", "long", "repeated"))
-  
-  keys <- eval(parse(text=paste0("prim_keys()$", type)))
+  keys <- prim_keys()[[type]]
   
   tabs <- lapply(files, read_dbtable, nrows = 1)
 
