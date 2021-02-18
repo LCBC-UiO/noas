@@ -14,6 +14,7 @@ read_dbtable <- function(path, ...){
              header = TRUE,
              sep = "\t", 
              stringsAsFactors = FALSE, 
+             quote = "",
              ...)
 }
 

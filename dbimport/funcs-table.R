@@ -36,6 +36,8 @@ insert_table <- function(x,
   
   dbtab <- sprintf("%s_%s", type, table_name)
   n_before <- get_rows(con, dbtab)
+
+  x$`_noas_data_source` <- file.path(basename(table_dir), basename(file_name))
   
   tryCatch({
     k <- DBI::dbWriteTable(

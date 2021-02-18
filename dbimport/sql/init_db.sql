@@ -164,6 +164,7 @@ CREATE TABLE visits (
   subject_id int NOT NULL,
   project_id text,
   wave_code float,
+  alt_subj_id text,
   visitdate  date,
   visitnumber int,
   CONSTRAINT visit_pk PRIMARY KEY(subject_id, wave_code, project_id),
@@ -253,6 +254,7 @@ CREATE VIEW core_core AS
     subjects.birthdate AS subject_birthdate,
     subjects.sex       AS subject_sex,
     subjects.shareable AS subject_shareable,
+    visits.alt_subj_id AS visit_alt_subj_id,
     visits.visitdate   AS visit_visitdate,
     visits.visitnumber AS visit_visitnumber,
     waves.reknr        AS wave_reknr,
@@ -286,14 +288,18 @@ INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wa
 INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'subject_sex',          3, 'text',    'Sex');
 INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'subject_birthdate',    4, 'date',    'Birth date');
 INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'subject_shareable',    5, 'integer', 'Shareable');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_visitdate',      6, 'date',    'Visit date');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_visitage',       7, 'float',   'Age at visit');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_visitnumber',    8, 'integer', 'Visit number');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_name',         9, 'text',    'Project name');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_code',        10, 'integer', 'Project code');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_description', 11, 'text',    'Project description');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_description',    12, 'text',    'Wave description');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_reknr',          13, 'integer', 'Wave REK Nr.');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_alt_subj_id',    6, 'text',    'Alternate Subject ID');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_visitdate',      7, 'date',    'Visit date');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_visitage',       8, 'float',   'Age at visit');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_visitnumber',    9, 'integer', 'Visit number');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_name',        10, 'text',    'Project name');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_code',        11, 'integer', 'Project code');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_description', 12, 'text',    'Project description');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_description',    13, 'text',    'Wave description');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_reknr',          14, 'integer', 'Wave REK Nr.');
 
 UPDATE metacolumns SET descr = '(visitdate - birthdate); #Y+(#M*365/12+#D)/365' where id = 'visit_visitage';
+UPDATE metacolumns SET descr = 'Subject id at the time of data collection for older projects with different ID systems than now, and participants that have joined several projects under different IDs.' where id = 'visit_alt_subj_id';
 UPDATE metacolumns SET descr = 'A counter per subject which is strictly increasing with visit date.' where id = 'visit_visinumber';
+UPDATE metacolumns SET descr = 'Date of cognitive testing. If this is missing, MRI date. If both these are missing, an approximate date is calculated using birthdate and age recorded at testing (old data).' where id = 'visit_visitdate';
+UPDATE metacolumns SET descr = 'Sequential counter of visits. Increases by one for each time a subject is assessed for a project wave of data collection.' where id = 'visit_visitnumber';

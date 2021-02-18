@@ -3,10 +3,8 @@
   "category": "mri",
   "columns": [
     {
-      "longname": "site name",
       "id": "site_name",
-      "type": "text",
-      "idx": 1
+      "type": "text"
     }
   ]
 }
