@@ -15,8 +15,7 @@ source("dbimport/funcs-read.R", echo = FALSE)
 validate_table <- function(path){
   table <- basename(path)
   
-  type <- read_noas_json(path)
-  type <- table_type(type$table_type)
+  type <- noas_table_type(path)
   
   if(is.na(type)){
     warning("Table '", table, "' does not have a correctly specified 'table_type' in the' _noas.json'",
