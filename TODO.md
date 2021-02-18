@@ -5,8 +5,6 @@
 
 ## features
   * support PGS data: should be dynamically computed for 
-  * write metadata: set column "id" and "type" in json 
-    * no "idx" and "title"
   * reading metadata: setting types in db 
     * expand types, currently only integer, float, text and date
       * bool?
@@ -18,13 +16,13 @@
     * currently some MOAS data is derived from raw data based on r-functions in two packages:
       * https://github.com/LCBC-UiO/Questionnaires
       * https://github.com/LCBC-UiO/Conversions
-    * can we refractor them to use let DB run them?
+    * can we refractor them to let DB run them?
   * visits table:
     * timepoint: column of computed sequential visit number
   * other core-like tables
     * table with project_id and wave_code information (like test versions etc)
     * table with information on MRI scanners
-  * meta-data: add checks for validation of cell values within known correct values
+  * meta-data: add checks for validation of cell values within known correct values (enum)
   * dbimport/sql/webui: write non-critical errors/warnings to metadata
     * number of omitted rows
     * exceptions when importing metadata
