@@ -301,3 +301,5 @@ INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wa
 UPDATE metacolumns SET descr = '(visitdate - birthdate); #Y+(#M*365/12+#D)/365' where id = 'visit_visitage';
 UPDATE metacolumns SET descr = 'Subject id at the time of data collection for older projects with different ID systems than now, and participants that have joined several projects under different IDs.' where id = 'visit_alt_subj_id';
 UPDATE metacolumns SET descr = 'A counter per subject which is strictly increasing with visit date.' where id = 'visit_visinumber';
+UPDATE metacolumns SET descr = 'Date of cognitive testing. If this is missing, MRI date. If both these are missing, an approximate date is calculated using birthdate and age recorded at testing (old data).' where id = 'visit_visitdate';
+UPDATE metacolumns SET descr = 'Sequential counter of visits. Increases by one for each time a subject is assessed for a project wave of data collection.' where id = 'visit_visitnumber';
