@@ -68,7 +68,7 @@ insert_metadata <- function(meta_info, con){
       invisible(FALSE)
     }
   )
-  
+
   # abort on error
   if(!ok) stop(call. = FALSE)
   
