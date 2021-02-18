@@ -16,9 +16,6 @@
     * currently some MOAS data is derived from raw data based on r-functions in two packages:
       * https://github.com/LCBC-UiO/Questionnaires
       * https://github.com/LCBC-UiO/Conversions
-    * can we refractor them to let DB run them?
-  * visits table:
-    * timepoint: column of computed sequential visit number
   * other core-like tables
     * table with project_id and wave_code information (like test versions etc)
     * table with information on MRI scanners
