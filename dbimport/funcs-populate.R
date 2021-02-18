@@ -24,10 +24,12 @@ populate_tables <- function(con){
 
   # Find top-level folders
   tabs <- list.dirs(db_dir, recursive = FALSE, full.names = TRUE)
-  tabs  <- normalizePath(tabs)
-  
+  tabs <- normalizePath(tabs)
+  tabs <- sapply(tabs, file.mtime)
+  tabs <- tabs[rev(order(tabs))]
+
   # Loop through and populate
-  k <- sapply(tabs, populate_table, con = con)
+  k <- sapply(names(tabs), populate_table, con = con)
 }
 
 populate_table <- function(table, con = NULL) {
