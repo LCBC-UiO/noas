@@ -82,7 +82,7 @@ clean: dberase
 update:
 	$(RM) webui/www/static_info.json
 	git pull
-	$(MAKE) webui/www/static_info.json
+	$(MAKE) all
 
 # ------------------------------------------------------------------------------
 
