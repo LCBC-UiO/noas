@@ -254,6 +254,7 @@ CREATE VIEW core_core AS
     subjects.birthdate AS subject_birthdate,
     subjects.sex       AS subject_sex,
     subjects.shareable AS subject_shareable,
+    visits.alt_subj_id   AS visit_alt_subj_id,
     visits.visitdate   AS visit_visitdate,
     visits.visitnumber AS visit_visitnumber,
     waves.reknr        AS wave_reknr,
