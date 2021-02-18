@@ -72,6 +72,8 @@ insert_metadata <- function(meta_info, con){
   # abort on error
   if(!ok) stop(call. = FALSE)
   
+  set_metacol(con, meta_info$id, "noas_data_source", "descr",
+              "File in the NOAS data repository where the information comes from")
   invisible(ok)
 }
 
