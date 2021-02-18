@@ -14,23 +14,23 @@ source('dbimport/funcs-populate.R')
   ifelse(v == "", default, v)
 }
 
-args <- commandArgs(trailingOnly = TRUE)
-if(length(args) > 0) args <- match.arg(args, c("unicode", "ascii"))
-
 curr_date <- date()
-noas_import_id <- .get_env("NOAS_IMPORT_ID", 
-                           sprintf("undefined (%s)", as.character(curr_date)))
+noas_import_id <- .get_env(
+  "NOAS_IMPORT_ID",
+  sprintf("undefined (%s)", as.character(curr_date))
+)
 
 # establish connection
 con <- moasdb_connect()
 
 j <- DBI::dbExecute(
-  con, 
-  read_sql("dbimport/sql/init_db.sql"))
+  con,
+  read_sql("dbimport/sql/init_db.sql")
+)
 
 # NOTE: convert these parameters to positional command line arguments?
 invisible(DBI::dbExecute(
-  con, 
+  con,
   "INSERT INTO versions (id, label, ts) VALUES ($1, $2, $3)",
   params=list(
     noas_import_id,
@@ -44,8 +44,10 @@ populate_core(con)
 cat(" ----------\n")
 populate_tables(con)
 
-stopifnot(DBI::dbExecute(con, "UPDATE versions SET import_completed=TRUE WHERE id = $1",
-                         params=list(noas_import_id)) == 1)
+stopifnot(
+  DBI::dbExecute(con,
+                 "UPDATE versions SET import_completed=TRUE WHERE id = $1",
+                 params=list(noas_import_id)) == 1)
 
 spent <- round(as.numeric(Sys.time() - start, units="mins"), 3)
 
