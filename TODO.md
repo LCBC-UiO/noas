@@ -30,9 +30,6 @@
 
 ## cleanup/refactoring
   * dbimport: use tryCatch for error handling?
-  * dbimport: check if metadata fields are known; error on unknown keys
-    * example: for all keys `if (key %in% c("title", "category", "descr")) {...} else { stop(...) }`
-  * data/import: remove quotes from strings 
   * data: remove pgs from the git data history
     * and symlink pgs like mri
   * dbimport: log verbosity when adding large number of repeated tables
