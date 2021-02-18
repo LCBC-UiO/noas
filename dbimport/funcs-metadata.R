@@ -155,3 +155,29 @@ valid_json_fields <- function(type = NULL, subset = NULL){
   if(is.null(subset)) return(x[[type]])
   x[[type]][[subset]]
 }
+
+# noas json ----
+
+# find if _noas.json is there
+# Read it in 
+read_noas_json <- function(dir_path){
+  noas <- file.path(dir_path, "_noas.json")
+  
+  if(!file.exists(noas))
+    stop("Table '", basename(dir_path), "' does not have a '_noas.json' file, and cannot be added",
+         call. = FALSE)
+  
+  # find type of data from json
+  jsonlite::read_json(noas, simplifyVector = TRUE) 
+}
+
+noas_table_type <- function(dir_path){
+  json <- read_noas_json(dir_path)
+  switch(
+    json$table_type,
+    "longitudinal" = "long",
+    "cross-sectional" = "cross",
+    "repeated" = "repeated",
+    stop("Unrecognised table type ", json$table_type, call. = FALSE)
+  )
+}
