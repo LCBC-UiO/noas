@@ -52,6 +52,7 @@
     <div id="btnSave" class="button button-minwidth ml-auto">Save selection</div>
     <div id="btnDlCsv" class="button button-minwidth">Download CSV</div>
     <div id="btnDlXlsx" class="button button-minwidth">Download Excel</div>
+    <div type="button" class="button button-minwidth" data-toggle="modal" data-target="#modalExportR">Download R</div>
     <div type="button" class="button button-minwidth" data-toggle="modal" data-target="#modalImportR">Import to R</div>
     <div id="btnBack" class="button button-minwidth">Back</div>
   </div>
@@ -74,7 +75,53 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
         </div>
-  
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modalExportR">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Download encrypted .R file</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>This file contains the password-protected data for safe and easy use outside of TSD.</p>
+          <hr>
+          <div class="row px-5">
+            <div class="col">
+              <span class="h4 text-muted">data ID:</span>
+              <span class="h4 text-muted" id="spExportRId">cc59fb2_9a02e6f</span>
+              <div class="mt-3"></div>
+              <span class="h4 text-muted">password:</span>
+              <span class="display-4 text-monospace" id="spExportRPw"></span>
+            </div>
+            <div class="col-auto">
+              <button type="button" class="btn btn-lg btn-secondary" id="btnDlEncR">Download encrypted .R file</button>
+              <!-- hidden download link, will get clicked by js -->
+              <a class="hidden" id="aDlEncR"></a>
+            </div>
+          </div>
+          <hr>
+          <div class="text-muted">
+            <p>
+              Instructions:
+              <ol>
+                <li>Take a picture of the password with your phone or write it down.*</li>
+                <li>Download the .R file.</li>
+                <li>Export the .R file from TSD to your local computer.</li>
+                <li>Load the .R file from R.<br> Example: <code id="codeExportRSource"></code></li>
+                <li>Enter the password from above.</li>
+                <li>Your sensitive data is loaded into R.</li>
+              </ol>
+            </p>
+            <p>*) Do NOT store the password and the encrypted .R file on the same device. (Don't take a screenshot. Don't take a picture, if it is getting synced to your PC.)</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
       </div>
     </div>
   </div>
@@ -192,6 +239,60 @@
           }
           return await r.text();
         })();
+        // encrypted R
+        {
+          const sel = getSelection();
+          const md5 = lcGetSelHash(sel);
+          const did = lcGetDataVersionFnStr(sel);
+          const dat = lcGetDateFnStr(Date.parse(g_table_data.date));
+          const dlfn = `noas_enc_${dat}_${md5}_${did}.R`;
+          document.getElementById("spExportRId").innerHTML = `${dat}_${md5}_${did}`;
+          document.getElementById("codeExportRSource").innerHTML = `source("~/Download/${dlfn}")`;
+          // set password
+          const password = (function(){
+            /* https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array */
+            function _shuffleArray(array) {
+              for (var i = array.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+              }
+              return array;
+            }
+            const tokens = [
+              "abcdefghijkmnopqrstuvwxyz",
+              "ABCDEFGHJKLMNOPQRSTUVWXYZ",
+              "0123456789",
+              "-/?!+*"
+            ];
+            const lengths = [3,3,2,2]; // number of tokens from each group
+            return _shuffleArray(
+              tokens
+                .map(e => _shuffleArray(e.split("")))
+                .map((e,i) => e.slice(0, lengths[i]))
+                .flat()
+            ).join("");
+          })();
+          document.getElementById("spExportRPw").innerHTML = password;
+          // download button
+          document.getElementById("btnDlEncR").onclick = async () => {
+            const r = await fetch(`r_enc.php?password=${password}`, {
+              method: "POST",
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(sel),
+            });
+            let blob = await r.blob();
+            let edlr = document.getElementById("aDlEncR");
+            edlr.download = dlfn;
+            edlr.href = 'data:application/octet-stream,' + window.URL.createObjectURL(blob);
+            edlr.click();
+
+            //window.location.assign(file);
+          }
+        }
       } catch (e) {
         showAlertBox(AlertType.ERROR, ["Unable to get table data.", e.toString()]);
         console.log("err: " + e.toString());
@@ -218,7 +319,7 @@
     document.getElementById("btnCopyR").onclick = (e) => {
       let ec = document.getElementById("codeImportR");
       navigator.clipboard.writeText(ec.innerText);
-    }
+    };
     document.getElementById("btnBack").addEventListener('click', () => {history.back()});
     
     // enable bs tooltips
