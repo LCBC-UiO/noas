@@ -266,6 +266,7 @@
             const lengths = [3,3,2,2]; // number of tokens from each group
             return _shuffleArray(
               tokens
+                .map(e => e+e+e)
                 .map(e => _shuffleArray(e.split("")))
                 .map((e,i) => e.slice(0, lengths[i]))
                 .flat()
