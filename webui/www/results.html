@@ -274,7 +274,7 @@
           document.getElementById("spExportRPw").innerHTML = password;
           // download button
           document.getElementById("btnDlEncR").onclick = async () => {
-            const r = await fetch(`r_enc.php?password=${password}`, {
+            const r = await fetch(`r_enc.php?password=${encodeURIComponent(password)}`, {
               method: "POST",
               headers: {
                 'Content-Type': 'application/json'
