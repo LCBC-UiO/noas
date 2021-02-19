@@ -244,7 +244,7 @@
           const dat = lcGetDateFnStr(Date.parse(g_table_data.date));
           const dlfn = `noas_enc_${dat}_${md5}_${did}.R`;
           document.getElementById("spExportRId").innerHTML = `${dat}_${md5}_${did}`;
-          document.getElementById("codeExportRSource").innerHTML = `source("~/Download/${dlfn}")`;
+          document.getElementById("codeExportRSource").innerHTML = `source("~/Downloads/${dlfn}")`;
           // set password
           const password = (function(){
             /* https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array */
