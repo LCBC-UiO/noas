@@ -49,6 +49,7 @@ run_webui: all
 	DBPORT=$(DBPORT) \
 	DBNAME=$(DBNAME) \
 	DBUSER=$(DBUSER) \
+	R_LIBS_USER=$(BASEDIR)/3rdparty/r_packages \
 	3rdparty/lighttpd/sbin/lighttpd -D -f lighttpd.conf
 
 .PHONY: run_db
