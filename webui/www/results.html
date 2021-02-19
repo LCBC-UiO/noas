@@ -281,10 +281,11 @@
               },
               body: JSON.stringify(sel),
             });
-            let blob = await r.blob();
+            // rewrite the blobs content-type
+            let blob = new Blob([await (await r.blob()).arrayBuffer()], {type : 'application/octet-stream'});
             let edlr = document.getElementById("aDlEncR");
             edlr.download = dlfn;
-            edlr.href = 'data:application/octet-stream,' + window.URL.createObjectURL(blob);
+            edlr.href = window.URL.createObjectURL(blob);
             edlr.click();
 
             //window.location.assign(file);
