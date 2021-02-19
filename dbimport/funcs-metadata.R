@@ -54,7 +54,7 @@ insert_metadata <- function(meta_info, con){
           alter_col(con, meta_info$id, meta_info$table_type, mc$id, mc$type)
         }
         # set any of these fields in metacolumns
-        for (mc_key in valid_json_fields("column", "metatable")) {
+        for (mc_key in valid_json_fields("columns", "metatable")) {
           # has field?
           if (is.null(mc[[mc_key]])) {
             next()
