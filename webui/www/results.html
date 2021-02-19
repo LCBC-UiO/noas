@@ -130,20 +130,17 @@
     var g_table = null;
 
     async function getTableData(selection) {
-      async function _getData(url) {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
+      const response = await fetch("./query_json.php", {
+        method: 'POST',
+        headers: {
           'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(selection),
-        });
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-        return response.json();
+        },
+        body: JSON.stringify(selection),
+      });
+      if (!response.ok) {
+        throw new Error(response.statusText);
       }
-      let jsn = await _getData("./query_json.php");
+      const jsn = await response.json();
       if (!jsn.status_ok) {
         throw Error(jsn.status_msg);
       }
