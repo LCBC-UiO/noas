@@ -108,13 +108,31 @@ str_count <- function(char, s) {
 }
 
 
-noas_table_type <- function(dir_path){
-  json <- read_noas_json(dir_path)
-  switch(
-    json$table_type,
+# noas json ----
+
+# find if _noas.json is there
+# Read it in and check fields
+read_noas_json <- function(dir_path){
+  noas <- file.path(dir_path, "_noas.json")
+  # check if we have the file
+  if(!file.exists(noas))
+    stop("Table '", basename(dir_path), "' does not have a '_noas.json' file, and cannot be added")
+  # read json
+  jsn <- jsonlite::read_json(noas, simplifyVector = TRUE) 
+  # check if we have table_type
+  if (! jsn$table_type %in% names(k_noas_table_types())) {
+    stop(sprintf("Unrecognised table type \"%s\" in file \"%s\"", jsn$table_type, dir_path))
+  }
+  jsn
+}
+
+k_noas_table_types <- function() c(
     "longitudinal" = "long",
     "cross-sectional" = "cross",
-    "repeated" = "repeated",
-    stop("Unrecognised table type ", json$table_type)
+    "repeated" = "repeated"
   )
+
+# translate JOSN table_type to short db table_type
+noas_dbtable_type <- function(jsntable_type){
+  k_noas_table_types()[jsntable_type]
 }

@@ -35,7 +35,10 @@ populate_table <- function(table, con = NULL) {
     validate_table(table)
   )
   cat(basename(table), "\n")
-  type <- noas_table_type(table)
+
+  type <- noas_dbtable_type(
+    read_noas_json(table)$table_type
+  )
 
   if(length(table) > 0){
     
