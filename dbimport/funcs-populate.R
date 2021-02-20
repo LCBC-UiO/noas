@@ -4,8 +4,7 @@ source("dbimport/funcs-table.R", echo = FALSE)
 # populate functions ----
 populate_core <- function(con){
   if(is.null(con)){
-    stop("Database connection not supplied, table not populated.",
-         call. = FALSE)
+    stop("Database connection not supplied, table not populated.")
   }
   
   # Add all core tables
@@ -15,8 +14,7 @@ populate_core <- function(con){
 
 populate_tables <- function(con){
   if(is.null(con)){
-    stop("Database connection not supplied, table not populated.",
-         call. = FALSE)
+    stop("Database connection not supplied, table not populated.")
   }
   
   db_dir <- file.path(read_config()$TABDIR,
@@ -51,7 +49,7 @@ populate_table <- function(table, con = NULL) {
     # loop through all table .tsv and add
     j <- sapply(table, func, con = con) 
   }else{
-    stop("There are no tables in", basename(table), call. = FALSE)
+    stop("There are no tables in", basename(table))
   }
 }
 

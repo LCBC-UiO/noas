@@ -35,7 +35,7 @@ insert_metadata <- function(meta_info, con){
                     meta_info$id,
                     field,
                     meta_info$jsn[[field]]
-            ), call. = FALSE
+            )
           )
         }
       }
@@ -47,7 +47,7 @@ insert_metadata <- function(meta_info, con){
           stop(sprintf("insert_metadata table=%s missing id in column=%d",
                        meta_info$id,
                        i
-          ), call. = FALSE)
+          ))
         }
         # set column type?
         if (!is.null(mc[["type"]])) {
@@ -70,7 +70,7 @@ insert_metadata <- function(meta_info, con){
   )
 
   # abort on error
-  if(!ok) stop(call. = FALSE)
+  if(!ok) stop()
   
   set_metacol(con, meta_info$id, "noas_data_source", "descr",
               "File in the NOAS data repository where the information comes from")
@@ -82,8 +82,7 @@ validate_metadata <- function(meta_info){
   tab_fields <- which(!names(meta_info) %in% valid_json_fields("table", "all"))
   if(length(tab_fields) > 0){
     stop("There are unsupported fields in the meta-data: ",
-         paste0(names(meta_info)[tab_fields], collapse=", "),
-         call. = FALSE)
+         paste0(names(meta_info)[tab_fields], collapse=", "))
   }
   
   if("columns" %in% names(meta_info)){
@@ -92,8 +91,7 @@ validate_metadata <- function(meta_info){
     
     if(length(col_idx) > 0){
       stop("There are unsupported fields in the meta-data for columns: ",
-           paste0(col_fields[col_idx], collapse=", "),
-           call. = FALSE)
+           paste0(col_fields[col_idx], collapse=", "))
     }
   }
 }
@@ -123,7 +121,7 @@ set_metacol <- function(con, table_id, col_id, key, value) {
               col_id,
               key,
               value
-      ), call. = FALSE
+      )
     )
   }
   invisible(TRUE)
@@ -164,8 +162,7 @@ read_noas_json <- function(dir_path){
   noas <- file.path(dir_path, "_noas.json")
   
   if(!file.exists(noas))
-    stop("Table '", basename(dir_path), "' does not have a '_noas.json' file, and cannot be added",
-         call. = FALSE)
+    stop("Table '", basename(dir_path), "' does not have a '_noas.json' file, and cannot be added")
   
   # find type of data from json
   jsonlite::read_json(noas, simplifyVector = TRUE) 
@@ -178,6 +175,6 @@ noas_table_type <- function(dir_path){
     "longitudinal" = "long",
     "cross-sectional" = "cross",
     "repeated" = "repeated",
-    stop("Unrecognised table type ", json$table_type, call. = FALSE)
+    stop("Unrecognised table type ", json$table_type)
   )
 }

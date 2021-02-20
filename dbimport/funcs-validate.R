@@ -43,7 +43,7 @@ validate_table <- function(path){
     invisible(TRUE)
   } else {
     stop("Validation failed: ", 
-        "Tables cannot be added to the database.\n", call. = FALSE)
+        "Tables cannot be added to the database.\n")
   }
     
 }

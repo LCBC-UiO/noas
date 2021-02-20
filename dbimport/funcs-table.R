@@ -48,8 +48,7 @@ insert_table <- function(x,
       ...
     )
     
-    if(k == FALSE) stop("\ntmp table not initiated\n",
-                        call. = FALSE)
+    if(k == FALSE) stop("\ntmp table not initiated\n")
     
     template <- read_sql(template_path)
     
