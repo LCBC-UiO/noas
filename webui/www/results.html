@@ -52,7 +52,7 @@
     <div id="btnSave" class="button button-minwidth ml-auto">Save selection</div>
     <div id="btnDlCsv" class="button button-minwidth">Download CSV</div>
     <div id="btnDlXlsx" class="button button-minwidth">Download Excel</div>
-    <div type="button" class="button button-minwidth" data-toggle="modal" data-target="#modalExportR">Download R</div>
+    <div type="button" class="button button-minwidth" data-toggle="modal" data-target="#modalExportR" id="btnModalEncR">Download R</div>
     <div type="button" class="button button-minwidth" data-toggle="modal" data-target="#modalImportR">Import to R</div>
     <div id="btnBack" class="button button-minwidth">Back</div>
   </div>
@@ -90,15 +90,20 @@
           <p>This file contains the password-protected data for safe and easy use outside of TSD.</p>
           <hr>
           <div class="row px-5">
-            <div class="col">
+            <div class="col-lg-7">
               <span class="h4 text-muted">data ID:</span>
               <span class="h4 text-muted" id="spExportRId">cc59fb2_9a02e6f</span>
               <div class="mt-3"></div>
               <span class="h4 text-muted">password:</span>
               <span class="display-4 text-monospace" id="spExportRPw"></span>
             </div>
-            <div class="col-auto">
+            <div class="col-lg-5 mt-3">
               <button type="button" class="btn btn-lg btn-secondary" id="btnDlEncR">Download encrypted .R file</button>
+              <div id="dProgress" class="progress w-100">
+                <div class="progress-bar progress-bar-striped progress-bar-animated w-100">
+                  preparing download...
+                </div>
+              </div>
               <!-- hidden download link, will get clicked by js -->
               <a class="hidden" id="aDlEncR"></a>
             </div>
@@ -266,6 +271,7 @@
             const lengths = [3,3,2,2]; // number of tokens from each group
             return _shuffleArray(
               tokens
+                .map(e => e+e+e)
                 .map(e => _shuffleArray(e.split("")))
                 .map((e,i) => e.slice(0, lengths[i]))
                 .flat()
@@ -274,6 +280,8 @@
           document.getElementById("spExportRPw").innerHTML = password;
           // download button
           document.getElementById("btnDlEncR").onclick = async () => {
+            document.getElementById("dProgress").classList.remove("hidden");
+            document.getElementById("btnDlEncR").classList.add("hidden");
             const r = await fetch(`r_enc.php?password=${encodeURIComponent(password)}`, {
               method: "POST",
               headers: {
@@ -286,9 +294,9 @@
             let edlr = document.getElementById("aDlEncR");
             edlr.download = dlfn;
             edlr.href = window.URL.createObjectURL(blob);
+            document.getElementById("dProgress").classList.add("hidden");
+            document.getElementById("btnDlEncR").classList.remove("hidden");
             edlr.click();
-
-            //window.location.assign(file);
           }
         }
       } catch (e) {
@@ -314,6 +322,10 @@
       const dlfilename = `noas_query_${lcGetDateFnStr(Date.parse(g_table_data.date))}_${md5}_${did}.xlsx`;
       g_table.download("xlsx", dlfilename, {sheetName:`NOAS download ${md5} ${did}`});
     });
+    document.getElementById("btnModalEncR").onclick = (e) => {
+      document.getElementById("btnDlEncR").classList.remove("hidden");
+      document.getElementById("dProgress").classList.add("hidden");
+    };
     document.getElementById("btnCopyR").onclick = (e) => {
       let ec = document.getElementById("codeImportR");
       navigator.clipboard.writeText(ec.innerText);
