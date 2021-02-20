@@ -106,3 +106,15 @@ str_count <- function(char, s) {
 `%||%` <- function(a, b){
   if( !any(c(is.null(a), is.na(a)))) a else b
 }
+
+
+noas_table_type <- function(dir_path){
+  json <- read_noas_json(dir_path)
+  switch(
+    json$table_type,
+    "longitudinal" = "long",
+    "cross-sectional" = "cross",
+    "repeated" = "repeated",
+    stop("Unrecognised table type ", json$table_type)
+  )
+}

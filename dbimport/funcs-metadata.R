@@ -167,14 +167,3 @@ read_noas_json <- function(dir_path){
   # find type of data from json
   jsonlite::read_json(noas, simplifyVector = TRUE) 
 }
-
-noas_table_type <- function(dir_path){
-  json <- read_noas_json(dir_path)
-  switch(
-    json$table_type,
-    "longitudinal" = "long",
-    "cross-sectional" = "cross",
-    "repeated" = "repeated",
-    stop("Unrecognised table type ", json$table_type)
-  )
-}
