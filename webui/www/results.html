@@ -64,9 +64,9 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Copy&paste into R</h4>
-          <span data-toggle="tooltip" data-placement="top" title="Copy to clipboard">
-            <button id="btnCopyR" type="button" class="ml-4 btn" data-dismiss="modal">
-              <span class="fas fa-copy fa-lg"></span> 
+          <span data-toggle="tooltip" data-placement="top" title="Select all">
+            <button id="btnMarkAllR" type="button" class="ml-4 btn">
+              <span class="fas fa-paint-roller fa-lg"></span> 
             </button>
           </span>
           <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -188,7 +188,7 @@
       });
     };
 
-    function getSelection() {
+    function getDataSelection() {
       try {
         const storage = window.sessionStorage.getItem('selection');
         if (!storage) {
@@ -204,7 +204,7 @@
 
     async function loadTable() {
       try {
-        const sel = getSelection();
+        const sel = getDataSelection();
         lcProgressInit("noasTable");
         // make db query
         g_table_data = await getTableData(sel);
@@ -243,7 +243,7 @@
         })();
         // encrypted R
         {
-          const sel = getSelection();
+          const sel = getDataSelection();
           const md5 = lcGetSelHash(sel);
           const did = lcGetDataVersionFnStr(sel);
           const dat = lcGetDateFnStr(Date.parse(g_table_data.date));
@@ -307,16 +307,16 @@
 
     loadTable();
 
-    document.getElementById("btnSave").addEventListener('click', () => lcSaveSelection(getSelection()));
+    document.getElementById("btnSave").addEventListener('click', () => lcSaveSelection(getDataSelection()));
     document.getElementById("btnDlCsv").addEventListener('click', function() {
-      const sel = getSelection();
+      const sel = getDataSelection();
       const md5 = lcGetSelHash(sel)
       const did = lcGetDataVersionFnStr(sel);
       const dlfilename = `noas_query_${lcGetDateFnStr(Date.parse(g_table_data.date))}_${md5}_${did}.csv`;
       g_table.download("csv", dlfilename, {delimiter:";"});
     });
     document.getElementById("btnDlXlsx").addEventListener('click', function() {
-      const sel = getSelection();
+      const sel = getDataSelection();
       const md5 = lcGetSelHash(sel);
       const did = lcGetDataVersionFnStr(sel);
       const dlfilename = `noas_query_${lcGetDateFnStr(Date.parse(g_table_data.date))}_${md5}_${did}.xlsx`;
@@ -326,9 +326,10 @@
       document.getElementById("btnDlEncR").classList.remove("hidden");
       document.getElementById("dProgress").classList.add("hidden");
     };
-    document.getElementById("btnCopyR").onclick = (e) => {
-      let ec = document.getElementById("codeImportR");
-      navigator.clipboard.writeText(ec.innerText);
+    document.getElementById("btnMarkAllR").onclick = (e) => {
+      window.getSelection().selectAllChildren(
+        document.getElementById("codeImportR") 
+      );
     };
     document.getElementById("btnBack").addEventListener('click', () => {history.back()});
     
