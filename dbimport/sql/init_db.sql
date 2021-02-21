@@ -199,6 +199,17 @@ CREATE TABLE metacolumns (
   CONSTRAINT metacolumns_fk FOREIGN KEY (metatable_id) REFERENCES metatables(id)
 );
 
+-- metadata how to merge repeated tables
+
+CREATE TABLE meta_repeated_grps (
+  metatable_id text,
+  metacolumn_id text,
+  repeated_group text NOT NULL,
+  CONSTRAINT meta_repeated_grps_pk PRIMARY KEY (metatable_id),
+  CONSTRAINT meta_repeated_grps_table_fk FOREIGN KEY (metatable_id) REFERENCES metatables(id),
+  CONSTRAINT meta_repeated_grps_col_fk   FOREIGN KEY (metatable_id, metacolumn_id) REFERENCES metacolumns(metatable_id, id)
+);
+
 -- metadata for data version
 
 CREATE TABLE versions (
