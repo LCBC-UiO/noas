@@ -98,7 +98,8 @@ read_metadata <- function(dirpath){
   # Generate some information based on file location
   meta$id <- basename(dirpath)
   meta$raw_data <- dirpath
-  meta$table_type <- noas_table_type(dirpath)
-
+  # read _noas.json
+  jsn <- read_noas_json(dirpath)
+  meta$table_type <- noas_dbtable_type(jsn$table_type)
   return(meta)
 }

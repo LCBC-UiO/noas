@@ -15,15 +15,20 @@ source("dbimport/funcs-read.R", echo = FALSE)
 validate_table <- function(path){
   table <- basename(path)
   
-  type <- noas_table_type(path)
-  
-  if(is.na(type)){
-    warning("Table '", table, "' does not have a correctly specified 'table_type' in the' _noas.json'",
-         call. = FALSE)
-    type_check = FALSE
-  }else{
-    type_check = TRUE
-  }
+  type_check <- FALSE
+  db_table_type <- NA
+  tryCatch(
+    {
+      jsn <- read_noas_json(path)
+      db_table_type <- noas_dbtable_type(jsn$table_type)
+      type_check <- TRUE
+      invisible()
+    }, error=function(e) {
+      # rethrow any error as warning
+      warning(e$message, call. = FALSE)
+      invisible()
+    }
+  )
   
   ffiles <- list.files(path, full.names = TRUE)
   ffiles <- ffiles[!grepl("json$", ffiles)]
@@ -31,7 +36,7 @@ validate_table <- function(path){
 
   delim <- check_delim(ffiles)
   
-  keys <- check_keys(ffiles, type)
+  keys <- check_keys(ffiles, db_table_type)
   
   cols <- TRUE
   # TODO: temporarily disabled until noas_data is in sync
@@ -43,7 +48,7 @@ validate_table <- function(path){
     invisible(TRUE)
   } else {
     stop("Validation failed: ", 
-        "Tables cannot be added to the database.\n", call. = FALSE)
+        "Tables cannot be added to the database.\n")
   }
     
 }

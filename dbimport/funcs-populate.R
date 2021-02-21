@@ -4,8 +4,7 @@ source("dbimport/funcs-table.R", echo = FALSE)
 # populate functions ----
 populate_core <- function(con){
   if(is.null(con)){
-    stop("Database connection not supplied, table not populated.",
-         call. = FALSE)
+    stop("Database connection not supplied, table not populated.")
   }
   
   # Add all core tables
@@ -15,8 +14,7 @@ populate_core <- function(con){
 
 populate_tables <- function(con){
   if(is.null(con)){
-    stop("Database connection not supplied, table not populated.",
-         call. = FALSE)
+    stop("Database connection not supplied, table not populated.")
   }
   
   db_dir <- file.path(read_config()$TABDIR,
@@ -37,21 +35,22 @@ populate_table <- function(table, con = NULL) {
     validate_table(table)
   )
   cat(basename(table), "\n")
-  type <- noas_table_type(table)
+
+  noas_jsn <- read_noas_json(table)
 
   if(length(table) > 0){
     
     func <- switch(
-      type, 
-      "long" = add_long_table,
-      "cross" = add_cross_table,
+      noas_jsn$table_type, 
+      "longitudinal" = add_long_table,
+      "cross-sectional" = add_cross_table,
       "repeated" = add_repeated_table
     )
     
     # loop through all table .tsv and add
-    j <- sapply(table, func, con = con) 
+    j <- sapply(table, func, con = con, noas_jsn = noas_jsn)
   }else{
-    stop("There are no tables in", basename(table), call. = FALSE)
+    stop("There are no tables in", basename(table))
   }
 }
 

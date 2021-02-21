@@ -14,7 +14,7 @@
 cat_table_success <- function(success, names){
   
   if(length(success) != length(names))
-    stop("success and names are not of equal length", call. = FALSE)
+    stop("success and names are not of equal length")
   
   if(length(success) == 0){
     spec_cat(sprintf("%2s No tables addes", codes()$note()))
