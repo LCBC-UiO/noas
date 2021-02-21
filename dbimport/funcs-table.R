@@ -125,7 +125,8 @@ get_data <- function(table_dir, key_vars) {
 #' @return success of adding, invisible
 #' @export
 add_cross_table <- function(table_dir, 
-                            con){
+                            con,
+                            noas_jsn){
   
   # retrieve the data
   data <- get_data(table_dir, prim_keys()$cross)
@@ -163,7 +164,8 @@ add_cross_table <- function(table_dir,
 #' @return success of adding, invisible
 #' @export
 add_long_table <- function(table_dir, 
-                           con
+                           con,
+                           noas_jsn
 ){
   # retrieve the data
   data <- get_data(table_dir, prim_keys()$long)
@@ -201,7 +203,8 @@ add_long_table <- function(table_dir,
 #' @return success of adding, invisible
 #' @export
 add_repeated_table <- function(table_dir, 
-                               con
+                               con,
+                               noas_jsn
 ){
   
   # retrieve the data
@@ -221,10 +224,26 @@ add_repeated_table <- function(table_dir,
                               visit_id_column = fourth_key
               )
   )
-  
+  # add repeated_group ?
+  if (!is.null(noas_jsn$repeated_group)) {
+    sql <- sprintf("INSERT into meta_repeated_grps (metatable_id, metacolumn_id, repeated_group) VALUES ($1, $2, $3)")
+    params <- list(
+      basename(table_dir),
+      fourth_key,
+      noas_jsn$repeated_group
+    )
+    if (DBI::dbExecute(con, sql, params=params) != 1) {
+      stop(
+        sprintf("insert_metadata meta_repeated_grps table=%s field=%s values=(%s,%s,%s)",
+          basename(table_dir),
+          fourth_key,
+          noas_jsn$repeated_group
+        )
+      )
+    }
+  }
   # insert meta-data if applicable
   k <- fix_metadata(table_dir, con)
-  
   invisible(j)
 }
 
