@@ -12,7 +12,7 @@ select
       , 'import_completed', (select import_completed from vers)
     )
     ,'tables'
-    , array_to_json(array_agg(row_to_json(t)))
+    , array_to_json(array_agg(json_strip_nulls(row_to_json(t))))
     ,'project'
     , (select '{$prj}')
   ) as meta_json
@@ -27,6 +27,15 @@ from (
     (
 			select row_count(mt.sampletype, mt.id, '{$prj}')
 		) as n,
+    (
+      select jsonb_build_object(
+        'col_id'
+        , substr(metacolumn_id, 2) -- skip '_'-prefix in column ID
+        ,'group_id'
+        , repeated_group
+      )
+      from meta_repeated_grps where metatable_id = mt.id
+		) as repeated_group,
     (
     select 
       array_to_json(array_agg(row_to_json(d)))
