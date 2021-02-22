@@ -1,3 +1,4 @@
 {
-  "table_type": "repeated"
+  "table_type": "repeated",
+  "repeated_group": "mri"
 }
