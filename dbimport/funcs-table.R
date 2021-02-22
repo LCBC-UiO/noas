@@ -30,6 +30,7 @@ insert_table <- function(x,
                          visit_id_column = NULL,
                          ...){
   stopifnot(is.data.frame(x))
+  stopifnot(nrow(x) > 0)
 
   table_name <- basename(table_dir)
   template_path <- sql_templates(type)
