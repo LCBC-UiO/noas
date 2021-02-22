@@ -38,9 +38,9 @@ For `Proj1` 24 observations are available, and 28 for `Proj2`.
 
 
 ### Repeated
-There is a single repeated table in the test-data, the `mri_aparc` table. 
-This file has 100 observations, of which 5 are omitted upon import for not existing in the visits table. 
-The fourth column identifying repeating within wave observations is `site_name`.
+There are two repeated tables in the test-data, the `mri_aparc` and `mri_aseg` table. 
+They both have 100 observations, of which 5 are omitted upon import for not existing in the visits table. 
+The fourth column identifying repeating within wave observations is `site_name` for both tables.
 
 There are 70 observations for `Proj1` and 25 for `Proj2`.
 60 observations are shareable, 19 are not, and 16 are `NA`.
@@ -48,7 +48,7 @@ There are 70 observations for `Proj1` and 25 for `Proj2`.
 
 ## Import
 
-Expected output.
+Expected output. The order of imported changes may vary, as tables are imported by modification date.
 
 ```sh
 v       core                           subjects_w1.tsv          (    0/   50 omitted)
@@ -58,18 +58,25 @@ v       core                                 waves.tsv          (    0/    3 omi
 v       core                             visits_w1.tsv          (    0/   92 omitted)
 v       core                             visits_w2.tsv          (    0/   68 omitted)
  ----------
+mri_aseg 
+v   repeated             mri_aseg         mri_aseg.tsv          (    5/  100 omitted)
+v   metadata             mri_aseg                added                               
+cvlt 
 v       long                 cvlt        MemC_01.0.tsv          (    0/   50 omitted)
 v       long                 cvlt        MemP_01.0.tsv          (    0/   50 omitted)
 v       long                 cvlt        MemP_02.0.tsv          (    0/   50 omitted)
 v   metadata                 cvlt                added                               
+mri_aparc 
+v   repeated            mri_aparc        mri_aparc.tsv          (    5/  100 omitted)
+v   metadata            mri_aparc                added                               
+ehi 
 v       long                  ehi        MemP_01.0.tsv          (    5/   10 omitted)
 v       long                  ehi        MemP_02.0.tsv          (    5/   10 omitted)
 v   metadata                  ehi                added                               
-v   repeated            mri_aparc        mri_aparc.tsv          (    5/  100 omitted)
-v   metadata            mri_aparc                added                               
+pgs_ad 
 v      cross               pgs_ad           pgs_ad.tsv          (    5/   40 omitted)
 v   metadata               pgs_ad                added                               
 
  ---------- 
-v   Database populated in  0.012 minutes 
+v   Database populated in  0.016 minutes         
 ```

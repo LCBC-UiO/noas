@@ -22,14 +22,15 @@ source("dbimport/funcs-metadata.R", echo = FALSE)
 #' @param table_dir name to give the table
 #' @param template_path path to the SQL template to apply
 #' @param ... additional arguments to \code{\link[DBI]{dbWriteTable}}
-insert_table <- function(x, 
-                         con, 
+insert_table <- function(x,
+                         con,
                          type,
-                         table_dir, 
-                         file_name, 
+                         table_dir,
+                         file_name,
                          visit_id_column = NULL,
                          ...){
   stopifnot(is.data.frame(x))
+  stopifnot(nrow(x) > 0)
 
   table_name <- basename(table_dir)
   template_path <- sql_templates(type)
@@ -37,13 +38,13 @@ insert_table <- function(x,
   dbtab <- sprintf("%s_%s", type, table_name)
   n_before <- get_rows(con, dbtab)
 
-  x$`_noas_data_source` <- file.path(basename(table_dir), basename(file_name))
+  x$`_noas_data_source` <- file.path(table_name, basename(file_name))
   
   tryCatch({
     k <- DBI::dbWriteTable(
-      con, 
-      paste0("tmp_", table_name), 
-      x, 
+      con,
+      sprintf("tmp_%s", table_name),
+      x,
       row.name = FALSE,
       ...
     )
@@ -66,8 +67,7 @@ insert_table <- function(x,
   },  
   finally = DBI::dbExecute(
     con,
-    paste0("drop table if exists tmp_",
-           table_name,";")
+    sprintf("drop table if exists tmp_%s;", table_name)
   )
   )
   
@@ -90,12 +90,12 @@ get_data <- function(table_dir, key_vars) {
   ft <- lapply(ffiles, read_dbtable)
   
   # Turn all to character
-  ft <- lapply(ft, function(x) as.data.frame(lapply(x, as.character), 
+  ft <- lapply(ft, function(x) as.data.frame(lapply(x, as.character),
                                              stringsAsFactors = FALSE))
   
   # remove table name from headers
   ft <- rename_table_headers(ft, key_vars)
-  
+
   # Alter subject_id and wave_code back to correct type
   ft <- lapply(ft, function(x){
     x$subject_id <- as.integer(x$subject_id)
@@ -114,7 +114,7 @@ get_data <- function(table_dir, key_vars) {
 #' Add long table to database
 #' 
 #' will add a long table to the 
-#' databse using \code{\link{insert_table_cross}}, 
+#' database using \code{\link{insert_table_cross}}, 
 #' also removing the table name from the 
 #' headers for cleaner representation in the 
 #' data base.
@@ -124,27 +124,23 @@ get_data <- function(table_dir, key_vars) {
 #'
 #' @return success of adding, invisible
 #' @export
-add_cross_table <- function(table_dir, 
-                            con,
-                            noas_jsn){
+add_cross_table <- function(table_dir, con){
   
   # retrieve the data
   data <- get_data(table_dir, prim_keys()$cross)
   
   # insert data to db
-  j <- mapply(insert_table, 
-              x = data$data, 
+  j <- mapply(insert_table,
+              x = data$data,
               file_name = data$files,
-              MoreArgs = list(con = con, 
+              MoreArgs = list(con = con,
                               type = "cross",
                               table_dir = table_dir
               )
   )
   
   # insert meta_data if applicable
-  k <- fix_metadata(table_dir, 
-                    con
-  )
+  k <- fix_metadata(table_dir, con)
   
   invisible(j)
 }
@@ -163,27 +159,22 @@ add_cross_table <- function(table_dir,
 #'
 #' @return success of adding, invisible
 #' @export
-add_long_table <- function(table_dir, 
-                           con,
-                           noas_jsn
-){
+add_long_table <- function(table_dir, con){
   # retrieve the data
   data <- get_data(table_dir, prim_keys()$long)
   
   # insert data to db
-  j <- mapply(insert_table, 
-              x = data$data, 
+  j <- mapply(insert_table,
+              x = data$data,
               file_name = data$files,
-              MoreArgs = list(con = con, 
+              MoreArgs = list(con = con,
                               type = "long",
                               table_dir = table_dir
               )
   )
-
+  
   # insert meta_data if applicable
-  data <- fix_metadata(table_dir, 
-                       con
-  )
+  data <- fix_metadata(table_dir, con)
   
   invisible(j)
 }
@@ -202,10 +193,7 @@ add_long_table <- function(table_dir,
 #'
 #' @return success of adding, invisible
 #' @export
-add_repeated_table <- function(table_dir, 
-                               con,
-                               noas_jsn
-){
+add_repeated_table <- function(table_dir, con){
   
   # retrieve the data
   data <- get_data(table_dir, prim_keys()$repeated)
@@ -215,18 +203,19 @@ add_repeated_table <- function(table_dir,
   stopifnot(length(fourth_key) == 1)
   
   # insert data to db
-  j <- mapply(insert_table, 
-              x = data$data, 
+  j <- mapply(insert_table,
+              x = data$data,
               file_name = data$files,
-              MoreArgs = list(con = con, 
+              MoreArgs = list(con = con,
                               type = "repeated",
                               table_dir = table_dir,
                               visit_id_column = fourth_key
               )
   )
   # add repeated_group ?
+  noas_jsn <- read_noas_json(table_dir)
   if (!is.null(noas_jsn$repeated_group)) {
-    sql <- sprintf("INSERT into meta_repeated_grps (metatable_id, metacolumn_id, repeated_group) VALUES ($1, $2, $3)")
+    sql <- "INSERT into meta_repeated_grps (metatable_id, metacolumn_id, repeated_group) VALUES ($1, $2, $3)"
     params <- list(
       basename(table_dir),
       fourth_key,
@@ -259,8 +248,9 @@ add_core_tab <- function(tab, con){
     
     n_before <- get_rows(con, tab)
     
-    j <- DBI::dbWriteTable(con, tab, x, 
-                           append = TRUE, row.name = FALSE)
+    j <- DBI::dbWriteTable(con, tab, x,
+                           append = TRUE,
+                           row.name = FALSE)
     
     
     n_after <- get_rows(con, tab)

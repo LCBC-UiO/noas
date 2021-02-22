@@ -9,7 +9,6 @@ source("dbimport/funcs-read.R", echo = FALSE)
 #' raw data folder for inclusion.
 #'
 #' @param path path to folder
-#' @param type type of table, one of 'long', 'cross' or 'repeated'
 #'
 #' @export
 validate_table <- function(path){
@@ -38,9 +37,7 @@ validate_table <- function(path){
   
   keys <- check_keys(ffiles, db_table_type)
   
-  cols <- TRUE
-  # TODO: temporarily disabled until noas_data is in sync
-  #cols <- check_cols(ffiles)
+  cols <- check_cols(ffiles)
 
   if(all(c(delim, keys, cols, type_check))){
     message("\nValidation succeess: ", 
