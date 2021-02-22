@@ -48,7 +48,7 @@ There are 70 observations for `Proj1` and 25 for `Proj2`.
 
 ## Import
 
-Expected output.
+Expected output. The order of imported changes may vary, as tables are imported by modification date.
 
 ```sh
 v       core                           subjects_w1.tsv          (    0/   50 omitted)
