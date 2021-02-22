@@ -31,24 +31,23 @@ populate_tables <- function(con){
 }
 
 populate_table <- function(table, con = NULL) {
+  cat(basename(table), "\n")
+  
   suppressMessages(
     validate_table(table)
   )
-  cat(basename(table), "\n")
-
-  noas_jsn <- read_noas_json(table)
 
   if(length(table) > 0){
     
     func <- switch(
-      noas_jsn$table_type, 
+      read_noas_json(table)$table_type,
       "longitudinal" = add_long_table,
       "cross-sectional" = add_cross_table,
       "repeated" = add_repeated_table
     )
     
     # loop through all table .tsv and add
-    j <- sapply(table, func, con = con, noas_jsn = noas_jsn)
+    j <- sapply(table, func, con = con)
   }else{
     stop("There are no tables in", basename(table))
   }

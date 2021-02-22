@@ -126,11 +126,13 @@ read_noas_json <- function(dir_path){
   jsn
 }
 
-k_noas_table_types <- function() c(
+k_noas_table_types <- function(){
+  c(
     "longitudinal" = "long",
     "cross-sectional" = "cross",
     "repeated" = "repeated"
   )
+}
 
 # translate JOSN table_type to short db table_type
 noas_dbtable_type <- function(jsntable_type){

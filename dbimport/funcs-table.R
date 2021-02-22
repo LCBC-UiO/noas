@@ -124,9 +124,7 @@ get_data <- function(table_dir, key_vars) {
 #'
 #' @return success of adding, invisible
 #' @export
-add_cross_table <- function(table_dir, 
-                            con,
-                            noas_jsn){
+add_cross_table <- function(table_dir, con){
   
   # retrieve the data
   data <- get_data(table_dir, prim_keys()$cross)
@@ -163,10 +161,7 @@ add_cross_table <- function(table_dir,
 #'
 #' @return success of adding, invisible
 #' @export
-add_long_table <- function(table_dir, 
-                           con,
-                           noas_jsn
-){
+add_long_table <- function(table_dir, con){
   # retrieve the data
   data <- get_data(table_dir, prim_keys()$long)
   
@@ -202,10 +197,7 @@ add_long_table <- function(table_dir,
 #'
 #' @return success of adding, invisible
 #' @export
-add_repeated_table <- function(table_dir, 
-                               con,
-                               noas_jsn
-){
+add_repeated_table <- function(table_dir, con){
   
   # retrieve the data
   data <- get_data(table_dir, prim_keys()$repeated)
@@ -225,8 +217,9 @@ add_repeated_table <- function(table_dir,
               )
   )
   # add repeated_group ?
+  noas_jsn <- read_noas_json(table_dir)
   if (!is.null(noas_jsn$repeated_group)) {
-    sql <- sprintf("INSERT into meta_repeated_grps (metatable_id, metacolumn_id, repeated_group) VALUES ($1, $2, $3)")
+    sql <- "INSERT into meta_repeated_grps (metatable_id, metacolumn_id, repeated_group) VALUES ($1, $2, $3)"
     params <- list(
       basename(table_dir),
       fourth_key,
