@@ -115,7 +115,7 @@ get_data <- function(table_dir, key_vars) {
 #' Add long table to database
 #' 
 #' will add a long table to the 
-#' databse using \code{\link{insert_table_cross}}, 
+#' database using \code{\link{insert_table_cross}}, 
 #' also removing the table name from the 
 #' headers for cleaner representation in the 
 #' data base.
