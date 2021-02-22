@@ -29,8 +29,6 @@ validate_table <- function(path){
     }
   )
   
-  table_name <- check_name(table)
-
   ffiles <- list.files(path, full.names = TRUE)
   ffiles <- ffiles[!grepl("json$", ffiles)]
   exts <- sapply(ffiles, check_table_ext) 
@@ -41,7 +39,7 @@ validate_table <- function(path){
   
   cols <- check_cols(ffiles)
 
-  if(all(c(delim, keys, cols, type_check, table_name))){
+  if(all(c(delim, keys, cols, type_check))){
     message("\nValidation succeess: ", 
         "Tables can safely be added to the database.\n")
     invisible(TRUE)
@@ -50,17 +48,6 @@ validate_table <- function(path){
         "Tables cannot be added to the database.\n")
   }
     
-}
-
-check_name <- function(table_name){
-  k <- grepl(table_name, DBI::.SQL92Keywords, ignore.case = TRUE)
-  k <- any(k)
-  
-  if(k)
-    warning("Table name is a SQL keyword. Choose another name.",
-            call. = FALSE)
-  
-  !k
 }
 
 #' Check if primary keys are set correctly
