@@ -1,7 +1,5 @@
 
 ## priority list  
-  * fixing long table names
-  * fix old data so they pass new validation
 
 ## features
   * support PGS data: should be dynamically computed for 
@@ -39,6 +37,3 @@
 ## potential problems
   * dbimport/sql: how to connect multiple repeated tables?
     * problem: without referencing each others visit_id, the query will split their data into separate rows
-  * name conflicts
-    * sql: if table name is sql keyword?
-
