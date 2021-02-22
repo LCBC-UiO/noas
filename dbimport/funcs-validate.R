@@ -9,7 +9,6 @@ source("dbimport/funcs-read.R", echo = FALSE)
 #' raw data folder for inclusion.
 #'
 #' @param path path to folder
-#' @param type type of table, one of 'long', 'cross' or 'repeated'
 #'
 #' @export
 validate_table <- function(path){
