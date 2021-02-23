@@ -1,15 +1,18 @@
 
 ## priority list  
 
+
 ## features
-  * support PGS data: should be dynamically computed for 
   * reading metadata: setting types in db 
     * expand types, currently only integer, float, text and date
       * bool?
+  * support PGS data: should be dynamically computed for 
     * time is imported as integer currently
     * "duration" type => "as.character" for now?
-  * dbimport/sql: how to handle undefined visits for long/repeated?
-    * currently, rows are silently discarded if (subj_id, project_id, wave_code) is not defined in core
+  * dbimport/sql/webui: write non-critical errors/warnings to metadata
+    * number of omitted rows
+    * exceptions when importing metadata
+    * show warnings for each table in web UI
   * compute derived data
     * currently some MOAS data is derived from raw data based on r-functions in two packages:
       * https://github.com/LCBC-UiO/Questionnaires
@@ -18,22 +21,16 @@
     * table with project_id and wave_code information (like test versions etc)
     * table with information on MRI scanners
   * meta-data: add checks for validation of cell values within known correct values (enum)
-  * dbimport/sql/webui: write non-critical errors/warnings to metadata
-    * number of omitted rows
-    * exceptions when importing metadata
-    * show warnings for each table in web UI
+
 
 ## cleanup/refactoring
   * dbimport: use tryCatch for error handling?
   * data: remove pgs from the git data history
     * and symlink pgs like mri
-  * dbimport: log verbosity when adding large number of repeated tables
-    * the data are already in single subject/wave files, so adding them this way to the DB would be convenient
-    * this floods the import log though.
 
 ## bugs
-  * webui: fourth column for repeated tables should appear as the first column.
+  * webui: fourth column for repeated tables should appear as the first column. (idx = -1?)
   
 ## potential problems
-  * dbimport/sql: how to connect multiple repeated tables?
-    * problem: without referencing each others visit_id, the query will split their data into separate rows
+  * Repeated fourth table: can we have a way for it to always be selected (to be sure rows are distinguishable)
+    * how to not to duplicate?
