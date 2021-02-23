@@ -71,14 +71,15 @@ check_keys <- function(files, type){
     }
   }
   
-  tabs <- !sapply(tabs, function(x) all((names(x) %in% keys)[1:length(keys)]))
+  nams <- lapply(tabs, function(x) !(keys %in% names(x)))
 
-  if(any(tabs)){
+  if(any(unlist(nams))){
     warning("Some tables are missing necessary primary columns.\n", call. = FALSE)
-    
-    k <- lapply(which(!tabs), 
+    k <- which(sapply(nams, function(x) any(x)))
+    k <- lapply(k, 
                 function(x) list(file = files[x],
-                                 missing = prim_keys()$long[nams[[x]]]))
+                                 missing = keys[nams[[x]]])
+    )
     j <- lapply(k, cat_miss_key) 
     return(FALSE)
   }else{
