@@ -97,6 +97,9 @@ validate_metadata <- function(meta_info){
 }
 
 alter_col <- function(con, table_id, table_type, col_id, col_type){
+  # Return TRUE is col is text, everything is imported as text
+  if(col_type == "text") return(TRUE)
+  
   # Need the USING part because all columns are imported as string at first
   # https://stackoverflow.com/questions/13170570/change-type-of-varchar-field-to-integer-cannot-be-cast-automatically-to-type-i
   sql_cmd <- sprintf('ALTER TABLE %s_%s ALTER COLUMN "_%s" TYPE %s USING (_%s::%s);',
