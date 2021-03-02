@@ -166,17 +166,15 @@ populate_tables <- function(con){
   tabs <- tabs[rev(order(tabs))]
 
   # Loop through and populate
-  sapply(names(tabs), populate_table, con = con)
+  k <- sapply(names(tabs), populate_table, con = con)
 }
 
 populate_table <- function(table, con = NULL) {
   cat(basename(table), "\n")
 
-  suppressMessages(
-    validate_table(table)
-  )
-
   noas_jsn <- read_noas_json(table)
+  
+  validate_table(table, noas_jsn)
 
   if(length(table) > 0){
     

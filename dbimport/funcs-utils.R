@@ -157,7 +157,6 @@ str_count <- function(char, s) {
   if( !any(c(is.null(a), is.na(a)))) a else b
 }
 
-
 # noas json ----
 
 # find if _noas.json is there

@@ -1,7 +1,8 @@
 #!/usr/bin/env Rscript
 
 options(
-  #warn = 2, # error on warnings
+  # warn = 2, # error on warnings
+  valid_success = FALSE, #should validation success be printed
   "stringsAsFactors" = FALSE
 )
 

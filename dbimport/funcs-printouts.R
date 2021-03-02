@@ -58,19 +58,16 @@ cat_err_cols <- function(x){
     ""
   }
   
-  y <- sprintf("\nTable %s\n%s\n%s", x$file, miss, extra)
-  j <- sapply(y, spec_cat)
+  sprintf("\nTable %s\n%s\n%s", x$file, miss, extra)
 }
 
 cat_miss_key <- function(x){
-  y <- sprintf("\nMissing primary columns:\t%s", 
-              paste(sapply(x$missing, wrap_string), collapse = ", "))
-  warning(y, call. = FALSE)
+  sprintf("\nMissing primary columns:\t%s", 
+          paste(sapply(x$missing, wrap_string), collapse = ", "))
 }
 
 cat_delim_err <- function(x){
-  y <- sprintf("\n%s Table %s", codes()$fail, x$file, x$key)
-  j <- sapply(y, spec_cat)
+  sprintf("\n%s Table %s", codes()$fail, x$file, x$key)
 }
 
 
