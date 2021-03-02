@@ -166,7 +166,7 @@ populate_tables <- function(con){
   tabs <- tabs[rev(order(tabs))]
 
   # Loop through and populate
-  k <- sapply(names(tabs), populate_table, con = con)
+  sapply(names(tabs), populate_table, con = con)
 }
 
 populate_table <- function(table, con = NULL) {
