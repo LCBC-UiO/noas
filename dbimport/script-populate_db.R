@@ -1,13 +1,12 @@
 #!/usr/bin/env Rscript
 
 options(
-  "stringsAsFactors" = FALSE,
-  warn = 2 # error on warnings
+  #warn = 2, # error on warnings
+  "stringsAsFactors" = FALSE
 )
 
 # get helper functions
-source('dbimport/funcs-utils.R')
-source('dbimport/funcs-populate.R')
+source('dbimport/funcs-table.R')
 
 .get_env <- function(envkey, default) {
   v <- Sys.getenv(envkey)

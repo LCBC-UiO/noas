@@ -1,7 +1,29 @@
-source("dbimport/funcs-read.R", echo = FALSE)
 source("dbimport/funcs-utils.R", echo = FALSE)
 
-# meta data ----
+#' Read in _metadata.json
+#'
+#' @param dirpath dir where _metadata.json lives
+read_metadata <- function(dirpath){
+  meta <- list()
+  ffile <- file.path(dirpath, "_metadata.json")
+  if(file.exists(ffile)){
+    meta$jsn <- jsonlite::read_json(ffile,
+                                    simplifyVector = FALSE)
+  }else(
+    meta <- list(
+      title = basename(dirpath)
+    )
+  )
+
+  # Generate some information based on file location
+  meta$id <- basename(dirpath)
+  meta$raw_data <- dirpath
+  # read _noas.json
+  jsn <- read_noas_json(dirpath)
+  meta$table_type <- noas_dbtable_type(jsn$table_type)
+  return(meta)
+}
+
 #' Inserts meta-information to the DB
 #' 
 #' Insert meta-information provided
