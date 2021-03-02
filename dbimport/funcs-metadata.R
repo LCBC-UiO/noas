@@ -35,17 +35,17 @@ read_metadata <- function(dirpath){
 insert_metadata <- function(meta_info, con){
   # if no meta-data return with success
   if (is.null(meta_info$jsn)) return(TRUE)
-  
+
   ok <- tryCatch(
     {
       # Check if meta-data are correctly formatted
       validate_metadata(meta_info$jsn)
-      
+
       # add metatables
       for (field in valid_json_fields("table", "metatable")) {
         # if no field, skip iteration
         if (is.null(meta_info$jsn[[field]])) next() 
-        
+
         sql <- sprintf("UPDATE metatables SET %s = $1 WHERE id = $2", field)
         params <- list(
           meta_info$jsn[[field]],
@@ -81,6 +81,7 @@ insert_metadata <- function(meta_info, con){
           if (is.null(mc[[mc_key]])) {
             next()
           }
+          
           set_metacol(con, meta_info$id, mc[["id"]], mc_key, mc[[mc_key]])
         }
       }
