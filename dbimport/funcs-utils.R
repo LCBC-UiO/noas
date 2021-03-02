@@ -185,5 +185,7 @@ k_noas_table_types <- function(){
 
 # translate JOSN table_type to short db table_type
 noas_dbtable_type <- function(jsntable_type){
-  k_noas_table_types()[jsntable_type]
+  type <- k_noas_table_types()[jsntable_type]
+  stopifnot(!is.na(type))
+  type
 }
