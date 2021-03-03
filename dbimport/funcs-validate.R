@@ -1,6 +1,5 @@
 source("dbimport/funcs-utils.R", echo = FALSE)
 source("dbimport/funcs-printouts.R", echo = FALSE)
-source("dbimport/funcs-read.R", echo = FALSE)
 
 #' Validate NOAS table
 #' 
@@ -11,43 +10,40 @@ source("dbimport/funcs-read.R", echo = FALSE)
 #' @param path path to folder
 #'
 #' @export
-validate_table <- function(path){
-  table <- basename(path)
-  
-  type_check <- FALSE
-  db_table_type <- NA
+validate_table <- function(path, noas_jsn, verbose = getOption("valid_success")){
+
   tryCatch(
     {
-      jsn <- read_noas_json(path)
-      db_table_type <- noas_dbtable_type(jsn$table_type)
+      db_table_type <- noas_dbtable_type(noas_jsn$table_type)
       type_check <- TRUE
-      invisible()
-    }, error=function(e) {
-      # rethrow any error as warning
+    }, error = function(e) {
+      type_check <- FALSE
       warning(e$message, call. = FALSE)
-      invisible()
     }
   )
   
   ffiles <- list.files(path, full.names = TRUE)
   ffiles <- ffiles[!grepl("json$", ffiles)]
-  exts <- sapply(ffiles, check_table_ext) 
-
-  delim <- check_delim(ffiles)
   
+  exts <- all(sapply(ffiles, check_table_ext))
+  deli <- check_delim(ffiles)
   keys <- check_keys(ffiles, db_table_type)
-  
   cols <- check_cols(ffiles)
 
-  if(all(c(delim, keys, cols, type_check))){
-    message("\nValidation succeess: ", 
-        "Tables can safely be added to the database.\n")
-    invisible(TRUE)
+  if(all(c(deli, keys, cols, exts, type_check))){
+    
+    if(is.null(verbose)){
+      verbose <- TRUE
+    }
+    
+    if(verbose)
+      message("\nValidation succeess: ", 
+              "Tables can safely be added to the database.\n")
   } else {
     stop("Validation failed: ", 
-        "Tables cannot be added to the database.\n")
+        "Tables cannot be added to the database.\n", 
+        call. = FALSE)
   }
-    
 }
 
 #' Check if primary keys are set correctly
@@ -66,25 +62,26 @@ check_keys <- function(files, type){
   if(type == "repeated"){
     nns <- sapply(tabs, function(x) names(x)[4])
     if(length(unique(nns)) != 1){
-      warning("Forth column is not the same across tables as required in repeated tables.\n", call. = FALSE)
-      return(FALSE)
+      stop("Forth column is not the same across tables as required in repeated tables.\n",
+           call. = FALSE)
     }
   }
   
   nams <- lapply(tabs, function(x) !(keys %in% names(x)))
 
   if(any(unlist(nams))){
-    warning("Some tables are missing necessary primary columns.\n", call. = FALSE)
     k <- which(sapply(nams, function(x) any(x)))
     k <- lapply(k, 
                 function(x) list(file = files[x],
                                  missing = keys[nams[[x]]])
     )
-    j <- lapply(k, cat_miss_key) 
-    return(FALSE)
-  }else{
-    return(TRUE)
+    
+    stop("Some tables are missing necessary primary columns.\n",
+         sapply(k, cat_miss_key),
+         call. = FALSE)
   }
+  
+  TRUE
 }
 
 #' Check table extension
@@ -96,11 +93,10 @@ check_keys <- function(files, type){
 #' @param file file path
 check_table_ext <- function(file){
   if(!grepl("tsv$", file)){
-    warning(file, "does not have the '.tsv' extension. Files must be tab-separated.\n", call. = FALSE)
-    return(FALSE)
-  }else{
-    return(TRUE)
+    stop(file, "does not have the '.tsv' extension. Files must be tab-separated.\n",
+         call. = FALSE)
   }
+  TRUE
 }
 
 check_delim <- function(files){
@@ -136,10 +132,9 @@ check_delim <- function(files){
     return(TRUE) 
   }
 
-  warning("Not all tables have tab (\\t) as separator\n", call. = FALSE)
-  
-  k <- lapply(split(delim, file), cat_delim_err)
-  return(FALSE)
+  stop("Not all tables have tab (\\t) as separator\n",
+       lapply(split(delim, file), cat_delim_err),
+       call. = FALSE)
 }
 
 
@@ -165,8 +160,8 @@ check_cols <- function(files){
                             stringsAsFactors = FALSE)
     
     if(nrow(k_nams) == length(files)){
-      warning("Files have different number of columns, they cannot be combined.\n", call. = FALSE)
-      return(FALSE)
+      stop("Files have different number of columns, they cannot be combined.\n",
+           call. = FALSE)
     }
 
     common <- k_nams$n_nams[k_nams$n == max(k_nams$n)]
@@ -182,21 +177,18 @@ check_cols <- function(files){
             file = files[x])
     )
     
-    warning("Files contain different columns.\n", call. = FALSE)
-    j <- lapply(diff_names, cat_err_cols)
-    
-    return(FALSE)  
+    stop("Files contain different columns.\n",
+         lapply(diff_names, cat_err_cols),
+         call. = FALSE)
   }
   
   nams <- do.call(rbind, nams)
   nams <- unique(nams)
   
   if(nrow(nams) != 1){
-    warning("File columns in differing order. Make sure all files present the columns in the same sequence.\n", call. = FALSE)
-    return(FALSE)
+    stop("File columns in differing order. Make sure all files present the columns in the same sequence.\n",
+            call. = FALSE)
   } 
-  
-  return(TRUE)
-
+  TRUE
 }
 

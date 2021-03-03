@@ -11,6 +11,55 @@ moasdb_connect <- function(){
                  host=cfg$DBHOST)
 }
 
+#' Read config file
+#' 
+#' The data base has a config.txt
+#' file where some settings for the
+#' data base is set. This function
+#' reads in that file and makes
+#' available these settings for use.
+#'
+#' @return list
+#' @export
+read_config <- function() {
+  cfg <- list()
+  .add_configs <- function(cfg, fn) {
+    lines <- readLines(fn)
+
+    # remove comments
+    lines <- lines[!grepl("^#", lines)]
+    # remove empty lines
+    lines <- lines[lines != ""]
+
+    for (line in lines) {
+      line  <- gsub("#.*$", "" , line) # remove comments
+      line  <- gsub("\ *$", "" , line) # remove trailing spaces
+      if (line == "") { # skip empy lines
+        next()
+      }
+      key <- gsub("=.*$", "",  line)
+      value_quoted <- gsub("^[^=]*=", "", line)
+      value <- as.character(parse(text=value_quoted))
+      cfg[key] <- value
+    }
+    return(cfg)
+  }
+  cfg <- .add_configs(cfg, "config_default.txt")
+  if (file.exists("config.txt")) {
+    cfg <- .add_configs(cfg, "config.txt")
+  }
+  # override with any existing NOAS_XXX env variables
+  for (key in names(cfg)) {
+    nkey <- sprintf("NOAS_%s", key)
+    v <- Sys.getenv(nkey)
+    # only works for non-empty env vars
+    if (v != "") {
+      cfg[key] = v
+    }
+  }
+  return(cfg)
+}
+
 
 #' List primary keys of the table types
 #' 
@@ -34,6 +83,7 @@ sql_templates <- function(type){
          repeated = "dbimport/sql/insert_repeated_table.sql"
   )
 }
+
 
 
 #' wrap string in character
@@ -107,7 +157,6 @@ str_count <- function(char, s) {
   if( !any(c(is.null(a), is.na(a)))) a else b
 }
 
-
 # noas json ----
 
 # find if _noas.json is there
@@ -136,5 +185,7 @@ k_noas_table_types <- function(){
 
 # translate JOSN table_type to short db table_type
 noas_dbtable_type <- function(jsntable_type){
-  k_noas_table_types()[jsntable_type]
+  type <- k_noas_table_types()[jsntable_type]
+  stopifnot(!is.na(type))
+  type
 }

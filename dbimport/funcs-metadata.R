@@ -1,7 +1,29 @@
-source("dbimport/funcs-read.R", echo = FALSE)
 source("dbimport/funcs-utils.R", echo = FALSE)
 
-# meta data ----
+#' Read in _metadata.json
+#'
+#' @param dirpath dir where _metadata.json lives
+read_metadata <- function(dirpath){
+  meta <- list()
+  ffile <- file.path(dirpath, "_metadata.json")
+  if(file.exists(ffile)){
+    meta$jsn <- jsonlite::read_json(ffile,
+                                    simplifyVector = FALSE)
+  }else(
+    meta <- list(
+      title = basename(dirpath)
+    )
+  )
+
+  # Generate some information based on file location
+  meta$id <- basename(dirpath)
+  meta$raw_data <- dirpath
+  # read _noas.json
+  jsn <- read_noas_json(dirpath)
+  meta$table_type <- noas_dbtable_type(jsn$table_type)
+  return(meta)
+}
+
 #' Inserts meta-information to the DB
 #' 
 #' Insert meta-information provided
@@ -13,17 +35,17 @@ source("dbimport/funcs-utils.R", echo = FALSE)
 insert_metadata <- function(meta_info, con){
   # if no meta-data return with success
   if (is.null(meta_info$jsn)) return(TRUE)
-  
+
   ok <- tryCatch(
     {
       # Check if meta-data are correctly formatted
       validate_metadata(meta_info$jsn)
-      
+
       # add metatables
       for (field in valid_json_fields("table", "metatable")) {
         # if no field, skip iteration
         if (is.null(meta_info$jsn[[field]])) next() 
-        
+
         sql <- sprintf("UPDATE metatables SET %s = $1 WHERE id = $2", field)
         params <- list(
           meta_info$jsn[[field]],
@@ -59,6 +81,7 @@ insert_metadata <- function(meta_info, con){
           if (is.null(mc[[mc_key]])) {
             next()
           }
+          
           set_metacol(con, meta_info$id, mc[["id"]], mc_key, mc[[mc_key]])
         }
       }
