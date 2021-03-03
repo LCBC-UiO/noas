@@ -21,6 +21,8 @@
     * table with project_id and wave_code information (like test versions etc)
     * table with information on MRI scanners
   * meta-data: add checks for validation of cell values within known correct values (enum)
+  * api: do not provide data on incomplete import (metadata is ok)
+  * webui: r_enc on decryption, print "do not save your workspace ..." + link to wiki page
 
 
 ## cleanup/refactoring
