@@ -15,6 +15,7 @@ websrcs := \
 	webui/www/js/jquery.min.js \
 	webui/www/js/popper.min.js \
 	webui/www/js/solid.min.js \
+	webui/www/js/showdown.min.js \
 	webui/www/js/tabulator.min.js \
 	webui/www/js/xlsx.full.min.js \
 	webui/www/js/pdfkit.standalone.js \
