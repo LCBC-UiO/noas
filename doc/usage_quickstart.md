@@ -2,11 +2,11 @@
 # Quick Start
 (updated 08. March 2021)
 
-NOAS gives you access to LCBCs inhouse data. As an alternative to the NOAS web UI you can work dicrectly with its API or its raw .tsv files.
+NOAS gives you access to LCBCs inhouse data. As an alternative to the NOAS web UI you can work directly with its API or its raw .tsv files.
 
 ## 1) Select a project
 
-First select a project. This will determin what data you will see on the next pages. 
+First select a project. This will determine what data you will see on the next pages. 
 
 ### The "All" project
 
@@ -40,7 +40,7 @@ In NOAS, every data set "xy" has a variable "xy_noas_data_source" _(2)_. If you 
 
 ### Keep track of your data
 
-  * When you download a table from NOAS, you may want to download the selectin as well _(1)_. This file contains all info where your data was coming from. You can also use it to load a variable selection.
+  * When you download a table from NOAS, you may want to download the selection as well _(1)_. This file contains all info where your data was coming from. You can also use it to load a variable selection.
 
   * When you download data from NOAS, the default filename will contain two 7-digit hex-strings (for example `f288fbd_0d6eef2`). The first is the ID of your selection and the second is the ID of the NOAS data state. When you rename your files from NOAS, you may want to keep these two IDs.
 
