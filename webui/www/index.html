@@ -81,7 +81,7 @@ NOAS
       }
     }
 
-    // show docu
+    // show documentation
     (async function(){
       // get .md file
       const r = await fetch("./doc/usage_quickstart.md", {
@@ -91,11 +91,23 @@ NOAS
         throw new Error(r.statusText);
       }
       const text = await r.text();
-      var converter = new showdown.Converter();
+      // mini extension to fix img paths
+      var sd_custom = {
+        type: 'lang',
+        filter: function (text, converter, options) {
+          text = text.replaceAll("(./img/","(./doc/img/");
+          return text;
+        }
+      };
+      showdown.extension('noas_ext', sd_custom);
+      // create converter
+      var converter = new showdown.Converter({
+        extensions: ['noas_ext'] 
+      });
       converter.setFlavor('github');
       html = converter.makeHtml(text);
+      // append to page
       document.getElementById("docu").innerHTML = html;
     })();
-
   </script>
 </body>
