@@ -9,6 +9,7 @@
 <script type="text/javascript" src="./js//popper.min.js"></script>
 <script type="text/javascript" src="./js/bootstrap.min.js"></script>
 <script type="text/javascript" src="./js/lcalerts.js"></script>
+<script type="text/javascript" src="./js/showdown.min.js"></script>
 <title>
 NOAS
 </title>
@@ -26,6 +27,11 @@ NOAS
         </div>
       </div>
     </section>
+  </div>
+  <div class="container mt-5 mx-auto">
+    <div class="row justify-content-md-center">
+      <div id="docu" class="col-8"></div>
+    </div>
   </div>
   <script>
     // get data
@@ -74,5 +80,22 @@ NOAS
         window.location.href = `./select.html?prj=${e.target.value}`;
       }
     }
+
+    // show docu
+    (async function(){
+      // get .md file
+      const r = await fetch("./doc/usage_quickstart.md", {
+        method: "GET"
+      });
+      if (!r.ok) {
+        throw new Error(r.statusText);
+      }
+      const text = await r.text();
+      var converter = new showdown.Converter();
+      converter.setFlavor('github');
+      html = converter.makeHtml(text);
+      document.getElementById("docu").innerHTML = html;
+    })();
+
   </script>
 </body>
