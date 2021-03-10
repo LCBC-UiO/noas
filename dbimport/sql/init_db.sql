@@ -230,7 +230,7 @@ CREATE OR REPLACE FUNCTION tfun_visitnumber()
   AS
 $$
 BEGIN
-	UPDATE visits v1
+  UPDATE visits v1
   SET visitnumber = (
     with t as (
       select *
