@@ -10,11 +10,8 @@ source("dbimport/funcs-printouts.R", echo = FALSE)
 #' @param path path to folder
 #'
 #' @export
-validate_table <- function(path, noas_jsn = NULL, verbose = getOption("valid_success")){
+validate_table <- function(path, noas_jsn, verbose = getOption("valid_success")){
 
-  # if called from command line, noas_jsn is not there
-  if(is.null(noas_jsn)) noas_json <- read_noas_json(path)
-  
   tryCatch(
     {
       db_table_type <- noas_dbtable_type(noas_jsn$table_type)

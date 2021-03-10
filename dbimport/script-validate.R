@@ -19,7 +19,7 @@ if(args == "--help"){
   if(!dir.exists(path)){
     cat("Directory does not exist:\t" , path)
   }else{
-    validate_table(path)
+    validate_table(path, read_noas_json(path))
   }
 }
 
