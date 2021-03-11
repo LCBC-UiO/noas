@@ -9,7 +9,6 @@ DROP VIEW IF EXISTS core_core;
 DO
 $do$
 DECLARE
-   _tbl text;
 BEGIN
 FOR _tbl  IN
   SELECT table_name
@@ -165,8 +164,9 @@ CREATE TABLE visits (
   project_id text,
   wave_code float,
   alt_subj_id text,
-  visitdate  date,
-  visitnumber int,
+  "date"  date,
+  "number" int,
+  interval_bl float,
   CONSTRAINT visit_pk PRIMARY KEY(subject_id, wave_code, project_id),
   CONSTRAINT visit_subject_fk FOREIGN KEY (subject_id) REFERENCES subjects(id),
   CONSTRAINT visit_wave_fk FOREIGN KEY (wave_code, project_id) REFERENCES waves(code, project_id)
@@ -231,15 +231,31 @@ CREATE OR REPLACE FUNCTION tfun_visitnumber()
 $$
 BEGIN
 	UPDATE visits v1
-  SET visitnumber = (
+  SET "number" = (
     with t as (
       select *
         , row_number() over ( 
-          partition by v2.subject_id order by v2.visitdate
+          partition by v2.subject_id order by v2.date
         ) as vn 
       from visits v2
     )
     select t.vn
+    from t
+    where v1.subject_id=t.subject_id 
+      and v1.wave_code=t.wave_code 
+      and v1.project_id=t.project_id
+  );
+  UPDATE visits v1
+    SET interval_bl = (
+    with t as (
+      select *
+      	, decimal_years(age(
+      	    v1.date
+      		  , min(v1.date) over(partition by v1.subject_id order by v1.date)
+      	)) as ib
+      from visits v1
+    )
+    select t.ib
     from t
     where v1.subject_id=t.subject_id 
       and v1.wave_code=t.wave_code 
@@ -266,8 +282,9 @@ CREATE VIEW core_core AS
     subjects.sex       AS subject_sex,
     subjects.shareable AS subject_shareable,
     visits.alt_subj_id AS visit_alt_subj_id,
-    visits.visitdate   AS visit_visitdate,
-    visits.visitnumber AS visit_visitnumber,
+    visits.date        AS visit_date,
+    visits.number      AS visit_number,
+    visits.interval_bl AS visit_interval_bl,
     waves.reknr        AS wave_reknr,
     waves.description  AS wave_description,
     waves.code         AS wave_code,
@@ -275,7 +292,7 @@ CREATE VIEW core_core AS
     projects.name        AS project_name,
     projects.code        AS project_code,
     projects.description AS project_description,
-    decimal_years(age(visits.visitdate, subjects.birthdate)) AS visit_visitage
+    decimal_years(age(visits.date, subjects.birthdate)) AS visit_age
   FROM
     visits
   LEFT OUTER JOIN waves ON
@@ -300,17 +317,18 @@ INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'su
 INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'subject_birthdate',    4, 'date',    'Birth date');
 INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'subject_shareable',    5, 'integer', 'Shareable');
 INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_alt_subj_id',    6, 'text',    'Alternate Subject ID');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_visitdate',      7, 'date',    'Visit date');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_visitage',       8, 'float',   'Age at visit');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_visitnumber',    9, 'integer', 'Visit number');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_name',        10, 'text',    'Project name');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_code',        11, 'integer', 'Project code');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_description', 12, 'text',    'Project description');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_description',    13, 'text',    'Wave description');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_reknr',          14, 'integer', 'Wave REK Nr.');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_date',           7, 'date',    'Visit date');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_age',            8, 'float',   'Age at visit');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_number',         9, 'integer', 'Visit number');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_interval_bl',   10, 'float',   'Interval from baseline');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_name',        11, 'text',    'Project name');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_code',        12, 'integer', 'Project code');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'project_description', 13, 'text',    'Project description');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_description',    14, 'text',    'Wave description');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_reknr',          15, 'integer', 'Wave REK Nr.');
 
-UPDATE metacolumns SET descr = '(visitdate - birthdate); #Y+(#M*365/12+#D)/365' where id = 'visit_visitage';
+UPDATE metacolumns SET descr = '(visit_date - birthdate); #Y+(#M*365/12+#D)/365' where id = 'visit_age';
 UPDATE metacolumns SET descr = 'Subject id at the time of data collection for older projects with different ID systems than now, and participants that have joined several projects under different IDs.' where id = 'visit_alt_subj_id';
-UPDATE metacolumns SET descr = 'A counter per subject which is strictly increasing with visit date.' where id = 'visit_visinumber';
-UPDATE metacolumns SET descr = 'Date of cognitive testing. If this is missing, MRI date. If both these are missing, an approximate date is calculated using birthdate and age recorded at testing (old data).' where id = 'visit_visitdate';
-UPDATE metacolumns SET descr = 'Sequential counter of visits. Increases by one for each time a subject is assessed for a project wave of data collection.' where id = 'visit_visitnumber';
+UPDATE metacolumns SET descr = 'Date of cognitive testing. If this is missing, MRI date. If both these are missing, an approximate date is calculated using birthdate and age recorded at testing (old data).' where id = 'visit_date';
+UPDATE metacolumns SET descr = 'Sequential counter of visits. Increases by one for each time a subject is assessed for a project wave of data collection.' where id = 'visit_number';
+UPDATE metacolumns SET descr = 'Interval from baseline in decimal years' where id = 'visit_interval_bl';
