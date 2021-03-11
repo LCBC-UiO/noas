@@ -9,6 +9,7 @@ DROP VIEW IF EXISTS core_core;
 DO
 $do$
 DECLARE
+  _tbl text;
 BEGIN
 FOR _tbl  IN
   SELECT table_name
