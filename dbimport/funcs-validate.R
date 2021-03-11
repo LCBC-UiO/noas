@@ -37,8 +37,8 @@ validate_table <- function(path, noas_jsn, verbose = getOption("valid_success"))
     }
     
     if(verbose)
-      message("\nValidation succeess: ", 
-              "Tables can safely be added to the database.\n")
+      cat("\nValidation succeess: ", 
+          "Tables can safely be added to the database.\n")
   } else {
     stop("Validation failed: ", 
         "Tables cannot be added to the database.\n", 

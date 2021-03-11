@@ -11,6 +11,25 @@ moasdb_connect <- function(){
                  host=cfg$DBHOST)
 }
 
+#' Read database table
+#' 
+#' Convenience function to easily read
+#' db tables without needing to set
+#' extra arguments
+#'
+#' @param path path to table
+#' @param ... other arguments to read.table()
+#' @return data.frame
+#' @export
+read_dbtable <- function(path, ...){
+  read.table(text = readLines(path, warn = FALSE),
+             header = TRUE,
+             sep = "\t",
+             stringsAsFactors = FALSE,
+             quote = "",
+             ...)
+}
+
 #' Read config file
 #' 
 #' The data base has a config.txt
