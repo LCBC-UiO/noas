@@ -23,6 +23,7 @@
   * meta-data: add checks for validation of cell values within known correct values (enum)
   * api: do not provide data on incomplete import (metadata is ok)
   * webui: r_enc on decryption, print "do not save your workspace ..." + link to wiki page
+  * webui: option to selected num per page in results table
 
 
 ## cleanup/refactoring
