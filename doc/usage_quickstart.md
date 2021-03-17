@@ -30,10 +30,10 @@ It is highly recommended to not select more variables than you need for your ana
 
 ### Query options
 
-At the botom of the page you will find "query options". There you can choose from three different set operations: 
+At the bottom of the page you will find "query options". There you can choose from three different set operations: 
   * **All** is a full outer join between all tables.
-  * **Union** is a full outer join between the non-core tables (cvlt, mri, pgs, ...), the resulting table from which is then inner joined with the core table.
-  * **Intersection** is an inner join between all tables.
+  * **Union** is a full outer join between the selected non-core tables (cvlt, mri, pgs, ...), the resulting table from which is then inner joined with the core table.
+  * **Intersection** is an inner join between all selected tables.
 
 ![set operations](./img/usage_setop.png)
 
