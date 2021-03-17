@@ -29,16 +29,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.4350364"
-     inkscape:cx="762.18614"
+     inkscape:cx="759.88749"
      inkscape:cy="-152.24337"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g13353"
      showgrid="false"
-     inkscape:window-width="1724"
-     inkscape:window-height="893"
-     inkscape:window-x="2488"
-     inkscape:window-y="261"
-     inkscape:window-maximized="0"
+     inkscape:window-width="2488"
+     inkscape:window-height="1376"
+     inkscape:window-x="1992"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
      fit-margin-top="10"
      fit-margin-left="10"
      fit-margin-right="10"
@@ -74,7 +74,10 @@
          sodipodi:role="line" /></text>
     <g
        id="g13371"
-       transform="translate(-2.8530061,-0.30408478)">
+       transform="translate(-2.8530061,-0.30408478)"
+       inkscape:export-filename="/home/fkrull/text13375.png"
+       inkscape:export-xdpi="42.809769"
+       inkscape:export-ydpi="42.809769">
       <circle
          inkscape:export-ydpi="96"
          inkscape:export-xdpi="96"
@@ -161,16 +164,20 @@
            style="stroke-width:0.26458332">mri</tspan></text>
     </g>
     <circle
-       style="fill:#d6a2ff;fill-opacity:1;stroke:none;stroke-width:5.23353052;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       style="fill:#2b80b4;fill-opacity:1;stroke:none;stroke-width:5.23353052;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
        id="circle8480"
        cx="158.05147"
        cy="72.763832"
        r="41.020767"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
+       inkscape:export-xdpi="42.809769"
+       inkscape:export-ydpi="42.809769"
+       inkscape:export-filename="/home/fkrull/text13375.png" />
     <g
        id="g13357"
-       transform="translate(209.81144,-111.06163)">
+       transform="translate(209.81144,-111.06163)"
+       inkscape:export-filename="/home/fkrull/text13375.png"
+       inkscape:export-xdpi="42.809769"
+       inkscape:export-ydpi="42.809769">
       <circle
          inkscape:export-ydpi="96"
          inkscape:export-xdpi="96"
@@ -185,11 +192,14 @@
          inkscape:connector-curvature="0"
          id="circle8506"
          d="m 58.022817,162.82415 a 19.234617,19.234617 0 0 0 -12.408545,4.56509 19.234617,19.234617 0 0 0 -11.928988,-4.17235 19.234617,19.234617 0 0 0 -19.235001,19.23448 19.234617,19.234617 0 0 0 19.235001,19.23448 19.234617,19.234617 0 0 0 2.878894,-0.23202 12.953926,12.953926 0 0 0 12.822473,11.2236 12.953926,12.953926 0 0 0 12.900506,-11.88712 19.234617,19.234617 0 0 0 14.970144,-18.73116 19.234617,19.234617 0 0 0 -19.234484,-19.235 z"
-         style="fill:#d6a2ff;fill-opacity:1;stroke:none;stroke-width:2.454;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
+         style="fill:#2b80b4;fill-opacity:1;stroke:none;stroke-width:2.454;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
     </g>
     <g
        id="g13353"
-       transform="translate(196.85899,-108.61758)">
+       transform="translate(196.85899,-108.61758)"
+       inkscape:export-filename="/home/fkrull/text13375.png"
+       inkscape:export-xdpi="42.809769"
+       inkscape:export-ydpi="42.809769">
       <circle
          inkscape:export-ydpi="96"
          inkscape:export-xdpi="96"
@@ -204,7 +214,7 @@
          inkscape:connector-curvature="0"
          id="circle8514"
          d="m 161.5974,184.33653 a 12.953926,12.953926 0 0 0 -8.76588,3.4339 19.234617,19.234617 0 0 0 5.47254,6.91792 19.234617,19.234617 0 0 0 6.22649,-10.00145 12.953926,12.953926 0 0 0 -2.93315,-0.35037 z"
-         style="fill:#d6a2ff;fill-opacity:1;stroke:none;stroke-width:2.454;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
+         style="fill:#2b80b4;fill-opacity:1;stroke:none;stroke-width:2.454;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
       <circle
          inkscape:export-ydpi="96"
          inkscape:export-xdpi="96"
@@ -236,8 +246,9 @@
        x="152.04666"
        y="127.31593"
        id="text8545"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"><tspan
+       inkscape:export-xdpi="42.809769"
+       inkscape:export-ydpi="42.809769"
+       inkscape:export-filename="/home/fkrull/text13375.png"><tspan
          sodipodi:role="line"
          id="tspan8543"
          x="152.04666"
@@ -249,8 +260,9 @@
        x="241.48497"
        y="127.31593"
        id="text8549"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"><tspan
+       inkscape:export-xdpi="42.809769"
+       inkscape:export-ydpi="42.809769"
+       inkscape:export-filename="/home/fkrull/text13375.png"><tspan
          sodipodi:role="line"
          id="tspan8547"
          x="241.48497"
@@ -262,21 +274,23 @@
        x="324.08179"
        y="127.31593"
        id="text8553"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"><tspan
+       inkscape:export-xdpi="42.809769"
+       inkscape:export-ydpi="42.809769"
+       inkscape:export-filename="/home/fkrull/text13375.png"><tspan
          sodipodi:role="line"
          id="tspan8551"
          x="324.08179"
          y="127.31593"
          style="stroke-width:0.26458332">intersection</tspan></text>
     <text
-       inkscape:export-ydpi="96"
-       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="42.809769"
+       inkscape:export-xdpi="42.809769"
        id="text13375"
        y="127.31593"
        x="8.5146112"
        style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       xml:space="preserve"><tspan
+       xml:space="preserve"
+       inkscape:export-filename="/home/fkrull/text13375.png"><tspan
          style="stroke-width:0.26458332"
          y="127.31593"
          x="8.5146112"
