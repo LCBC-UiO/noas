@@ -1,6 +1,6 @@
 
 # Quick Start
-(updated 08. March 2021)
+(updated 17. March 2021)
 
 NOAS gives you access to LCBCs inhouse data. As an alternative to the NOAS web UI you can work directly with its API or its raw .tsv files.
 
@@ -27,6 +27,15 @@ It is highly recommended to not select more variables than you need for your ana
   * Whenever you see "n=_some number_", it refers to the number of rows.
 
   * The NOAS data gets updated over time. _(1)_ shows you the ID of the current state.
+
+### Query options
+
+At the botom of the page you will find "query options". There you can choose from three different set operations: 
+  * **All** is a full outer join between all tables.
+  * **Union** is a full outer join between the non-core tables (cvlt, mri, pgs, ...), the resulting table from which is then inner joined with the core table.
+  * **Intersection** is an inner join between all tables.
+
+![set operations](./img/usage_setop.png)
 
 ## 3) Save your NOAS results
 
