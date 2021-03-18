@@ -24,7 +24,6 @@
   * api: do not provide data on incomplete import (metadata is ok)
   * webui: r_enc on decryption, print "do not save your workspace ..." + link to wiki page
   * webui: option to selected num per page in results table
-  * webui: show full col and val names on hover in results table
 
 
 ## cleanup/refactoring
