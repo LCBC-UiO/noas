@@ -45,7 +45,7 @@
   box-sizing: border-box;
   width: 100%;
   border-bottom: 2px solid var(--colnorm2);
-  background-color: rgb(97, 22, 22);
+  background-color: var(--colnorm2);;
   color: var(--colnorm0);
   font-weight: bold;
   white-space: nowrap;
