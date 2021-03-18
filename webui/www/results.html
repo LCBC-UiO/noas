@@ -222,10 +222,12 @@
           },
           data: g_table_data.rows,
           /* replace null elements with empty string */
-          downloadDataFormatter:function(data){
+          downloadDataFormatter: function(data){
             data = JSON.parse(JSON.stringify(data).replace(/null/g, '""'))
             return data
-          }
+          },
+          tooltipsHeader: true,
+          tooltips: true,
         });
         // load "import to r" code
         document.getElementById("codeImportR").innerHTML = await (async function() {
