@@ -10,8 +10,10 @@ mkdir -p ${DBLOGFILE%/*}
 
 
 cat > ${DBDATADIR}/postgresql.conf << EOI 
+port = ${DBPORT}
 max_connections = 100                   # (change requires restart)
-shared_buffers = 32MB                   # min 128kB
+shared_buffers = 128MB                  # min 128kB
+max_locks_per_transaction = 1024        # might need increase while NOAS grows
 log_timezone = 'Europe/Oslo'
 datestyle = 'iso, mdy'
 timezone = 'Europe/Oslo'
@@ -20,7 +22,6 @@ lc_monetary = 'en_US.UTF-8'                     # locale for monetary formatting
 lc_numeric = 'en_US.UTF-8'                      # locale for number formatting
 lc_time = 'en_US.UTF-8'                         # locale for time formatting
 default_text_search_config = 'pg_catalog.english'
-port = ${DBPORT}
 EOI
 3rdparty/postgresql/bin/pg_ctl -D ${DBDATADIR} -l ${DBLOGFILE} -w start
 3rdparty/postgresql/bin/createuser -s ${DBUSER} -h localhost -p ${DBPORT} 2> /dev/null

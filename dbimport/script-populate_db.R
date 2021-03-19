@@ -22,6 +22,8 @@ noas_import_id <- .get_env(
 
 # establish connection
 con <- moasdb_connect()
+# start atomic transaction, changes in this con won't be visible until the commit
+invisible(DBI::dbBegin(con))
 
 j <- DBI::dbExecute(
   con,
@@ -48,6 +50,10 @@ stopifnot(
   DBI::dbExecute(con,
                  "UPDATE versions SET import_completed=TRUE WHERE id = $1",
                  params=list(noas_import_id)) == 1)
+
+# make db changes permanent and visible to other cons
+invisible(DBI::dbCommit(con))
+invisible(DBI::dbDisconnect(con))
 
 spent <- round(as.numeric(Sys.time() - start, units="mins"), 3)
 
