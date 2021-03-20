@@ -104,7 +104,7 @@ END;
 $total$ LANGUAGE plpgsql;
 
 -- get duration in years - used for age at visit
-CREATE OR REPLACE FUNCTION decimal_years (d interval)
+CREATE OR REPLACE FUNCTION _decimal_years (d interval)
 RETURNS float AS $yrs$
 DECLARE
 	yrs float;
@@ -225,7 +225,7 @@ CREATE TABLE versions (
 
 -- Triggers
 
-CREATE OR REPLACE FUNCTION tfun_visitnumber()
+CREATE OR REPLACE FUNCTION _update_visitnumber()
   RETURNS trigger 
   LANGUAGE PLPGSQL
   AS
@@ -250,7 +250,7 @@ BEGIN
     SET interval_bl = (
     with t as (
       select *
-      	, decimal_years(age(
+      	, _decimal_years(age(
       	    v1.date
       		  , min(v1.date) over(partition by v1.subject_id order by v1.date)
       	)) as ib
@@ -270,7 +270,7 @@ CREATE TRIGGER trigger_visitnumber
   AFTER INSERT
   ON visits
   FOR EACH STATEMENT
-  EXECUTE PROCEDURE tfun_visitnumber();
+  EXECUTE PROCEDURE _update_visitnumber();
 
 --------------------------------------------------------------------------------
 
@@ -293,7 +293,7 @@ CREATE VIEW noas_core AS
     projects.name        AS project_name,
     projects.code        AS project_code,
     projects.description AS project_description,
-    decimal_years(age(visits.date, subjects.birthdate)) AS visit_age
+    _decimal_years(age(visits.date, subjects.birthdate)) AS visit_age
   FROM
     visits
   LEFT OUTER JOIN waves ON
