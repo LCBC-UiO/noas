@@ -9,14 +9,14 @@ ALTER TABLE tmp_{table_name}
   ALTER column wave_code TYPE numeric(3,1);
 
 -- define the table
-CREATE TABLE IF NOT EXISTS repeated_{table_name} (
+CREATE TABLE IF NOT EXISTS noas_{table_name} (
   like tmp_{table_name} including ALL,
   constraint {table_name}_pk PRIMARY KEY (subject_id, project_id, wave_code, {visit_id_column}),
   constraint {table_name}_visit_fk FOREIGN KEY (subject_id, project_id, wave_code) REFERENCES visits(subject_id, project_id, wave_code)
 );
 
 -- copy temporary data to defined table
-INSERT INTO repeated_{table_name} 
+INSERT INTO noas_{table_name} 
   SELECT * FROM tmp_{table_name} t
   WHERE (t.subject_id, t.project_id, t.wave_code) IN (SELECT subject_id, project_id, wave_code FROM visits);
 
@@ -38,7 +38,7 @@ FOR _tbl IN
   SELECT column_name
       FROM information_schema.columns
     WHERE table_schema = 'public'
-      AND table_name   = 'repeated_{table_name}'
+      AND table_name   = 'noas_{table_name}'
       AND column_name  like '\_%'
 LOOP
   EXECUTE 
@@ -49,4 +49,4 @@ $do$;
 
 -- indexes
 
-CREATE INDEX IF NOT EXISTS repeated_{table_name}_idx_p ON repeated_{table_name} (project_id);
+CREATE INDEX IF NOT EXISTS noas_{table_name}_idx_p ON noas_{table_name} (project_id);

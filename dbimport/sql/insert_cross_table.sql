@@ -10,7 +10,7 @@ ALTER TABLE tmp_{table_name}
 SET client_min_messages = error;
 
 -- define the table
-CREATE TABLE IF NOT EXISTS cross_{table_name} (
+CREATE TABLE IF NOT EXISTS noas_{table_name} (
   LIKE tmp_{table_name} including ALL,
   constraint {table_name}_pk PRIMARY KEY (subject_id),
   constraint {table_name}_visit_fk FOREIGN KEY (subject_id) REFERENCES subjects(id)
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS cross_{table_name} (
 SELECT set_config('client_min_messages', 'error', true);
 
 -- copy temporary data to defined table
-INSERT INTO cross_{table_name} 
+INSERT INTO noas_{table_name} 
   SELECT * FROM tmp_{table_name} t
   WHERE (t.subject_id) IN (SELECT id FROM subjects);
 
@@ -45,7 +45,7 @@ FOR _tbl IN
   SELECT column_name
       FROM information_schema.columns
     WHERE table_schema = 'public'
-      AND table_name   = 'cross_{table_name}'
+      AND table_name   = 'noas_{table_name}'
       AND column_name  like '\_%'
 LOOP
   EXECUTE 

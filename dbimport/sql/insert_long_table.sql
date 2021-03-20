@@ -12,7 +12,7 @@ ALTER TABLE tmp_{table_name}
 SET client_min_messages = error;
 
 -- define the table
-CREATE TABLE IF NOT EXISTS long_{table_name} (
+CREATE TABLE IF NOT EXISTS noas_{table_name} (
   LIKE tmp_{table_name} including ALL,
   constraint {table_name}_pk PRIMARY KEY (subject_id, project_id, wave_code),
   constraint {table_name}_visit_fk FOREIGN KEY (subject_id, project_id, wave_code) REFERENCES visits(subject_id, project_id, wave_code)
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS long_{table_name} (
 SELECT set_config('client_min_messages', 'error', true);
 
 -- copy temporary data to defined table
-INSERT INTO long_{table_name} 
+INSERT INTO noas_{table_name} 
   SELECT * FROM tmp_{table_name} t
   WHERE (t.subject_id, t.project_id, t.wave_code) IN (SELECT subject_id, project_id, wave_code FROM visits);
 
@@ -42,7 +42,7 @@ FOR _tbl IN
   SELECT column_name
       FROM information_schema.columns
     WHERE table_schema = 'public'
-      AND table_name   = 'long_{table_name}'
+      AND table_name   = 'noas_{table_name}'
       AND column_name  like '\_%'
 LOOP
   EXECUTE 
@@ -53,4 +53,4 @@ $do$;
 
 -- indexes
 
-CREATE INDEX IF NOT EXISTS long_{table_name}_idx_p ON long_{table_name} (project_id);
+CREATE INDEX IF NOT EXISTS noas_{table_name}_idx_p ON noas_{table_name} (project_id);

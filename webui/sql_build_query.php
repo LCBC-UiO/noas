@@ -44,15 +44,15 @@ function sql_build_query($dbmeta, $sel) {
         case "core":
           break;
         case "long":
-          $sql = "LEFT OUTER JOIN long_{$tid} {$tid} ON core.subject_id={$tid}.subject_id AND core.project_id={$tid}.project_id AND core.wave_code={$tid}.wave_code";
+          $sql = "LEFT OUTER JOIN noas_{$tid} {$tid} ON core.subject_id={$tid}.subject_id AND core.project_id={$tid}.project_id AND core.wave_code={$tid}.wave_code";
           array_push($r, $sql);
           break;
         case "repeated":
-          $sql = "LEFT OUTER JOIN repeated_{$tid} {$tid} ON core.subject_id={$tid}.subject_id AND core.project_id={$tid}.project_id AND core.wave_code={$tid}.wave_code";
+          $sql = "LEFT OUTER JOIN noas_{$tid} {$tid} ON core.subject_id={$tid}.subject_id AND core.project_id={$tid}.project_id AND core.wave_code={$tid}.wave_code";
           array_push($r, $sql);
           break;
         case "cross":
-          $sql = "LEFT OUTER JOIN cross_{$tid} {$tid} ON core.subject_id={$tid}.subject_id";
+          $sql = "LEFT OUTER JOIN noas_{$tid} {$tid} ON core.subject_id={$tid}.subject_id";
           array_push($r, $sql);
           break;
         default:
@@ -84,15 +84,15 @@ function sql_build_query($dbmeta, $sel) {
         case "core":
           break;
         case "long":
-          $sql = "{$conj} core.subject_id IN (SELECT DISTINCT(subject_id) FROM long_{$tid} t WHERE t.subject_id=core.subject_id AND t.project_id=core.project_id AND t.wave_code=core.wave_code)";
+          $sql = "{$conj} core.subject_id IN (SELECT DISTINCT(subject_id) FROM noas_{$tid} t WHERE t.subject_id=core.subject_id AND t.project_id=core.project_id AND t.wave_code=core.wave_code)";
           array_push($r, $sql);
           break;
         case "repeated":
-          $sql = "{$conj} core.subject_id IN (SELECT DISTINCT(subject_id) FROM repeated_{$tid} t WHERE t.subject_id=core.subject_id AND t.project_id=core.project_id AND t.wave_code=core.wave_code)";
+          $sql = "{$conj} core.subject_id IN (SELECT DISTINCT(subject_id) FROM noas_{$tid} t WHERE t.subject_id=core.subject_id AND t.project_id=core.project_id AND t.wave_code=core.wave_code)";
           array_push($r, $sql);
           break;
         case "cross":
-          $sql = "{$conj} core.subject_id IN (SELECT DISTINCT(subject_id) FROM cross_{$tid} t WHERE t.subject_id=core.subject_id)";
+          $sql = "{$conj} core.subject_id IN (SELECT DISTINCT(subject_id) FROM noas_{$tid} t WHERE t.subject_id=core.subject_id)";
           array_push($r, $sql);
           break;
         default:
@@ -158,7 +158,7 @@ function sql_build_query($dbmeta, $sel) {
   $sql = "
 SELECT DISTINCT 
 {$sql_select}
-FROM core_core AS core
+FROM noas_core AS core
 {$sql_join}
 WHERE TRUE AND 
 {$sql_where}

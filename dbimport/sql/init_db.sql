@@ -3,7 +3,7 @@ SET client_min_messages = warning;
 
 -- Delete everything in the database
 
-DROP VIEW IF EXISTS core_core;
+DROP VIEW IF EXISTS noas_core;
 -- drop tables if they exist
 -- creates a script to delete all long_* tables
 DO
@@ -78,8 +78,8 @@ BEGIN
       $ex$
         select count(*) from %I t 
           where t.subject_id in 
-          ( select c.subject_id from core_core c where c.subject_shareable = 1 )
-      $ex$, metatable_sampletype || '_' || metatable_id
+          ( select c.subject_id from noas_core c where c.subject_shareable = 1 )
+      $ex$, 'noas' || '_' || metatable_id
     ) INTO total;
   else
     if ( metatable_sampletype = 'long' or metatable_sampletype = 'repeated' or metatable_sampletype = 'core' ) then
@@ -87,15 +87,15 @@ BEGIN
         $ex$
           select count(*) from %I t 
             where t.project_id = '%s'
-        $ex$, metatable_sampletype || '_' || metatable_id, project_id
+        $ex$, 'noas' || '_' || metatable_id, project_id
       ) INTO total;
     else -- this is for cross-sectional data:
       EXECUTE format(
         $ex$
           select count(*) from %I t
             where t.subject_id in 
-            ( select c.subject_id from core_core c where c.project_id = '%s' )
-        $ex$, metatable_sampletype || '_' || metatable_id, project_id
+            ( select c.subject_id from noas_core c where c.project_id = '%s' )
+        $ex$, 'noas' || '_' || metatable_id, project_id
       ) INTO total;
     end if;
   end if;
@@ -276,7 +276,7 @@ CREATE TRIGGER trigger_visitnumber
 
 -- Combine core tables
 
-CREATE VIEW core_core AS
+CREATE VIEW noas_core AS
   SELECT
     subjects.id        AS subject_id,
     subjects.birthdate AS subject_birthdate,
