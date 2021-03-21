@@ -21,7 +21,6 @@
     * table with project_id and wave_code information (like test versions etc)
     * table with information on MRI scanners
   * meta-data: add checks for validation of cell values within known correct values (enum)
-  * api: do not provide data on incomplete import (metadata is ok)
   * webui: r_enc on decryption, print "do not save your workspace ..." + link to wiki page
   * webui: option to selected num per page in results table
 
@@ -32,8 +31,7 @@
     * and symlink pgs like mri
 
 ## bugs
-  * webui: fourth column for repeated tables should appear as the first column. (idx = -1?)
-  
+
 ## potential problems
   * Repeated fourth table: can we have a way for it to always be selected (to be sure rows are distinguishable)
     * how to not to duplicate?

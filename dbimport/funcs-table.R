@@ -38,9 +38,10 @@ insert_table <- function(x,
   dbtab <- sprintf("%s_%s", type, table_name)
   n_before <- get_rows(con, dbtab)
 
-  x$`_noas_data_source` <- file.path(table_name, basename(file_name))
+  noas_data_source <- file.path(table_name, basename(file_name))
 
   tryCatch({
+   
     k <- DBI::dbWriteTable(
       con,
       sprintf("tmp_%s", table_name),
@@ -51,19 +52,7 @@ insert_table <- function(x,
 
     if(k == FALSE) stop("\ntmp table not initiated\n")
 
-    template <- read_sql(template_path)
-
-    # replace {table_name} with content of table_name
-    tmp_template <- gsub("\\{table_name\\}", 
-                         table_name, template)
-
-    # replace {visit_id_column} with content of visit_id_column
-    if(!is.null(visit_id_column)){
-      tmp_template <- gsub("\\{visit_id_column\\}", 
-                           visit_id_column, tmp_template)
-    }
-  
-    DBI::dbExecute(con, tmp_template)
+    DBI::dbExecute(con, sprintf("select import_%s_table('tmp_%s', '%s', '%s')", type, table_name, table_name, noas_data_source))
   },  
   finally = DBI::dbExecute(
     con,

@@ -121,6 +121,208 @@ BEGIN
 END;
 $yrs$ LANGUAGE plpgsql;
 
+-- add column "noas data source"
+CREATE OR REPLACE FUNCTION _add_noas_ds_col(table_name_in regclass, noas_data_source text)
+RETURNS void AS $$
+BEGIN
+  -- add noas_data_source
+  EXECUTE format(
+    $ex$
+      ALTER TABLE %s ADD COLUMN _noas_data_source text;
+    $ex$
+    ,table_name_in
+  );
+  EXECUTE format(
+    $ex$
+      UPDATE %s SET _noas_data_source = '%s';
+    $ex$
+    ,table_name_in
+    ,noas_data_source
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+-- create auto generated metadata
+CREATE OR REPLACE FUNCTION _write_default_metadata(table_name_dst text, sample_type e_sampletype)
+RETURNS void AS $$
+DECLARE
+	_colid text;
+BEGIN
+  EXECUTE format(
+    $ex$
+      INSERT INTO metatables (id, sampletype, title)
+        VALUES ('%s', '%s', INITCAP('%s'))
+        ON conflict (id) do nothing;
+    $ex$
+    ,table_name_dst
+    ,sample_type
+    ,table_name_dst
+  );
+  FOR _colid IN
+    SELECT column_name
+      FROM information_schema.columns
+      WHERE table_schema = 'public'
+        AND table_name   = 'noas_' || table_name_dst
+        AND column_name  like '\_%'
+  LOOP
+    EXECUTE format(
+      $ex$
+        INSERT INTO metacolumns (metatable_id, id, idx, title) 
+          VALUES ('%s', '%s',  1, INITCAP(REPLACE(SUBSTRING('%s', 2), '_', ' '))) 
+          ON CONFLICT DO NOTHING;
+      $ex$
+      ,table_name_dst
+      ,_colid
+      ,_colid
+    );
+  END LOOP;
+  -- fix metadata
+  EXECUTE format(
+    $ex$
+      UPDATE metacolumns 
+        SET idx = 9999, descr = 'File in the NOAS data directory where the information comes from'
+        WHERE metatable_id = '%s' AND id = '_noas_data_source';
+    $ex$
+    ,table_name_dst
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+-- import cross
+CREATE OR REPLACE FUNCTION import_cross_table(table_name_in regclass, table_name_dst text, noas_data_source text)
+RETURNS boolean AS $$
+BEGIN
+  EXECUTE format(
+    $ex$
+      ALTER TABLE %s ALTER column subject_id TYPE int
+    $ex$
+    ,table_name_in
+  );
+  PERFORM _add_noas_ds_col(table_name_in, noas_data_source);
+  EXECUTE format(
+    $ex$
+      CREATE TABLE IF NOT EXISTS noas_%s (
+        LIKE %s including ALL,
+        CONSTRAINT noas_%s_pk PRIMARY KEY (subject_id),
+        CONSTRAINT noas_%s_fk FOREIGN KEY (subject_id) REFERENCES subjects(id)
+      )
+    $ex$
+    ,table_name_dst
+    ,table_name_in
+    ,table_name_dst
+    ,table_name_dst
+  );
+  EXECUTE format(
+    $ex$
+      INSERT INTO noas_%s
+        SELECT * FROM %s t
+        WHERE (t.subject_id) IN (SELECT id FROM subjects);
+    $ex$
+    ,table_name_dst
+    ,table_name_in
+  );
+  -- auto create metadata
+  PERFORM _write_default_metadata(table_name_dst, 'cross');
+  RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+-- import long
+CREATE OR REPLACE FUNCTION import_long_table(table_name_in regclass, table_name_dst text, noas_data_source text)
+RETURNS boolean AS $$
+BEGIN
+  EXECUTE format(
+    $ex$
+      ALTER TABLE %s
+        ALTER column subject_id TYPE int,
+        ALTER column project_id TYPE text,
+        ALTER column wave_code TYPE numeric(3,1);
+    $ex$
+    ,table_name_in
+  );
+  PERFORM _add_noas_ds_col(table_name_in, noas_data_source);
+  EXECUTE format(
+    $ex$
+      CREATE TABLE IF NOT EXISTS noas_%s (
+        LIKE %s including ALL,
+        CONSTRAINT noas_%s_pk PRIMARY KEY (subject_id, project_id, wave_code),
+        CONSTRAINT noas_%s_fk FOREIGN KEY (subject_id, project_id, wave_code) REFERENCES visits(subject_id, project_id, wave_code)
+      )
+    $ex$
+    ,table_name_dst
+    ,table_name_in
+    ,table_name_dst
+    ,table_name_dst
+  );
+  EXECUTE format(
+    $ex$
+      INSERT INTO noas_%s
+        SELECT * FROM %s t
+        WHERE (t.subject_id, t.project_id, t.wave_code) IN (SELECT subject_id, project_id, wave_code FROM visits);
+    $ex$
+    ,table_name_dst
+    ,table_name_in
+  );
+  -- auto create metadata
+  PERFORM _write_default_metadata(table_name_dst, 'long');
+  RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+-- get column id of nth column
+CREATE OR REPLACE FUNCTION _get_nth_colname(tab_name text, col_id int)
+RETURNS text AS $$
+BEGIN
+  RETURN(
+    SELECT column_name 
+      FROM information_schema.columns
+      WHERE table_schema = 'public'
+      AND table_name   = tab_name
+      AND ordinal_position = col_id
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+-- import repeated
+CREATE OR REPLACE FUNCTION import_repeated_table(table_name_in regclass, table_name_dst text, noas_data_source text)
+RETURNS boolean AS $$
+DECLARE
+  visit_id_colname text;
+BEGIN
+  SELECT _get_nth_colname(table_name_in::text, 4) into visit_id_colname;
+  EXECUTE format(
+    $ex$
+      ALTER TABLE %s
+        ALTER column subject_id TYPE int,
+        ALTER column project_id TYPE text,
+        ALTER column wave_code TYPE numeric(3,1);
+    $ex$
+    ,table_name_in
+  );
+  PERFORM _add_noas_ds_col(table_name_in, noas_data_source);
+  EXECUTE '
+    CREATE TABLE IF NOT EXISTS noas_' || table_name_dst || ' (
+      LIKE ' || table_name_in || ' including ALL,
+      CONSTRAINT noas_' || table_name_dst || '_pk PRIMARY KEY (subject_id, project_id, wave_code, ' ||  visit_id_colname || '),
+      CONSTRAINT noas_' || table_name_dst || '_fk FOREIGN KEY (subject_id, project_id, wave_code) REFERENCES visits(subject_id, project_id, wave_code))
+   ';
+  EXECUTE format(
+    $ex$
+      INSERT INTO noas_%s
+        SELECT * FROM %s t
+        WHERE (t.subject_id, t.project_id, t.wave_code) IN (SELECT subject_id, project_id, wave_code FROM visits);
+    $ex$
+    ,table_name_dst
+    ,table_name_in
+  );
+  -- auto create metadata
+  PERFORM _write_default_metadata(table_name_dst, 'repeated');
+  -- fix 4th column
+  UPDATE metacolumns 
+    SET idx = -1 WHERE metatable_id = '%s' AND id = visit_id_colname;
+  RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
 
 --------------------------------------------------------------------------------
 
