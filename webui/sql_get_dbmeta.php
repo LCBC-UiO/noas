@@ -52,7 +52,7 @@ from (
       where
         mt.id = mc.metatable_id
       order by
-        mc.idx 
+        mc.idx, mc.id
       ) d 
     ) as columns
   from
