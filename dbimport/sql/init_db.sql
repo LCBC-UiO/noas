@@ -1,19 +1,22 @@
 /*
  * After running this file, non_core data should be added to the DB with:
  * 
- * import_cross_table(input_table_name, noas_table_id, noas_data_source)
- * import_long_table(input_table_name, noas_table_id, noas_data_source)
- * import_repeated_table(input_table_name, noas_table_id, noas_data_source)
+ * import_table(sample_type, input_table_name, noas_table_id, noas_data_source, repeated_group)
  * import_metadata(noas_table_id, metadata_json)
  * 
  * where:
- *   input_table_name is the name of an already existing (temporary) 
- *                       where the data will be taken from
- *   noas_table_id    is the id of the tabe in noas (without the noas_ prefix).
- *                       The table will be created automatically.
- *   noas_data_source is the file name of the tsv file that provied the data in
- *                       'input_table_name'
- *   metadata_json    is the json containing the metadata (contents of _meatadata.json)
+ *   sample_type      - the type of the input table. Valid values are:
+ *                        [cross, long, repeated]
+ *   input_table_name - the name of an already existing (temporary) 
+ *                        where the data will be taken from
+ *   noas_table_id    - the id of the tabe in noas (without the noas_ prefix).
+ *                        The table will be created automatically.
+ *   noas_data_source - the file name of the tsv file that provied the data in
+ *                        'input_table_name'
+ *   repeated_group   - evalued when sample_type == repeated. Repeated tables with the same
+ *                        repeated_group can b merged by thier 4th column
+ *
+ *   metadata_json    - the json containing the metadata (contents of _metadata.json)
  * 
  *
  */
@@ -209,8 +212,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- import cross
-CREATE OR REPLACE FUNCTION import_cross_table(table_name_in regclass, table_name_dst text, noas_data_source text)
-RETURNS boolean AS $$
+CREATE OR REPLACE FUNCTION _import_cross_table(table_name_in regclass, table_name_dst text, noas_data_source text)
+RETURNS void AS $$
 DECLARE
   visit_id_colname text;
   _s integer;
@@ -257,13 +260,12 @@ BEGIN
   );
   -- auto create metadata
   PERFORM _write_default_metadata(table_name_dst, 'cross');
-  RETURN TRUE;
 END;
 $$ LANGUAGE plpgsql;
 
 -- import long
-CREATE OR REPLACE FUNCTION import_long_table(table_name_in regclass, table_name_dst text, noas_data_source text)
-RETURNS boolean AS $$
+CREATE OR REPLACE FUNCTION _import_long_table(table_name_in regclass, table_name_dst text, noas_data_source text)
+RETURNS void AS $$
 DECLARE
   visit_id_colname text;
   _s integer;
@@ -315,7 +317,6 @@ BEGIN
   );
   -- auto create metadata
   PERFORM _write_default_metadata(table_name_dst, 'long');
-  RETURN TRUE;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -334,8 +335,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- import repeated
-CREATE OR REPLACE FUNCTION import_repeated_table(table_name_in regclass, table_name_dst text, noas_data_source text)
-RETURNS boolean AS $$
+CREATE OR REPLACE FUNCTION _import_repeated_table(table_name_in regclass, table_name_dst text, noas_data_source text)
+RETURNS void AS $$
 DECLARE
   visit_id_colname text;
   _s integer;
@@ -391,11 +392,31 @@ BEGIN
     ,table_name_dst
     ,visit_id_colname
   );
+END;
+$$ LANGUAGE plpgsql;
+
+-- import table
+CREATE OR REPLACE FUNCTION import_table(sample_type e_sampletype, table_name_in regclass, noas_table_id text, noas_data_source text, repeated_grp text default NULL)
+RETURNS boolean AS $$
+BEGIN
+  IF sample_type = 'repeated' THEN
+    PERFORM _import_repeated_table(table_name_in, noas_table_id, noas_data_source);
+  ELSE
+    EXECUTE format(
+      $ex$
+        SELECT _import_%s_table('%s', '%s', '%s'); --this is not happy with PERFORM instead. Maybe becaue within EXECUTE format?
+      $ex$
+      ,sample_type
+      ,table_name_in
+      ,noas_table_id
+      ,noas_data_source
+    );
+  END IF;
   RETURN TRUE;
 END;
 $$ LANGUAGE plpgsql;
 
--- import a colmn from metadata json
+-- import a column from metadata json
 CREATE OR REPLACE FUNCTION _import_col_metadata(table_id text, col_metadata json)
 RETURNS void AS $$
 DECLARE

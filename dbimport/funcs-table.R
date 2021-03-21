@@ -52,7 +52,7 @@ insert_table <- function(x,
 
     if(k == FALSE) stop("\ntmp table not initiated\n")
 
-    DBI::dbExecute(con, sprintf("select import_%s_table('tmp_%s', '%s', '%s')", type, table_name, table_name, noas_data_source))
+    DBI::dbExecute(con, sprintf("select import_table('%s', 'tmp_%s', '%s', '%s')", type, table_name, table_name, noas_data_source))
   },  
   finally = DBI::dbExecute(
     con,
