@@ -35,7 +35,7 @@ insert_table <- function(x,
   table_name <- basename(table_dir)
   template_path <- sql_templates(type)
 
-  dbtab <- sprintf("%s_%s", type, table_name)
+  dbtab <- sprintf("noas_%s", table_name)
   n_before <- get_rows(con, dbtab)
 
   noas_data_source <- file.path(table_name, basename(file_name))
@@ -97,17 +97,6 @@ get_data <- function(table_dir, key_vars) {
 
   return(list(data = ft, files = ffiles))
 }
-
-#' Read in sql file
-#'
-#' @param path path to sql file
-#'
-#' @return character
-#' @export
-read_sql <- function(path, ...){
-  readChar(path, file.info(path)$size, ...)
-}
-
 
 # populate functions ----
 populate_core <- function(con){

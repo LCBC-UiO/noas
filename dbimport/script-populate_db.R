@@ -25,10 +25,10 @@ con <- moasdb_connect()
 # start atomic transaction, changes in this con won't be visible until the commit
 invisible(DBI::dbBegin(con))
 
-j <- DBI::dbExecute(
-  con,
-  read_sql("dbimport/sql/init_db.sql")
-)
+j <- (function(){
+  path <- "dbimport/sql/init_db.sql"
+  DBI::dbExecute(con, readChar(path, file.info(path)$size))
+})()
 
 # NOTE: convert these parameters to positional command line arguments?
 invisible(DBI::dbExecute(

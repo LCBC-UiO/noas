@@ -1,3 +1,23 @@
+/*
+ * After running this file, non_core data should be added to the DB with:
+ * 
+ * import_cross_table(input_table_name, noas_table_id, noas_data_source)
+ * import_long_table(input_table_name, noas_table_id, noas_data_source)
+ * import_repeated_table(input_table_name, noas_table_id, noas_data_source)
+ * import_metadata(noas_table_id, metadata_json)
+ * 
+ * where:
+ *   input_table_name is the name of an already existing (temporary) 
+ *                       where the data will be taken from
+ *   noas_table_id    is the id of the tabe in noas (without the noas_ prefix).
+ *                       The table will be created automatically.
+ *   noas_data_source is the file name of the tsv file that provied the data in
+ *                       'input_table_name'
+ *   metadata_json    is the json containing the metadata (contents of _meatadata.json)
+ * 
+ *
+ */
+
 -- suppress NOTICE messages
 SET client_min_messages = warning;
 
@@ -320,6 +340,96 @@ BEGIN
   -- fix 4th column
   UPDATE metacolumns 
     SET idx = -1 WHERE metatable_id = '%s' AND id = visit_id_colname;
+  RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+-- import a colmn from metadata json
+CREATE OR REPLACE FUNCTION _import_col_metadata(table_id text, col_metadata json)
+RETURNS void AS $$
+DECLARE
+   _key   text;
+   _value json;
+BEGIN
+  IF col_metadata->>'id' IS NULL THEN
+    RAISE EXCEPTION 'Metadata is missing column ID field';
+  END IF;
+  FOR _key, _value IN SELECT * FROM json_each(col_metadata)
+  LOOP
+    IF _key = ANY (ARRAY['category','title','descr']) THEN
+      EXECUTE format(
+        $ex$
+          UPDATE metacolumns SET %s = %s WHERE metatable_id = '%s' AND id = '_%s';
+        $ex$
+        ,_key
+        ,quote_literal(_value #>> '{}')
+        ,table_id
+        ,col_metadata->>'id'
+      );
+    ELSIF _key = 'type' THEN
+      IF _value #>> '{}' = ANY (ARRAY['float','integer','date']) THEN -- might need to translate type at some point
+        EXECUTE format(
+          $ex$
+            ALTER TABLE noas_%s ALTER COLUMN _%s TYPE %s USING (_%s::%s);
+          $ex$
+          ,table_id
+          ,col_metadata->>'id'
+          ,_value #>> '{}'
+          ,col_metadata->>'id'
+          ,_value #>> '{}'
+        );
+      ELSIF _value #>> '{}' = 'text' THEN
+        -- do nothing - it's already ::text
+      ELSE 
+        RAISE EXCEPTION 'Unknown column type "%"', _value #>> '{}';
+      END IF;
+    ELSIF _key = 'idx' THEN
+      EXECUTE format(
+        $ex$
+          UPDATE metacolumns SET idx = %s WHERE metatable_id = '%s' AND id = '_%s';
+        $ex$
+        ,_value #>> '{}'
+        ,table_id
+        ,col_metadata->>'id'
+      );
+    ELSIF _key = 'id' THEN
+      -- do nothing
+    ELSE
+      RAISE EXCEPTION 'Unknown metadata column field "%"', _key; 
+    END IF;
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+-- import metadata
+CREATE OR REPLACE FUNCTION import_metadata(table_id text, metadata json)
+RETURNS boolean AS $$
+DECLARE
+   _key   text;
+   _value json;
+   _col   json;
+BEGIN
+    FOR _key, _value IN
+       SELECT * FROM json_each(metadata)
+    LOOP
+      IF _key = ANY (ARRAY['category','title','descr']) THEN
+        EXECUTE format(
+          $ex$
+            UPDATE metatables SET %s = %s WHERE id = '%s';
+          $ex$
+          ,_key
+          ,quote_literal(_value #>> '{}')
+          ,table_id
+        );
+      ELSIF _key = 'columns' THEN
+        FOR _col IN SELECT * FROM json_array_elements(_value)
+        LOOP
+          PERFORM _import_col_metadata(table_id, _col);
+        END LOOP;
+      ELSE
+        RAISE EXCEPTION 'Unknown metadata field "%"', _key;
+      END IF;
+    END LOOP;
   RETURN TRUE;
 END;
 $$ LANGUAGE plpgsql;
