@@ -338,8 +338,15 @@ BEGIN
   -- auto create metadata
   PERFORM _write_default_metadata(table_name_dst, 'repeated');
   -- fix 4th column
-  UPDATE metacolumns 
-    SET idx = -1 WHERE metatable_id = '%s' AND id = visit_id_colname;
+  EXECUTE format(
+    $ex$
+      UPDATE metacolumns 
+        SET idx = -1 
+        WHERE metatable_id = '%s' AND id = '%s';
+    $ex$
+    ,table_name_dst
+    ,visit_id_colname
+  );
   RETURN TRUE;
 END;
 $$ LANGUAGE plpgsql;
