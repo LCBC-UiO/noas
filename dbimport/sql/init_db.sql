@@ -335,15 +335,15 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- import repeated
-CREATE OR REPLACE FUNCTION _import_repeated_table(table_name_in regclass, table_name_dst text, noas_data_source text)
+CREATE OR REPLACE FUNCTION _import_repeated_table(table_name_in regclass, table_name_dst text, noas_data_source text, repeated_grp text)
 RETURNS void AS $$
 DECLARE
-  visit_id_colname text;
+  _4th_col_id text;
   _s integer;
   _p text;
   _w float;
 BEGIN
-  SELECT _get_nth_colname(table_name_in::text, 4) INTO visit_id_colname;
+  SELECT _get_nth_colname(table_name_in::text, 4) INTO _4th_col_id;
   EXECUTE format(
     $ex$
       ALTER TABLE %s
@@ -368,7 +368,7 @@ BEGIN
   EXECUTE '
     CREATE TABLE IF NOT EXISTS noas_' || table_name_dst || ' (
       LIKE ' || table_name_in || ' including ALL,
-      CONSTRAINT noas_' || table_name_dst || '_pk PRIMARY KEY (subject_id, project_id, wave_code, ' ||  visit_id_colname || '),
+      CONSTRAINT noas_' || table_name_dst || '_pk PRIMARY KEY (subject_id, project_id, wave_code, ' ||  _4th_col_id || '),
       CONSTRAINT noas_' || table_name_dst || '_fk FOREIGN KEY (subject_id, project_id, wave_code) REFERENCES visits(subject_id, project_id, wave_code))
    ';
   EXECUTE format(
@@ -390,8 +390,13 @@ BEGIN
         WHERE metatable_id = '%s' AND id = '%s';
     $ex$
     ,table_name_dst
-    ,visit_id_colname
+    ,_4th_col_id
   );
+  -- add repeated group?
+  IF repeated_grp IS NOT NULL THEN
+    INSERT INTO meta_repeated_grps (metatable_id, metacolumn_id, repeated_group) 
+      VALUES (table_name_dst, _4th_col_id, repeated_grp);
+  END IF;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -400,7 +405,7 @@ CREATE OR REPLACE FUNCTION import_table(sample_type e_sampletype, table_name_in 
 RETURNS boolean AS $$
 BEGIN
   IF sample_type = 'repeated' THEN
-    PERFORM _import_repeated_table(table_name_in, noas_table_id, noas_data_source);
+    PERFORM _import_repeated_table(table_name_in, noas_table_id, noas_data_source, repeated_grp);
   ELSE
     EXECUTE format(
       $ex$
@@ -466,7 +471,7 @@ BEGIN
         );
       ELSIF _value #>> '{}' = 'text' THEN
         -- do nothing - it's already ::text
-      ELSE 
+      ELSE
         RAISE EXCEPTION 'Unknown column type "%"', _value #>> '{}';
       END IF;
     END IF;

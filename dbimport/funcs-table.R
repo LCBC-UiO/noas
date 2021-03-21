@@ -27,7 +27,7 @@ insert_table <- function(x,
                          type,
                          table_dir,
                          file_name,
-                         visit_id_column = NULL,
+                         repeated_group = NULL,
                          ...){
   stopifnot(is.data.frame(x))
   stopifnot(nrow(x) > 0)
@@ -52,7 +52,15 @@ insert_table <- function(x,
 
     if(k == FALSE) stop("\ntmp table not initiated\n")
 
-    DBI::dbExecute(con, sprintf("select import_table('%s', 'tmp_%s', '%s', '%s')", type, table_name, table_name, noas_data_source))
+    DBI::dbExecute(con, sprintf("select import_table($1, $2, $3, $4, %s)", 
+      ifelse(is.null(repeated_group), "NULL", sprintf("'%s'", repeated_group))), # quick-fix for NULL param. Doen't seem to be supported
+      params=list(
+        type,
+        sprintf("tmp_%s", table_name),
+        table_name,
+        noas_data_source
+      )
+    )
   },  
   finally = DBI::dbExecute(
     con,
@@ -239,10 +247,6 @@ add_repeated_table <- function(table_dir, con, noas_jsn, ...){
   
   # retrieve the data
   data <- get_data(table_dir, prim_keys()$repeated)
-  fourth_key <- sapply(data$data, function(x) names(x)[4])
-  fourth_key <- unique(fourth_key)
-  
-  stopifnot(length(fourth_key) == 1)
   
   # insert data to db
   j <- mapply(insert_table,
@@ -251,29 +255,9 @@ add_repeated_table <- function(table_dir, con, noas_jsn, ...){
               MoreArgs = list(con = con,
                               type = "repeated",
                               table_dir = table_dir,
-                              visit_id_column = fourth_key
+                              repeated_group = noas_jsn$repeated_group
               )
   )
-
-  # add repeated_group
-  if (!is.null(noas_jsn$repeated_group)) {
-    sql <- "INSERT into meta_repeated_grps (metatable_id, metacolumn_id, repeated_group) VALUES ($1, $2, $3)"
-    params <- list(
-      basename(table_dir),
-      fourth_key,
-      noas_jsn$repeated_group
-    )
-    if (DBI::dbExecute(con, sql, params=params) != 1) {
-      stop(
-        sprintf("insert_metadata meta_repeated_grps table=%s field=%s values=(%s,%s,%s)",
-          basename(table_dir),
-          fourth_key,
-          noas_jsn$repeated_group
-        )
-      )
-    }
-  }
-  # insert meta-data if applicable
   k <- fix_metadata(table_dir, con)
   invisible(j)
 }
