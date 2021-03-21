@@ -407,7 +407,7 @@ BEGIN
   END IF;
   FOR _key, _value IN SELECT * FROM json_each(col_metadata)
   LOOP
-    IF _key = ANY (ARRAY['category','title','descr']) THEN
+    IF _key = ANY (ARRAY['category','title','descr','type']) THEN
       EXECUTE format(
         $ex$
           UPDATE metacolumns SET %s = %s WHERE metatable_id = '%s' AND id = '_%s';
@@ -417,7 +417,21 @@ BEGIN
         ,table_id
         ,col_metadata->>'id'
       );
-    ELSIF _key = 'type' THEN
+    ELSIF _key = 'idx' THEN
+      EXECUTE format(
+        $ex$
+          UPDATE metacolumns SET idx = %s WHERE metatable_id = '%s' AND id = '_%s';
+        $ex$
+        ,_value #>> '{}'
+        ,table_id
+        ,col_metadata->>'id'
+      );
+    ELSIF _key = 'id' THEN
+      -- do nothing
+    ELSE
+      RAISE EXCEPTION 'Unknown metadata column field "%"', _key; 
+    END IF;
+    IF _key = 'type' THEN
       IF _value #>> '{}' = ANY (ARRAY['float','integer','date']) THEN -- might need to translate type at some point
         EXECUTE format(
           $ex$
@@ -434,19 +448,6 @@ BEGIN
       ELSE 
         RAISE EXCEPTION 'Unknown column type "%"', _value #>> '{}';
       END IF;
-    ELSIF _key = 'idx' THEN
-      EXECUTE format(
-        $ex$
-          UPDATE metacolumns SET idx = %s WHERE metatable_id = '%s' AND id = '_%s';
-        $ex$
-        ,_value #>> '{}'
-        ,table_id
-        ,col_metadata->>'id'
-      );
-    ELSIF _key = 'id' THEN
-      -- do nothing
-    ELSE
-      RAISE EXCEPTION 'Unknown metadata column field "%"', _key; 
     END IF;
   END LOOP;
 END;
