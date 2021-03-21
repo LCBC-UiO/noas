@@ -211,6 +211,9 @@ $$ LANGUAGE plpgsql;
 -- import cross
 CREATE OR REPLACE FUNCTION import_cross_table(table_name_in regclass, table_name_dst text, noas_data_source text)
 RETURNS boolean AS $$
+DECLARE
+  visit_id_colname text;
+  _s integer;
 BEGIN
   EXECUTE format(
     $ex$
@@ -218,6 +221,17 @@ BEGIN
     $ex$
     ,table_name_in
   );
+  -- check if defined 
+  FOR _s IN EXECUTE format(
+    $ex$
+      SELECT subject_id FROM %s t
+      WHERE t.subject_id NOT IN (SELECT subject_id FROM visits)
+    $ex$
+    ,table_name_in
+  )
+  LOOP
+    RAISE warning 'entry not found in % : subject_id=%', noas_data_source, _s;
+  END LOOP;
   PERFORM _add_noas_ds_col(table_name_in, noas_data_source);
   EXECUTE format(
     $ex$
@@ -250,6 +264,11 @@ $$ LANGUAGE plpgsql;
 -- import long
 CREATE OR REPLACE FUNCTION import_long_table(table_name_in regclass, table_name_dst text, noas_data_source text)
 RETURNS boolean AS $$
+DECLARE
+  visit_id_colname text;
+  _s integer;
+  _p text;
+  _w float;
 BEGIN
   EXECUTE format(
     $ex$
@@ -260,6 +279,17 @@ BEGIN
     $ex$
     ,table_name_in
   );
+  -- check if defined 
+  FOR _s, _p, _w IN EXECUTE format(
+    $ex$
+      SELECT subject_id, project_id, wave_code FROM %s t
+      WHERE (t.subject_id, t.project_id, t.wave_code) NOT IN (SELECT subject_id, project_id, wave_code FROM visits)
+    $ex$
+    ,table_name_in
+  )
+  LOOP
+    RAISE warning 'entry not found in % : subject_id=% project_id=% wave_code=%', noas_data_source, _s, _p, _w;
+  END LOOP;
   PERFORM _add_noas_ds_col(table_name_in, noas_data_source);
   EXECUTE format(
     $ex$
@@ -308,8 +338,11 @@ CREATE OR REPLACE FUNCTION import_repeated_table(table_name_in regclass, table_n
 RETURNS boolean AS $$
 DECLARE
   visit_id_colname text;
+  _s integer;
+  _p text;
+  _w float;
 BEGIN
-  SELECT _get_nth_colname(table_name_in::text, 4) into visit_id_colname;
+  SELECT _get_nth_colname(table_name_in::text, 4) INTO visit_id_colname;
   EXECUTE format(
     $ex$
       ALTER TABLE %s
@@ -319,6 +352,17 @@ BEGIN
     $ex$
     ,table_name_in
   );
+  -- check if defined 
+  FOR _s, _p, _w IN EXECUTE format(
+    $ex$
+      SELECT subject_id, project_id, wave_code FROM %s t
+      WHERE (t.subject_id, t.project_id, t.wave_code) NOT IN (SELECT subject_id, project_id, wave_code FROM visits)
+    $ex$
+    ,table_name_in
+  )
+  LOOP
+    RAISE warning 'entry not found in % : subject_id=% project_id=% wave_code=%', noas_data_source, _s, _p, _w;
+  END LOOP;
   PERFORM _add_noas_ds_col(table_name_in, noas_data_source);
   EXECUTE '
     CREATE TABLE IF NOT EXISTS noas_' || table_name_dst || ' (
