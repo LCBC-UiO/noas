@@ -9,10 +9,8 @@
   * support PGS data: should be dynamically computed for 
     * time is imported as integer currently
     * "duration" type => "as.character" for now?
-  * dbimport/sql/webui: write non-critical errors/warnings to metadata
-    * number of omitted rows
-    * exceptions when importing metadata
-    * show warnings for each table in web UI
+  * dbimport/sql/webui: write non-critical errors/warnings
+    * currently emitted as db warnings - write to  metadata?
   * compute derived data
     * currently some MOAS data is derived from raw data based on r-functions in two packages:
       * https://github.com/LCBC-UiO/Questionnaires
@@ -23,6 +21,7 @@
   * meta-data: add checks for validation of cell values within known correct values (enum)
   * webui: r_enc on decryption, print "do not save your workspace ..." + link to wiki page
   * webui: option to selected num per page in results table
+  * db: use `_noas.json` as parameter for import_table()
 
 
 ## cleanup/refactoring
