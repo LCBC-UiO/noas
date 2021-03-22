@@ -64,4 +64,4 @@ dlclean:
 	$(RM) ./download/*.tar.gz
 
 clean:
-	$(RM) -r ./r_packages/*
+	$(RM) -r ./r_packages/
