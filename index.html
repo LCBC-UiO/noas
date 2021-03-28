@@ -7,8 +7,11 @@
   <script src="d3.v6.min.js"></script>
   <style>
 
-    .node circle {
+    .node {
       cursor: pointer;
+    }
+
+    .node circle {
       fill: #fff;
       stroke: steelblue;
       stroke-width: 3px;
@@ -19,12 +22,14 @@
       font-family: sans-serif;
       font-size: 12px;
     }
-    /* .node-label {
-    } */
-    .node text.node-caption {
-      font-size: 11px;
-      font-style: italic;
+
+    .node.emph {
+      fill: #c71515;
     }
+  
+    .node.emph circle {
+      stroke: #c71515;
+    } 
     
     .link {
       fill: none;
@@ -112,24 +117,7 @@
     
     async function start() {
 
-      var treeData =
-        {
-          "name": "Top Level",
-          id: "root",
-          "children": [
-            { 
-              "name": "Level 2: A",
-              id: "sd",
-              "children": [
-                { "name": "Son of A", id:"sona" },
-                { "name": "Daughter of A", id: "daua" }
-              ]
-            },
-            { "name": "Level 2: B", id:"lvl2b" }
-          ]
-        };
-        //console.log(dbmeta_to_tree(dbmeta_s2c));
-        treeData = dbmeta_to_tree(dbmeta_all);
+      let treeData = dbmeta_to_tree(dbmeta_all);
 
 
       // Set the dimensions and margins of the diagram
@@ -241,21 +229,6 @@
         var nodes = treeData.descendants(),
             links = treeData.descendants().slice(1);
 
-        // var l_transform = {x: 0, y: 0};
-        // if (update_type) {
-        //   // console.log(update_type);
-        //   // console.log(d3.transform(d3.select('g').attr("transform")));
-        //   l_transform = d3.zoomTransform(d3.select('g').node());
-          
-        //   const c_width  = document.querySelector('body').offsetWidth;
-        //   const c_height = document.querySelector('body').offsetHeight;
-        //   console.log(`x: ${l_transform.x} += ${(c_width)} / 2 - ${event.x}  => ${l_transform.x + (c_width/2)  - event.x}`);
-        //   console.log(`y: ${l_transform.y} += ${(c_height)} / 2 - ${event.y} => ${l_transform.y + (c_height/2) - event.y}`);
-        //   l_transform.x +=  (c_width/2)  - event.x;
-        //   l_transform.y +=  (c_height/2) - event.y;
-        // }
-
-
         // Normalize for fixed-depth.
        nodes.forEach(function(d){ d.y = d.depth * 240});
 
@@ -271,7 +244,13 @@
             .attr("transform", function(d) {
               return "translate(" + source.y0 + "," + source.x0 + ")";
           })
-          .on('click', click);
+          .on('click', click)
+          .on('mouseover', function(e, d) {
+            d3.select(this).classed('emph', true)
+          })
+          .on('mouseout', function(e, d) {
+            d3.select(this).classed('emph', false)
+          });
 
         // Add Circle for the nodes
         nodeEnter.append('circle')
@@ -289,7 +268,6 @@
             .text(function (d) {
               if (isTable(d.data)) {
                 return `${d.data.id}; n=${d.data.n}`;
-                //return `${d.data.title} (${d.data.id}; n=${d.data.n})`;
               }
               return d.data.title ?? d.data.id; 
             })
@@ -439,14 +417,6 @@
     }
     start();
 
-  //   window.setTimeout(function() {
-  //     d3.selectAll(".node");
-  //     console.log(d3.selectAll(".node").size());
-  //     var max = 600;
-  //   //set the max of the group
-  //   d3.select("svg").attr("height", max + 100)
-  //   console.log(max)
-  // }, 800)
 
   </script>
 </body>
