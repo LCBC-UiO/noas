@@ -1,21 +1,16 @@
 /*
  * After running this file, non_core data should be added to the DB with:
  * 
- * import_table(sample_type, input_table_name, noas_table_id, noas_data_source, repeated_group)
+ * import_table(input_table_name, noas_table_id, noas_json, noas_data_source)
  * import_metadata(noas_table_id, metadata_json)
  * 
  * where:
- *   sample_type      - the type of the input table. Valid values are:
- *                        [cross, long, repeated]
  *   input_table_name - the name of an already existing (temporary) 
  *                        where the data will be taken from
  *   noas_table_id    - the id of the tabe in noas (without the noas_ prefix).
  *                        The table will be created automatically.
- *   noas_data_source - the file name of the tsv file that provied the data in
- *                        'input_table_name'
- *   repeated_group   - evalued when sample_type == repeated. Repeated tables with the same
- *                        repeated_group can b merged by thier 4th column
- *
+ *   noas_json        - the json containing the table_type and in some cases 
+                          the repeated group (contents of _noas.json)
  *   metadata_json    - the json containing the metadata (contents of _metadata.json)
  * 
  *
@@ -401,17 +396,28 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- import table
-CREATE OR REPLACE FUNCTION import_table(sample_type e_sampletype, table_name_in regclass, noas_table_id text, noas_data_source text, repeated_grp text default NULL)
+CREATE OR REPLACE FUNCTION import_table(table_name_in regclass, noas_table_id text, noas_json json, noas_data_source text)
 RETURNS boolean AS $$
+DECLARE
+   _table_type e_sampletype;
 BEGIN
-  IF sample_type = 'repeated' THEN
-    PERFORM _import_repeated_table(table_name_in, noas_table_id, noas_data_source, repeated_grp);
+  IF noas_json->>'table_type' IS NULL THEN
+    RAISE EXCEPTION 'noas_json is missing column "table_type" field';
+  ELSIF noas_json->>'table_type' = 'cross-sectional' THEN
+    SELECT 'cross' into _table_type;
+  ELSIF noas_json->>'table_type' = 'longitudinal' THEN
+    SELECT 'long' into _table_type;
+  ELSIF noas_json->>'table_type' = 'repeated' THEN
+    SELECT 'repeated' into _table_type;
+  END IF;
+  IF noas_json->>'table_type' = 'repeated' THEN
+    PERFORM _import_repeated_table(table_name_in, noas_table_id, noas_data_source, noas_json->>'repeated_group');
   ELSE
     EXECUTE format(
       $ex$
         SELECT _import_%s_table('%s', '%s', '%s'); --this is not happy with PERFORM instead. Maybe becaue within EXECUTE format?
       $ex$
-      ,sample_type
+      ,_table_type
       ,table_name_in
       ,noas_table_id
       ,noas_data_source
