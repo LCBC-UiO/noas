@@ -6,119 +6,11 @@
   <title>tree test</title>
   <script src="d3.v6.min.js"></script>
   <script src="noas_selector_tree.js"></script>
-  <style>
-
-    #nst .node {
-      cursor: pointer;
-      font-family: sans-serif;
-      font-size: 12px;
-    }
-
-    #nst .node circle {
-      fill: #fff;
-      stroke: steelblue;
-      stroke-width: 3px;
-    }
-    #nst g.node.emph circle {
-      stroke: #c71515;
-    }
-    
-    #nst g.node.column rect {
-      fill: #fff;
-      stroke-width: 3px;
-      stroke: steelblue;
-    }
-    #nst g.node.column.emph rect {
-      stroke: #c71515;
-    }
-    #nst g.node.emph {
-      fill: #c71515;
-    }
-
-    #nst g.node.emph.disabled {
-      fill: #c71515;
-      cursor: default;
-    }
-
-    #nst .column path {
-      fill: none;
-      stroke: rgb(107, 107, 107);
-      stroke-width: 0;
-    }
-
-    #nst .column.checked path {
-      fill: none;
-      stroke: rgb(107, 107, 107);
-      stroke-width: 3;
-    }
-
-    #nst .column.checked.disabled path {
-      fill: none;
-      stroke: rgb(177, 177, 177);
-      stroke-width: 3;
-    }
-    
-    #nst .link {
-      fill: none;
-      stroke: #ddd;
-      stroke-width: 2px;
-    }
-
-    html, body {
-      margin: 0;
-      /* height: 100%; */
-    }
-
-    #nst * {
-      box-sizing: border-box;
-    }
-
-    #nst {
-      height: 80vh;
-    }
-
-    #nst .row {  
-      display: flex;
-      flex-direction: row;
-      height: 100%;
-    }
-
-    #nst .side {
-      flex: 30%;
-      background-color: #f1f1f1;
-      padding: 20px;
-      overflow: hidden;
-      overflow-wrap: break-word;
-    }
-
-    #nst .main {
-      display: flex;
-      flex-direction: column;
-      flex: 70%;
-      overflow: hidden;
-    }
-    #nst #tree {
-      flex: 100%;
-      min-height: 100%;
-    }
-    #nst svg {
-      cursor: grab;
-    }
-  </style>
+  <link rel="stylesheet" href="./noas_selector_tree.css" type="text/css"/> 
 </head>
 <body>
   <div> some stufff </div>
   <div id="noasTables">
-    <div id="nst">
-      <div class="row">
-        <div class="side">
-          <button id="btnGetSel">Get Selection</button>
-          <button id="btnDoStuf">Do Stuff</button>
-          <div id="selInfo"></div>
-        </div>
-        <div class="main"><div id="tree"></div></div>
-      </div>
-    </div>
   </div>
   <div> some more stufff </div>
   <script src="dbmeta_all.js"></script>
@@ -127,36 +19,36 @@
     
     
 
-    let ns_tree = new NoasSelectorTree("noasTables", dbmeta_s2c);
+    let ns_tree = new NoasSelectorTree("noasTables", dbmeta_all);
     ns_tree.render();
 
     
 
-    document.getElementById("btnDoStuf").onclick = (e) => {
-      const selection = [
-        {
-          "table_id": "core",
-          "column_id": "subject_id"
-        },
-        {
-          "table_id": "core",
-          "column_id": "project_id"
-        },
-        {
-          "table_id": "core",
-          "column_id": "wave_code"
-        },
-        {
-          "table_id": "core",
-          "column_id": "subject_sex"
-        }
-      ];
-      ns_tree.setSelection(selection);
-    }
+  //   document.getElementById("btnDoStuf").onclick = (e) => {
+  //     const selection = [
+  //       {
+  //         "table_id": "core",
+  //         "column_id": "subject_id"
+  //       },
+  //       {
+  //         "table_id": "core",
+  //         "column_id": "project_id"
+  //       },
+  //       {
+  //         "table_id": "core",
+  //         "column_id": "wave_code"
+  //       },
+  //       {
+  //         "table_id": "core",
+  //         "column_id": "subject_sex"
+  //       }
+  //     ];
+  //     ns_tree.setSelection(selection);
+  //   }
 
-    document.getElementById("btnGetSel").onclick = (e) => {
-     console.log(ns_tree.getSelection());
-   };
+  //   document.getElementById("btnGetSel").onclick = (e) => {
+  //    console.log(ns_tree.getSelection());
+  //  };
 
 
   </script>

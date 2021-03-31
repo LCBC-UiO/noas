@@ -74,13 +74,39 @@ class NoasSelectorTree extends NoasSelectorBase {
   }
 
   render() {
-    // let eNoasTables = document.getElementById(this.dstId);
-    // eNoasTables.innerHTML = '';
+    let eNoasTables = document.getElementById(this.dstId);
+    eNoasTables.innerHTML = '';
 
+    let enst = document.createElement("div");
+    enst.id = "nst";
+    eNoasTables.append(enst);
+    {
+      let erow = document.createElement("div");
+      erow.classList.add("row");
+      enst.append(erow);
+      {
+        let eside = document.createElement("div");
+        eside.classList.add("side");
+        erow.append(eside);
+        {
+          let eselinf = document.createElement("div");
+          eselinf.id = "selInfo";
+          eside.append(eselinf);
+        }
+        let emain = document.createElement("div");
+        emain.classList.add("main");
+        erow.append(emain);
+        {
+          let etree = document.createElement("div");
+          etree.id = "tree";
+          emain.append(etree);
+        }
+      }
+    }
     // Set the dimensions and margins of the diagram
     var margin = {top: 20, right: 390, bottom: 30, left: 90};
-    var width = document.querySelector(".main").width;
-    var height = document.querySelector(".main").offsetHeight;
+    var width  = document.querySelector(`#${this.dstId} .main`).width;
+    var height = document.querySelector(`#${this.dstId} .main`).offsetHeight;
 
     // console.log(height);
 
