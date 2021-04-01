@@ -171,6 +171,7 @@ class NoasSelectorBoxes extends NoasSelectorBase {
   }
 
   setSelection(columns) {
+    this.clearSelection();
     // apply selection
     let idsNotFound = [];
     // column checkboxes
