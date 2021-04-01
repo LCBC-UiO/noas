@@ -1,0 +1,117 @@
+
+#nst .node {
+  cursor: pointer;
+  font-family: sans-serif;
+  font-size: 12px;
+}
+
+#nst .node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 3px;
+}
+#nst g.node.emph circle {
+  stroke: #c71515;
+}
+
+#nst g.node.column rect {
+  fill: #fff;
+  stroke-width: 3px;
+  stroke: steelblue;
+}
+#nst g.node.column.emph rect {
+  stroke: #c71515;
+}
+#nst g.node.emph {
+  fill: #c71515;
+}
+
+#nst g.node.emph.disabled {
+  fill: #c71515;
+  cursor: default;
+}
+
+#nst .column path {
+  fill: none;
+  stroke: rgb(107, 107, 107);
+  stroke-width: 0;
+}
+
+#nst .column.checked path {
+  fill: none;
+  stroke: rgb(107, 107, 107);
+  stroke-width: 3;
+}
+
+#nst .column.checked.disabled path {
+  fill: none;
+  stroke: rgb(177, 177, 177);
+  stroke-width: 3;
+}
+
+#nst .link {
+  fill: none;
+  stroke: #ddd;
+  stroke-width: 2px;
+}
+
+html, body {
+  margin: 0;
+  /* height: 100%; */
+}
+ 
+#nst #selInfo {
+  /* background-color: #f1f1f1; */
+  border: 2px solid var(--colborder1);
+  border-radius: 8px;
+  box-shadow: 2px 2px 4px 4px #AAA;
+  background-color: var(--colbackground2);
+  padding: 10px;
+  margin-left: 10px;
+  height: 100%;
+}
+
+#nst {
+  height: 65vh;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+#nst .row {  
+  height: 100%;
+  display: flex;
+  margin-right: 0px;
+}
+
+#nst .side {
+  word-wrap: break-word;
+  overflow-x: hidden;
+  flex: 0 0 300px;
+  height: 100%;
+  padding-right: 8px;
+  padding-left: 5px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+#nst .main {
+  height: 100%;
+  align-self: stretch;
+  flex: 1;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+#nst #tree {
+  height: 100%;
+  overflow: hidden;
+  border: 2px solid var(--colborder1);
+  border-radius: 8px;
+  box-shadow: 2px 2px 4px 4px #AAA;
+}
+#nst svg {
+  cursor: grab;
+}
+
+#nst svg.grabbing {
+  cursor: grabbing;
+}

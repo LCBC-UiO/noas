@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8"/>
 <link rel="shortcut icon" href="./img/favicon.ico">
@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="./css/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="./css/bootstrap.css" type="text/css"/>
 <link rel="stylesheet" href="./css/optbox.css" type="text/css"/>
+<link rel="stylesheet" href="./css/noas_selector_tree.css" type="text/css"/>
 <script type="text/javascript" src="./js/solid.min.js" ></script>
 <script type="text/javascript" src="./js/fontawesome.min.js"></script>
 <script type="text/javascript" src="./js/jquery.min.js"></script>
@@ -14,7 +15,9 @@
 <script type="text/javascript" src="./js/bootstrap.min.js"></script>
 <script type="text/javascript" src="./js/lcalerts.js"></script>
 <script type="text/javascript" src="./js/lchelper.js"></script>
-<script src="js/noas_select_boxes.js" type="text/javascript"></script>
+<script type="text/javascript" src="js/noas_select_boxes.js"></script>
+<script type="text/javascript" src="js/d3.v6.min.js"></script>
+<script type="text/javascript" src="js/noas_selector_tree.js"></script>
 
 
 <title>
@@ -51,8 +54,18 @@ NOAS - Query selector
     <div id="alerts"></div>
   </div>
   <div class="d-flex">
-    <div class="h4 mt-1">
-      Database Query
+    <div class="h4 mt-1 ml-3">
+      Select variables
+    </div>
+    <div class="ml-5">
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radioNsBoxes" value="boxes" checked>
+        <label class="form-check-label" for="inlineRadio1">boxes</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radioNsTree" value="tree">
+        <label class="form-check-label" for="inlineRadio2">tree</label>
+      </div>
     </div>
     <div id="btnClear" class="button button-minwidth ml-auto">Clear selection</div>
     <label id="btnLoad" class="button button-minwidth">
@@ -117,8 +130,22 @@ NOAS - Query selector
         showAlertBox(AlertType.ERROR, errmsg);
       }
     }
-    g_noas_selector = new NoasSelectorBoxes("noasTables", meta);
-    g_noas_selector.render();
+    function updateSelector(meta) {
+      const selection = g_noas_selector ? g_noas_selector.getSelection() : null;
+      if(document.getElementById("radioNsBoxes").checked) {
+        g_noas_selector = new NoasSelectorBoxes("noasTables", meta);
+      } else {
+        g_noas_selector = new NoasSelectorTree("noasTables", meta);
+      }
+      g_noas_selector.render();
+      if (selection) {
+        g_noas_selector.setSelection(selection);
+      }
+    }
+    updateSelector(meta);
+    document.getElementById("radioNsBoxes").onchange = () => updateSelector(meta);
+    document.getElementById("radioNsTree").onchange = () => updateSelector(meta);
+
     document.getElementById("version-id").innerHTML = `${meta.version.id}`;
 
     let efooter = document.getElementById("noasSelFooter");
