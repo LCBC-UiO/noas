@@ -72,9 +72,19 @@ class NoasSelectorTree extends NoasSelectorBase {
         eside.classList.add("side");
         erow.append(eside);
         {
-          let eselinf = document.createElement("div");
-          eselinf.id = "selInfo";
-          eside.append(eselinf);
+          let esi = document.createElement("div");
+          esi.id = "sideinner";
+          eside.append(esi);
+          {
+            let esinf = document.createElement("div");
+            esinf.id = "selInfo";
+            esi.append(esinf);
+          }
+          {
+            let ehinf = document.createElement("div");
+            ehinf.id = "hoverInfo";
+            esi.append(ehinf);
+          }
         }
         let emain = document.createElement("div");
         emain.classList.add("main");
@@ -220,6 +230,7 @@ class NoasSelectorTree extends NoasSelectorBase {
     this.root.children[0].children.forEach(_nodeCollapse);
     this.root.children[1].children.forEach(_nodeCollapse);
     let scmap = {};
+    sel_cols.push({table_id: "core", column_id: "subject_id"});
     sel_cols.forEach(e => {
       if (! Object.keys(scmap).includes(e.table_id)) {
         scmap[e.table_id] = [];
@@ -229,6 +240,7 @@ class NoasSelectorTree extends NoasSelectorBase {
     _nodeSelect(this.root, scmap);
     _nodeDisable(this.root, { core: ["subject_id"] });
     this._update(this.root, this);
+    _updateSelected(this);
   }
 
   _update(source, nst) {
@@ -290,6 +302,7 @@ class NoasSelectorTree extends NoasSelectorBase {
       }
       d.checked = !d.checked;
       nst._update(d, nst);
+      _updateSelected(nst);
       event.stopPropagation();
     }
 
@@ -481,7 +494,8 @@ function isTable (t) { return t.n !== undefined;}
 function isCategory (t) { return t.n === undefined && t.title === undefined;} 
 
 function _nodeMouseover(d) {
-  let esi = document.getElementById("selInfo");
+  let esi = document.getElementById("hoverInfo");
+  esi.innerHTML = "";
   let dl = document.createElement("dl");
   esi.appendChild(dl);
   if (isTable(d.data)) {
@@ -575,5 +589,21 @@ function _nodeMouseover(d) {
   }
 }
 function _nodeMouseout() {
-  document.getElementById("selInfo").innerHTML = "";
+  document.getElementById("hoverInfo").innerHTML = "";
+}
+function _updateSelected(nst) {
+  const sel_cols = nst.getSelection();
+  let esi = document.getElementById("selInfo");
+  esi.innerHTML = "";
+  let ep = document.createElement("p");
+  ep.innerHTML = `${sel_cols.length} column${ sel_cols.length == 1 ? "" : "s"} selected`;
+  esi.appendChild(ep);
+  // let eul = document.createElement("ul");
+  // esi.appendChild(eul);
+  // sel_cols.forEach(e => {
+  //   let eli = document.createElement("li");
+  //   eli.innerHTML = `${e.table_id}_${e.column_id}`;
+  //   eul.appendChild(eli);
+  // });
+
 }
