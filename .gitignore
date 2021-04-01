@@ -24,6 +24,7 @@ webui/www/js/xlsx.full.min.js
 webui/www/static_info.json
 webui/www/js/pdfkit.standalone.js
 webui/www/js/blob-stream.js
+webui/www/js/d3.v6.min.js
 
 .Rhistory
 .Rproj.user$

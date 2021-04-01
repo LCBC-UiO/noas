@@ -19,7 +19,8 @@ websrcs := \
 	webui/www/js/tabulator.min.js \
 	webui/www/js/xlsx.full.min.js \
 	webui/www/js/pdfkit.standalone.js \
-	webui/www/js/blob-stream.js
+	webui/www/js/blob-stream.js \
+	webui/www/js/d3.v6.min.js
 
 # ------------------------------------------------------------------------------
 
