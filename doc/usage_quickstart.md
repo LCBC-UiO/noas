@@ -10,7 +10,7 @@ First select a project. This will determine what data you will see on the next p
 
 ### The "All" project
 
-Select "All" if you want to see data for all projects combined. Some data is not "shareable", meaning we do not have permission to merge it across projects. This non-shareable data excluded in "All". (Do not merge this data by hand unless you have permission for this.)
+Select "All" if you want to see data for all projects combined. Some data is not "shareable", meaning we do not have permission to merge it across projects. This non-shareable data is excluded in "All". (Do not merge this data by hand unless you have permission for this.)
 
 ## 2) Select variables
 
