@@ -439,7 +439,7 @@ BEGIN
   END IF;
   FOR _key, _value IN SELECT * FROM json_each(col_metadata)
   LOOP
-    IF _key = ANY (ARRAY['category','title','descr','type']) THEN
+    IF _key = ANY (ARRAY['title','descr','type']) THEN
       EXECUTE format(
         $ex$
           UPDATE metacolumns SET %s = %s WHERE metatable_id = '%s' AND id = '_%s';
@@ -492,11 +492,12 @@ DECLARE
    _key   text;
    _value json;
    _col   json;
+   _cats  json[];
 BEGIN
     FOR _key, _value IN
        SELECT * FROM json_each(metadata)
     LOOP
-      IF _key = ANY (ARRAY['category','title','descr']) THEN
+      IF _key = ANY (ARRAY['title','descr']) THEN
         EXECUTE format(
           $ex$
             UPDATE metatables SET %s = %s WHERE id = '%s';
@@ -505,6 +506,11 @@ BEGIN
           ,quote_literal(_value #>> '{}')
           ,table_id
         );
+      ELSIF _key = 'category' THEN
+        SELECT array(SELECT json_array_elements(_value)) INTO _cats;
+        UPDATE metatables 
+          SET category = (SELECT array(SELECT json_array_elements_text(_value)))
+          WHERE id = table_id;
       ELSIF _key = 'columns' THEN
         FOR _col IN SELECT * FROM json_array_elements(_value)
         LOOP
@@ -576,7 +582,7 @@ CREATE TABLE visits (
 CREATE TABLE metatables (
   id text,
   sampletype e_sampletype,
-  category   text,
+  category   text[] DEFAULT ARRAY[]::text[],
   idx        integer DEFAULT 1,
   title      text,
   descr text DEFAULT NULL,

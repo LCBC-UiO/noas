@@ -44,7 +44,7 @@ class NoasSelectorBoxes extends NoasSelectorBase {
       let eArrow = document.createElement('i');
       eOptheadSpan.append(eArrow);
       eArrow.classList.add("ddarrow");
-      const strCategory = e.category ? `[${e.category}] ` : '';
+      const strCategory = e.category.length ? `[${e.category.join(", ")}] ` : '';
       eOptheadSpan.insertAdjacentHTML('beforeend',
         `${strCategory}${e.title} (${e.id}; n=${e.n})`
       );

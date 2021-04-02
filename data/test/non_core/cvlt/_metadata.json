@@ -1,6 +1,8 @@
 {
   "title": "California Verbal Learning Task",
-  "category": "cognitive test",
+  "category": [
+    "cognitive test"
+  ],
   "columns": [
     {
       "title": "cvlt a1",

@@ -16,12 +16,7 @@ class NoasSelectorTree extends NoasSelectorBase {
         if (table.id == "core") {
           return [];
         }
-  
-        let path = ["non_core"];
-        if (table.category) {
-          path.push(table.category);
-        }
-        return path;
+        return ["non_core"].concat(table.category);
       }
       function _insertTableNode(tree, path, node) {
         // insert category?

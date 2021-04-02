@@ -19,7 +19,7 @@ select
 from (
   select
     mt.id,
-    mt.category,
+    array_to_json(mt.category) as category,
     mt.sampletype,
     mt.title,
     mt.idx,
@@ -59,7 +59,8 @@ from (
     metatables mt
   order by
     mt.idx,
-    mt.category,
+    array_length(mt.category, 1) > 0,
+    array_to_string(mt.category, ', '),
     mt.title
 ) t
 ";
