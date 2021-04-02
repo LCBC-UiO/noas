@@ -355,7 +355,7 @@ class NoasSelectorTree extends NoasSelectorBase {
     // Update the node attributes and style
     nodeUpdate.select('.node circle')
       .style("fill", function(d) {
-            return d._children ? "lightsteelblue" : "#fff";
+            return d._children ? "rgb(206, 224, 151)" : "rgb(236, 240, 224)";
       })
       .transition()
         .attr('r', 10);
