@@ -131,6 +131,8 @@ NOAS - Query selector
       }
     }
     function updateSelector(meta) {
+      document.getElementById("radioNsBoxes").disabled = true;
+      document.getElementById("radioNsTree").disabled  = true;
       const selection = g_noas_selector ? g_noas_selector.getSelection() : null;
       if(document.getElementById("radioNsBoxes").checked) {
         g_noas_selector = new NoasSelectorBoxes("noasTables", meta);
@@ -141,6 +143,8 @@ NOAS - Query selector
       if (selection) {
         g_noas_selector.setSelection(selection);
       }
+      document.getElementById("radioNsBoxes").disabled = false;
+      document.getElementById("radioNsTree").disabled  = false;
     }
     updateSelector(meta);
     document.getElementById("radioNsBoxes").onchange = () => updateSelector(meta);
