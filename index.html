@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tree test</title>
+  <script src="d3.v6.min.js"></script>
+  <script src="noas_selector_tree.js"></script>
+  <link rel="stylesheet" href="./noas_selector_tree.css" type="text/css"/> 
+</head>
+<body>
+  <div> some stufff </div>
+  <div id="noasTables">
+  </div>
+  <div> some more stufff </div>
+  <script src="dbmeta_all.js"></script>
+  <script src="dbmeta_s2c.js"></script>
+  <script>
+    
+    
+
+    let ns_tree = new NoasSelectorTree("noasTables", dbmeta_all);
+    ns_tree.render();
+
+    
+
+  //   document.getElementById("btnDoStuf").onclick = (e) => {
+  //     const selection = [
+  //       {
+  //         "table_id": "core",
+  //         "column_id": "subject_id"
+  //       },
+  //       {
+  //         "table_id": "core",
+  //         "column_id": "project_id"
+  //       },
+  //       {
+  //         "table_id": "core",
+  //         "column_id": "wave_code"
+  //       },
+  //       {
+  //         "table_id": "core",
+  //         "column_id": "subject_sex"
+  //       }
+  //     ];
+  //     ns_tree.setSelection(selection);
+  //   }
+
+  //   document.getElementById("btnGetSel").onclick = (e) => {
+  //    console.log(ns_tree.getSelection());
+  //  };
+
+
+  </script>
+</body>
+</html>
