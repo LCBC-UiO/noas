@@ -328,7 +328,7 @@ class NoasSelectorTree extends NoasSelectorBase {
     //nodeEnter.filter(".column").append("text").text("sdf");
     
     node.select('text')
-      .merge(nodeEnter.append("text"))
+      .merge(nodeEnter.append("text").style('fill-opacity', 1e-6))
         .text(function (d) {
           if (isTable(d.data)) {
             return `${d.data.id}; n=${d.data.n}` + (d.data.descr ? " ⓘ" : "");
@@ -338,6 +338,7 @@ class NoasSelectorTree extends NoasSelectorBase {
         .attr("text-anchor", "middle")
         .attr("y", "0.35em")
         .transition().duration(nst.duration)
+          .style('fill-opacity', 1)
           .attr("x", function(d) {
             return (this.getBBox().width/2 + 13) * (d.children ? -1 : 1);
           });
