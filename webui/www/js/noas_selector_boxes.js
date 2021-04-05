@@ -23,11 +23,10 @@ class NoasSelectorBoxes extends NoasSelectorBase {
   }
 
   render() {
-    let eNoasTables = document.getElementById(this.dstId);
-    eNoasTables.innerHTML = '';
+    let frag = document.createDocumentFragment();
     this.dbmeta.tables.forEach((e,i) => {
       let eOptbox = document.createElement('div');
-      eNoasTables.appendChild(eOptbox);
+      frag.appendChild(eOptbox);
       eOptbox.classList.add("optbox");
       // hide box if n=0
       if (!e.n) {
@@ -138,7 +137,7 @@ class NoasSelectorBoxes extends NoasSelectorBase {
         });
       }
     });
-
+    document.getElementById(this.dstId).replaceChildren(frag);
     // preselect some cols
     let ecbcsubj = document.querySelector("#colcheck_core_subject_id");
     ecbcsubj.checked = true;
