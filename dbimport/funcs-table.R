@@ -3,6 +3,12 @@ source("dbimport/funcs-printouts.R", echo = FALSE)
 source("dbimport/funcs-metadata.R", echo = FALSE)
 source("dbimport/funcs-validate.R", echo = FALSE)
 
+read_noasjson_str <- function(dirpath){
+  ffile <- file.path(dirpath, "_noas.json")
+  if (!file.exists(ffile)) return(NULL)
+  return(readChar(ffile, file.size(ffile)))
+}
+
 # Insert functions are functions taking a single
 # table and placing it in the DB
 # Add functions efficiently adds multiple tables
@@ -52,12 +58,11 @@ insert_table <- function(x,
 
     if(k == FALSE) stop("\ntmp table not initiated\n")
 
-    DBI::dbExecute(con, sprintf("select import_table($1, $2, $3, $4, %s)", 
-      ifelse(is.null(repeated_group), "NULL", sprintf("'%s'", repeated_group))), # quick-fix for NULL param. Doen't seem to be supported
+    DBI::dbExecute(con, "select import_table($1, $2, $3, $4)", 
       params=list(
-        type,
         sprintf("tmp_%s", table_name),
         table_name,
+        read_noasjson_str(table_dir),
         noas_data_source
       )
     )

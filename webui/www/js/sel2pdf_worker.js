@@ -23,8 +23,8 @@ function _writeTables(doc, m, onpageadd) {
       .font('Helvetica-Bold').text(`${et.title}`, {continued: true, underline: true})
       .font("Helvetica").text(` (${et.id})`);
     doc.fontSize(12);
-    if (et.category) {
-      doc.font('Helvetica-Oblique').text('category: ', {continued: true, indent: 10}).font('Helvetica').text(et.category);
+    if (et.category.length) {
+      doc.font('Helvetica-Oblique').text('category: ', {continued: true, indent: 10}).font('Helvetica').text(et.category.join(", "));
     }
     doc.font('Helvetica-Oblique').text('type: ', {continued: true, indent: 10}).font('Helvetica').text(et.sampletype);
     doc.font('Helvetica-Oblique').text('num. rows: ', {continued: true, indent: 10}).font('Helvetica').text(et.n);
@@ -87,13 +87,14 @@ function _create_pdf(m) {
     doc.moveDown();
     let curr_cat = -1; // something we don't expect to be real data (core has cat null)
     toc.forEach(e => {
+      const get_out_cat = (et) => {
+        if (et.idx == 0) return "Core data";
+        if (et.category.length == 0) return "uncategorized";
+        return et.category.join(", ");
+      };
       doc.lineGap(4);
       if (curr_cat != e.table.category) {
-        const out_cat = ((et) => {
-          if (et.idx == 0) return "Core data";
-          if (et.category == null) return "uncategorized";
-          return et.category;
-        })(e.table);
+        const out_cat = get_out_cat(e.table);
         doc
           .fontSize(11).font('Helvetica').text(out_cat, {align: 'left', underline: true , indent: 20});
       }
@@ -101,7 +102,7 @@ function _create_pdf(m) {
         .fontSize(10)
         .font('Helvetica').text(`${e.table.title} (${e.table.id})`, {continued: true, indent: 40})
         .font('Helvetica-Oblique').text(`    ${e.page}`);
-        curr_cat = e.table.category;
+        curr_cat = get_out_cat(e.table);
     });
   }
   // get current page - to be used add offset for page numbers

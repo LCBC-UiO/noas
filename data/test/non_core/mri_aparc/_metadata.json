@@ -1,6 +1,8 @@
 {
   "title": "Desikan-Killiany cortical atlas",
-  "category": "mri",
+  "category": [
+    "mri"
+  ],
   "columns": [
     {
       "id": "site_name",

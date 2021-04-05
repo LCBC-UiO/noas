@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8"/>
 <link rel="shortcut icon" href="./img/favicon.ico">
@@ -7,13 +7,19 @@
 <link rel="stylesheet" href="./css/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="./css/bootstrap.css" type="text/css"/>
 <link rel="stylesheet" href="./css/optbox.css" type="text/css"/>
+<link rel="stylesheet" href="./css/noas_selector_tree.css" type="text/css"/>
 <script type="text/javascript" src="./js/solid.min.js" ></script>
 <script type="text/javascript" src="./js/fontawesome.min.js"></script>
+<script type="text/javascript" src="./js/d3.v6.min.js"></script>
 <script type="text/javascript" src="./js/jquery.min.js"></script>
 <script type="text/javascript" src="./js//popper.min.js"></script>
 <script type="text/javascript" src="./js/bootstrap.min.js"></script>
 <script type="text/javascript" src="./js/lcalerts.js"></script>
 <script type="text/javascript" src="./js/lchelper.js"></script>
+<script type="text/javascript" src="./js/noas_selector_base.js"></script>
+<script type="text/javascript" src="./js/noas_selector_boxes.js"></script>
+<script type="text/javascript" src="./js/noas_selector_tree.js"></script>
+
 
 <title>
 NOAS - Query selector
@@ -49,8 +55,18 @@ NOAS - Query selector
     <div id="alerts"></div>
   </div>
   <div class="d-flex">
-    <div class="h4 mt-1">
-      Database Query
+    <div class="h4 mt-1 ml-3">
+      Select variables
+    </div>
+    <div class="ml-5">
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radioNsBoxes" value="boxes" checked>
+        <label class="form-check-label" for="inlineRadio1">boxes</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radioNsTree" value="tree">
+        <label class="form-check-label" for="inlineRadio2">tree</label>
+      </div>
     </div>
     <div id="btnClear" class="button button-minwidth ml-auto">Clear selection</div>
     <label id="btnLoad" class="button button-minwidth">
@@ -59,13 +75,14 @@ NOAS - Query selector
     <div id="btnGetDocPdf" class="button button-minwidth">Download docu</div>
     <div id="btnSubmitTop" class="button button-minwidth">Submit</div>
   </div>
-  <div id="noasTables">
-  </div>
+  <div id="noasTables"></div>
+  <div id="noasSelFooter"></div>
   <div class="mt-4">
     <div id="btnSubmit" class="button button-minwidth">Submit</div>
   </div>
   <div class="mb-5"></div>
 <script>
+  let g_noas_selector = null;
 
   const g_prj = (function() {
     const prj = (new URLSearchParams(window.location.search)).get("prj");
@@ -114,125 +131,32 @@ NOAS - Query selector
         showAlertBox(AlertType.ERROR, errmsg);
       }
     }
-    let eNoasTables = document.getElementById("noasTables");
-    eNoasTables.innerHTML = '';
+    function updateSelector(meta) {
+      document.getElementById("radioNsBoxes").disabled = true;
+      document.getElementById("radioNsTree").disabled  = true;
+      const selection = g_noas_selector ? g_noas_selector.getSelection() : null;
+      if(document.getElementById("radioNsBoxes").checked) {
+        g_noas_selector = new NoasSelectorBoxes("noasTables", meta);
+      } else {
+        g_noas_selector = new NoasSelectorTree("noasTables", meta);
+      }
+      g_noas_selector.render();
+      if (selection) {
+        g_noas_selector.setSelection(selection);
+      }
+      document.getElementById("radioNsBoxes").disabled = false;
+      document.getElementById("radioNsTree").disabled  = false;
+    }
+    updateSelector(meta);
+    document.getElementById("radioNsBoxes").onchange = () => updateSelector(meta);
+    document.getElementById("radioNsTree").onchange = () => updateSelector(meta);
+
     document.getElementById("version-id").innerHTML = `${meta.version.id}`;
-    meta.tables.forEach((e,i) => {
-      let eOptbox = document.createElement('div');
-      eNoasTables.appendChild(eOptbox);
-      eOptbox.classList.add("optbox");
-      // hide box if n=0
-      if (!e.n) {
-        eOptbox.classList.add("hidden");
-      }
-      eOptbox.id = `noasTable_${e.id}`;
-      // box header
-      let eOpthead = document.createElement('div');
-      eOptbox.appendChild(eOpthead);
-      eOpthead.classList.add("opthead");
-      let eOptheadSpan = document.createElement('span');
-      eOpthead.appendChild(eOptheadSpan);
-      eOptheadSpan.classList.add("optopener");
-      let eArrow = document.createElement('i');
-      eOptheadSpan.append(eArrow);
-      eArrow.classList.add("ddarrow");
-      const strCategory = e.category ? `[${e.category}] ` : '';
-      eOptheadSpan.insertAdjacentHTML('beforeend',
-        `${strCategory}${e.title} (${e.id}; n=${e.n})`
-      );
-      // open / close
-      eOptheadSpan.addEventListener('click', () => {
-        eOptbody.classList.toggle('openoptbody');
-        eArrow.classList.toggle('openddarrow');
-      });
-      // tooltip
-      if (e.descr) {
-        let eDescr = document.createElement('span');
-        eOpthead.appendChild(eDescr);
-        eDescr.classList.add("ml-3");
-        eDescr.setAttribute("data-toggle", "tooltip");
-        eDescr.setAttribute("data-placement", "top");
-        eDescr.setAttribute("title", e.descr);
-        {
-          let eIcon = document.createElement('span');
-          eDescr.appendChild(eIcon);
-          eIcon.classList.add("fas");
-          eIcon.classList.add("fa-info-circle");
-          eIcon.classList.add("small");
-        }
-      }
-      // box body (columns)
-      let eOptbody = document.createElement('div');
-      eOptbox.appendChild(eOptbody);
-      eOptbody.classList.add("optbody");
-      let eOptcontent = document.createElement('div');
-      eOptbody.appendChild(eOptcontent);
-      eOptcontent.classList.add("optcontent");
-      eOptcontent.classList.add("container");
-      eOptcontent.classList.add("mx-1");
-      // columns
-      let eRow = document.createElement("div");
-      eOptcontent.appendChild(eRow);
-      eRow.classList.add("row");
-      e.columns.forEach((ec,i) => {
-        let eCol = document.createElement("div");
-        eRow.appendChild(eCol);
-        eCol.classList.add("col-sm-3");
-        eCol.classList.add("mb-2");
-        eCol.classList.add("form-group");
-        eCol.classList.add("form-check");
-        let eLabel = document.createElement("label");
-        eCol.appendChild(eLabel);
-        eLabel.classList.add("form-check-label");
-        eLabel.classList.add("font-weight-normal");
-        let eCheck = document.createElement("input");
-        eLabel.appendChild(eCheck);
-        eCheck.id = `colcheck_${e.id}_${ec.id}`;
-        eCheck.type = 'checkbox';
-        eCheck.classList.add("mr-3");
-        eCheck.noasTableId = e.id;
-        eCheck.noasColId = ec.id;
-        eCheck.value = "1";
-        eLabel.insertAdjacentHTML('beforeend', ec.title)
-        // column descr tooltip
-        if (ec.descr) {
-          eLabel.insertAdjacentHTML('beforeend', "&nbsp;")
-          let eDescr = document.createElement('span');
-          eLabel.appendChild(eDescr);
-          eDescr.setAttribute("data-toggle", "tooltip");
-          eDescr.setAttribute("data-placement", "top");
-          eDescr.setAttribute("title", ec.descr);
-          {
-            let eIcon = document.createElement('span');
-            eDescr.appendChild(eIcon);
-            eIcon.classList.add("fas");
-            eIcon.classList.add("fa-info-circle");
-            eIcon.classList.add("text-muted");
-            eIcon.classList.add("small");
-          }
-        }
-      });
-      // select all button
-      if (i > 0) {
-        let eSelAll = document.createElement('a');
-        eOptcontent.appendChild(eSelAll);
-        eSelAll.classList.add("opt-selectall");
-        eSelAll.classList.add("mt-2");
-        const strSelAll = "Select all";
-        const strUnselAll = "Unselect all";
-        eSelAll.insertAdjacentHTML('beforeend', "Select all");
-        eSelAll.addEventListener('click', (e) => {
-          let doSel = e.srcElement.innerHTML == strSelAll;
-          e.srcElement.innerHTML = doSel ? strUnselAll : strSelAll;
-          eOptcontent.querySelectorAll("input").forEach(e => {
-            e.checked = doSel;
-          })
-        });
-      }
-    });
+
+    let efooter = document.getElementById("noasSelFooter");
     // query options
     let eOptbox = document.createElement('div');
-    eNoasTables.appendChild(eOptbox);
+    efooter.appendChild(eOptbox);
     eOptbox.classList.add("optbox");
     eOptbox.id = `queryOpts`;
     // query options box header
@@ -278,16 +202,6 @@ NOAS - Query selector
       eOptcontent.appendChild(document.createElement('br'));
       eRadio.checked = i == 2; // preselect intersect 
     }); // end query options
-
-    // preselect some cols
-    let ecbcsubj = document.querySelector("#colcheck_core_subject_id");
-    ecbcsubj.checked = true;
-    ecbcsubj.disabled = true;
-    document.querySelector("#colcheck_core_project_id").checked = true;
-    document.querySelector("#colcheck_core_wave_code").checked = true;
-    document.querySelector("#colcheck_core_subject_sex").checked  = true;
-    // open default boxes
-    document.querySelector("#noasTable_core span").click();
     document.querySelector("#queryOpts span").click();
     // enable buttons
     document.getElementById("btnClear").addEventListener('click', clearSelection);
@@ -295,32 +209,20 @@ NOAS - Query selector
     document.getElementById("btnSubmit").addEventListener('click', submitSelection);
     document.getElementById("btnSubmitTop").addEventListener('click', submitSelection);
     document.getElementById("btnGetDocPdf").addEventListener('click', () => downloadPdf(meta));
-    // enable bs tooltips
-    $('[data-toggle="tooltip"]').tooltip({ boundary: 'window' });
   }
 
   // clear selection
   function clearSelection() {
-    document.querySelectorAll("[id^='colcheck_']").forEach(e => e.checked = false);
-    // check subjid
-    document.querySelector("#colcheck_core_subject_id").checked = true;
+    g_noas_selector.clearSelection();
   }
 
   function getSelection() {
     let sel = {
-      columns: [],
+      columns: g_noas_selector.getSelection(),
       set_op: null,
       date: (new Date()).toISOString(),
       version: document.getElementById("version-id").innerHTML,
     };
-    // get selected columns
-    let cbs = document.querySelectorAll("[id^='colcheck_']");
-    cbs.forEach(e => {
-      if (!e.checked) {
-        return;
-      }
-      sel.columns.push({table_id: e.noasTableId, column_id: e.noasColId});
-    });
     sel.project = g_prj;
     // query options
     sel.set_op = document.querySelector('input[name="setOps"]:checked').value;
@@ -343,18 +245,8 @@ NOAS - Query selector
       }
       // clear
       clearSelection();
-      // apply selection
-      let idsNotFound = [];
-      // column checkboxes
-      selection.columns.forEach(e => {
-        let checkid = `colcheck_${e.table_id}_${e.column_id}`;
-        let cb = document.getElementById(checkid);
-        if (!cb) {
-          idsNotFound.push(e);
-          return;
-        }
-        cb.checked = true;
-      });
+      // apply selection to columns
+      let idsNotFound = g_noas_selector.setSelection(selection.columns);
       // query options
       document.querySelectorAll('input[name="setOps"]').forEach(e => {
         e.checked = e.value == selection.set_op;

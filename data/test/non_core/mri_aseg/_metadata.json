@@ -1,6 +1,8 @@
 {
   "title": "Aseg subcortical atlas",
-  "category": "mri",
+  "category": [
+    "mri"
+  ],
   "columns": [
     {
       "id": "site_name",

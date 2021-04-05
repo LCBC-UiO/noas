@@ -1,6 +1,8 @@
 {
   "title": "Edinburgh Handedness Inventory",
-  "category": "questionnaire",
+  "category": [ 
+    "questionnaire" 
+  ],
   "columns": [
     {
       "descr": "ehi nominal",
