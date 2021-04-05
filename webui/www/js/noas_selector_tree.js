@@ -527,7 +527,7 @@ function _nodeMouseover(d) {
       dl.appendChild(dd);
       dd.innerHTML = {
         core: "core",
-        cross: "corss-sectional",
+        cross: "cross-sectional",
         long: "longitudinal",
         repeated: "repeated",
       }[d.data.sampletype];
