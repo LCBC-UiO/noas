@@ -129,8 +129,8 @@ class NoasSelectorBoxes extends NoasSelectorBase {
         const strUnselAll = "Unselect all";
         eSelAll.insertAdjacentHTML('beforeend', "Select all");
         eSelAll.addEventListener('click', (e) => {
-          let doSel = e.srcElement.innerHTML == strSelAll;
-          e.srcElement.innerHTML = doSel ? strUnselAll : strSelAll;
+          let doSel = e.target.innerHTML == strSelAll;
+          e.target.innerHTML = doSel ? strUnselAll : strSelAll;
           eOptcontent.querySelectorAll("input").forEach(e => {
             e.checked = doSel;
           })
