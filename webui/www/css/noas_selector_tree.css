@@ -66,11 +66,11 @@ html, body {
   box-shadow: 2px 2px 4px 4px #AAA;
   background-color: var(--colbackground2);
   padding: 10px;
+  padding-top: 16px;
   margin-left: 10px;
   height: 100%;
   overflow-y: hidden;
 }
-
 
 #nst {
   height: 65vh;

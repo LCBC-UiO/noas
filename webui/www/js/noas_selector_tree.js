@@ -594,12 +594,4 @@ function _updateSelected(nst) {
   let ep = document.createElement("p");
   ep.innerHTML = `${sel_cols.length} column${ sel_cols.length == 1 ? "" : "s"} selected`;
   esi.appendChild(ep);
-  // let eul = document.createElement("ul");
-  // esi.appendChild(eul);
-  // sel_cols.forEach(e => {
-  //   let eli = document.createElement("li");
-  //   eli.innerHTML = `${e.table_id}_${e.column_id}`;
-  //   eul.appendChild(eli);
-  // });
-
 }
