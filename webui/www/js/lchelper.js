@@ -46,6 +46,7 @@ function lcProgressInit(parentId) {
     ep.appendChild(es);
     es.id = "noasProgressText";
     es.classList.add("progress");
+    es.classList.add("mx-5");
     let e = document.createElement("div");
     es.appendChild(e);
     e.id = "noasProgress";
