@@ -93,7 +93,7 @@ function _create_pdf(m) {
         return et.category.join(", ");
       };
       doc.lineGap(4);
-      if (curr_cat != e.table.category) {
+      if (curr_cat != get_out_cat(e.table)) {
         const out_cat = get_out_cat(e.table);
         doc
           .fontSize(11).font('Helvetica').text(out_cat, {align: 'left', underline: true , indent: 20});
