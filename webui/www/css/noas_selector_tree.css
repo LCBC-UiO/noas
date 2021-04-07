@@ -73,7 +73,7 @@ html, body {
 }
 
 #nst {
-  height: 65vh;
+  height: calc(100vh - 300px);
   margin-left: 4px;
   margin-right: 4px;
 }
