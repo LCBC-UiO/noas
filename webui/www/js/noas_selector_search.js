@@ -153,7 +153,7 @@ class NoasSelectorSearch extends NoasSelectorBase {
 
 /*----------------------------------------------------------------------------*/
 
-function createNsRow(textcenter, textright, onclick) {
+function createNsRow(textcenter, fasymbol, onclick) {
   let erow = document.createElement("div");
   erow.classList.add("resrow");
   if (onclick === null) erow.classList.add("nssdisabled");
@@ -163,17 +163,24 @@ function createNsRow(textcenter, textright, onclick) {
   ecenter.innerHTML = textcenter;
   let ecaret = document.createElement("div");
   ecaret.classList.add("resrowright");
-  ecaret.innerHTML = textright;
+  ecaret.classList.add("fas");
+  ecaret.classList.add(`fa-${fasymbol}`);
+  ecaret.classList.add("fa-lg");
   erow.appendChild(ecaret);
   erow.onclick = onclick;
   return erow;
+}
+function hasIconNsRow(r, fasymbol) {
+  return r.lastElementChild.getAttribute("data-icon") == fasymbol;
+}
+function setIconNsRow(r, fasymbol) {
+  r.lastElementChild.setAttribute("data-icon", fasymbol);
 }
 
 /*----------------------------------------------------------------------------*/
 
 function doSearch(e, nss) {
-  console.log(e);
-  const sres = nss.fuse.search(e.data);
+  const sres = e.data ? nss.fuse.search(e.data) : [];
   let frag = document.createDocumentFragment();
   const maxResults = 40;
   sres.slice(0, maxResults).forEach(r => {
@@ -182,7 +189,7 @@ function doSearch(e, nss) {
       r.item.column ? r.item.column.id : null
     );
     frag.appendChild(
-      createNsRow(SearchItems.prettyPrintHit(r), ">", rowonclick)
+      createNsRow(SearchItems.prettyPrintHit(r), "chevron-right", rowonclick)
     );
   });
   document.getElementById("nssResults").innerHTML = '';
@@ -194,6 +201,8 @@ function doSearch(e, nss) {
 class NssSelection {
   onRemove = null;
   selCols = {};
+
+  static get SymbolRemove() { return "backspace"; }
 
   constructor(dstId, dbmeta) {
     this.distId = dstId;
@@ -222,8 +231,15 @@ class NssSelection {
   render() {
     let edst = document.getElementById(this.distId);
     const keys = Object.keys(this.selCols);
-    edst.parentElement.firstElementChild.innerHTML = `Selections (${keys.length})`;
-    console.log(edst.parentElement);
+    edst.parentElement.firstElementChild.innerHTML = "";
+    const eicon = document.createElement("i");
+    eicon.classList.add("fas");
+    eicon.classList.add("fa-shopping-cart");
+    eicon.classList.add("mr-2");
+    edst.parentElement.firstElementChild.appendChild(eicon);
+    edst.parentElement.firstElementChild.appendChild(
+      document.createTextNode(`Selections (${keys.length})`)
+    );
     let frag = document.createDocumentFragment();
     keys.forEach(k => {
       const c = this.selCols[k];
@@ -231,7 +247,7 @@ class NssSelection {
         this.removeCol(c.table_id, c.column_id);
       };
       const tcid = `${c.table_id}_${c.column_id}`;
-      const erow = createNsRow(tcid, "-", c.disabled ? null : onRowClick);
+      const erow = createNsRow(tcid, NssSelection.SymbolRemove, c.disabled ? null : onRowClick);
       frag.appendChild(erow);
     });
     edst.replaceChildren(frag);
@@ -246,11 +262,13 @@ class NssSelection {
 class NssColumns {
   onUpdateSelection = null;
   nssselection = null;
+
+  static get SymbolAdd()    { return "plus-circle"; }
+  static get SymbolRemove() { return "backspace"; }
   
   constructor(dstId, nssselection) {
     this.distId = dstId;
     this.nssselection = nssselection;
-    console.log(this.nssselection);
   }
   
   setTable(table, colid) {
@@ -259,16 +277,16 @@ class NssColumns {
     const nssc = this;
     table.columns.forEach(c => {
       const onRowClick = function(){
-        const doAdd = this.lastChild.innerHTML == "+";
+        const doAdd = hasIconNsRow(this, NssColumns.SymbolAdd);
         if (doAdd) {
-          this.lastChild.innerHTML = '-';
+          setIconNsRow(this, NssColumns.SymbolRemove);
           nssc.nssselection.addCol(table.id, c.id);
         } else {
           nssc.nssselection.removeCol(table.id, c.id);
         }
       };
       const s = this.nssselection.isSelected(table.id, c.id);
-      const erow = createNsRow(c.title, s ? "-" : "+", onRowClick);
+      const erow = createNsRow(c.title, s ? NssColumns.SymbolRemove : NssColumns.SymbolAdd, onRowClick);
       erow.noasTableId = table.id;
       erow.noasColumnId = c.id;
       frag.appendChild(erow);
@@ -285,7 +303,7 @@ class NssColumns {
   update() {
     Array.from(document.getElementById(this.distId).children).forEach((e) => {
       const s = this.nssselection.isSelected(e.noasTableId, e.noasColumnId);
-      e.lastChild.innerHTML = s ? "-" : "+";
+      setIconNsRow(e, s ? NssColumns.SymbolRemove : NssColumns.SymbolAdd);
     });
   }
 }
