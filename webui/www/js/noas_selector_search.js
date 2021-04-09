@@ -52,8 +52,11 @@ class NoasSelectorSearch extends NoasSelectorBase {
     }
     this.nssSelection = new NssSelection("nssSelection");
     this.nssColumns = new NssColumns("nssColumns", this.nssSelection);
-    this.nssSelection.onRemove = () => { this.nssColumns.update(); };
+    this.nssSelection.onUpdate = () => { this.nssColumns.update(); };
     this.nssSelection.addCol("core", "subject_id", true);
+    this.nssSelection.addCol("core", "project_id");
+    this.nssSelection.addCol("core", "wave_code");
+    this.nssSelection.addCol("core", "subject_sex");
 
 
     let search_data = [];
@@ -85,15 +88,29 @@ class NoasSelectorSearch extends NoasSelectorBase {
   }
 
   getSelection(){
-
+    return this.nssSelection.getSelection();
   }
 
-  setSelection(){
-
+  setSelection(sel_cols){
+    this.nssSelection.removeCols(
+      this.nssSelection.getSelection()
+    );
+    this.nssSelection.addCol("core", "subject_id", true);
+    this.nssSelection.addCols(sel_cols);
+    const ids_found = this.nssSelection.getSelection();
+    const ids_bad = sel_cols.filter(x => 
+      !ids_found.some(y =>
+        (y.table_id == x.table_id && y.column_id == x.column_id)
+      )
+    );
+    return ids_bad;
   }
-  
-  clearSelection(){
 
+  clearSelection() {
+    this.nssSelection.removeCols(
+      this.nssSelection.getSelection()
+    );
+    this.nssSelection.addCol("core", "subject_id", true);
   }
 
   showTable(table, colid) {
@@ -199,7 +216,7 @@ function doSearch(e, nss) {
 /*----------------------------------------------------------------------------*/
 
 class NssSelection {
-  onRemove = null;
+  onUpdate = null;
   selCols = {};
 
   static get SymbolRemove() { return "backspace"; }
@@ -207,13 +224,18 @@ class NssSelection {
   constructor(dstId, dbmeta) {
     this.distId = dstId;
   }
-  set onRemove(onRemove) { this.onRemove = onRemove; }
+  set onUpdate(onUpdate) { this.onUpdate = onUpdate; }
   setSelection(sel_cols) {
     // this.selCols = sel_cols;
     let frag = document.createDocumentFragment();
   }
   getSelection() {
-    return Object.keys(this.selCols).map(k => this.selCols[k]);
+    return Object.keys(this.selCols).map(k => {
+      return {
+        table_id: this.selCols[k].table_id,
+        column_id: this.selCols[k].column_id,
+      };
+    });
   }
   addCol(tableId, colId, disabled = false) {
     this.selCols[`${tableId}_${colId}`] = {
@@ -222,11 +244,33 @@ class NssSelection {
       disabled: disabled,
     };
     this.render();
+    this.onUpdate();
+  }
+  addCols(cols) {
+    cols.forEach(c => {
+      if (this.isSelected(c.table_id, c.column_id)) {
+        return;
+      }
+      this.selCols[`${c.table_id}_${c.column_id}`] = {
+        table_id: c.table_id,
+        column_id: c.column_id,
+        disabled: c.disabled,
+      };
+    });
+    this.render();
+    this.onUpdate();
   }
   removeCol(tableId, colId) {
     delete this.selCols[`${tableId}_${colId}`];
     this.render();
-    this.onRemove();
+    this.onUpdate();
+  }
+  removeCols(cols) {
+    cols.forEach(c => {
+      delete this.selCols[`${c.table_id}_${c.column_id}`];
+    });
+    this.render();
+    this.onUpdate();
   }
   render() {
     let edst = document.getElementById(this.distId);
