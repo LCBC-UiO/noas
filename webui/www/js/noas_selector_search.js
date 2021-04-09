@@ -163,21 +163,26 @@ class NoasSelectorSearch extends NoasSelectorBase {
       dd.innerHTML = table.descr;
     }
     document.getElementById("nssTable").replaceChildren(frag);
-  
     this.nssColumns.setTable(table, colid);
   }
 }
 
 /*----------------------------------------------------------------------------*/
 
-function createNsRow(textcenter, fasymbol, onclick) {
+function createNsRow(textcenter, fasymbol, onclick, tooltip = null) {
   let erow = document.createElement("div");
   erow.classList.add("resrow");
   if (onclick === null) erow.classList.add("nssdisabled");
-  let ecenter = document.createElement("div");
+  let ecenter = document.createElement("span");
   ecenter.classList.add("resrowcenter");
   erow.appendChild(ecenter);
   ecenter.innerHTML = textcenter;
+  if (tooltip) {
+    ecenter.setAttribute("data-toggle", "tooltip");
+    ecenter.setAttribute("data-placement", "left");
+    //ecenter.setAttribute("data-container", "body");
+    ecenter.setAttribute("title", tooltip);
+  }
   let ecaret = document.createElement("div");
   ecaret.classList.add("resrowright");
   ecaret.classList.add("fas");
@@ -323,14 +328,22 @@ class NssColumns {
       const onRowClick = function(){
         const doAdd = hasIconNsRow(this, NssColumns.SymbolAdd);
         if (doAdd) {
-          setIconNsRow(this, NssColumns.SymbolRemove);
           nssc.nssselection.addCol(table.id, c.id);
         } else {
           nssc.nssselection.removeCol(table.id, c.id);
         }
       };
       const s = this.nssselection.isSelected(table.id, c.id);
-      const erow = createNsRow(c.title, s ? NssColumns.SymbolRemove : NssColumns.SymbolAdd, onRowClick);
+      const erow = createNsRow(
+        c.title, 
+        s ? NssColumns.SymbolRemove : NssColumns.SymbolAdd, 
+        onRowClick, 
+        [
+          (c.descr ? `Description: ${c.descr}` : null),
+          (c.type ? `Type: ${c.type}` : null),
+          `ID: ${table.id}_${c.id}`, 
+        ].filter(e => e).join("; "),
+      );
       erow.noasTableId = table.id;
       erow.noasColumnId = c.id;
       frag.appendChild(erow);
@@ -339,6 +352,7 @@ class NssColumns {
       }
     });
     document.getElementById(this.distId).replaceChildren(frag);
+    $('[data-toggle="tooltip"]').tooltip({ boundary: 'window'});
     if (eshow) {
       eshow.scrollIntoView({behavior: "smooth", block: "center"});
       eshow.classList.add("emph");
