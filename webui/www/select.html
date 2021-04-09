@@ -8,9 +8,11 @@
 <link rel="stylesheet" href="./css/bootstrap.css" type="text/css"/>
 <link rel="stylesheet" href="./css/optbox.css" type="text/css"/>
 <link rel="stylesheet" href="./css/noas_selector_tree.css" type="text/css"/>
+<link rel="stylesheet" href="./css/noas_selector_search.css" type="text/css"/>
 <script type="text/javascript" src="./js/solid.min.js" ></script>
 <script type="text/javascript" src="./js/fontawesome.min.js"></script>
 <script type="text/javascript" src="./js/d3.v6.min.js"></script>
+<script type="text/javascript" src="./js/fuse-6.4.6.js"></script>
 <script type="text/javascript" src="./js/jquery.min.js"></script>
 <script type="text/javascript" src="./js//popper.min.js"></script>
 <script type="text/javascript" src="./js/bootstrap.min.js"></script>
@@ -19,6 +21,7 @@
 <script type="text/javascript" src="./js/noas_selector_base.js"></script>
 <script type="text/javascript" src="./js/noas_selector_boxes.js"></script>
 <script type="text/javascript" src="./js/noas_selector_tree.js"></script>
+<script type="text/javascript" src="./js/noas_selector_search.js"></script>
 
 
 <title>
@@ -64,11 +67,15 @@ NOAS - Query selector
     <div class="ml-5">
       <div class="form-check form-check-inline">
         <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radioNsBoxes" value="boxes" checked>
-        <label class="form-check-label" for="inlineRadio1">boxes</label>
+        <label class="form-check-label mr-2" for="inlineRadio1">boxes</label>
       </div>
       <div class="form-check form-check-inline">
         <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radioNsTree" value="tree">
-        <label class="form-check-label" for="inlineRadio2">tree</label>
+        <label class="form-check-label mr-2" for="inlineRadio2">tree</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radioNsSearch" value="search">
+        <label class="form-check-label" for="inlineRadio2">search</label>
       </div>
     </div>
     <div id="btnClear" class="button button-minwidth ml-auto">Clear selection</div>
@@ -83,7 +90,7 @@ NOAS - Query selector
   <div class="mt-4">
     <div id="btnSubmit" class="button button-minwidth">Submit</div>
   </div>
-  <div class="mb-5"></div>
+  <div class="mb-2"></div>
 <script>
   let g_noas_selector = null;
 
@@ -135,24 +142,29 @@ NOAS - Query selector
       }
     }
     function updateSelector(meta) {
-      document.getElementById("radioNsBoxes").disabled = true;
-      document.getElementById("radioNsTree").disabled  = true;
+      document.getElementById("radioNsBoxes").disabled  = true;
+      document.getElementById("radioNsTree").disabled   = true;
+      document.getElementById("radioNsSearch").disabled = true;
       const selection = g_noas_selector ? g_noas_selector.getSelection() : null;
       if(document.getElementById("radioNsBoxes").checked) {
         g_noas_selector = new NoasSelectorBoxes("noasTables", meta);
-      } else {
+      } else if (document.getElementById("radioNsTree").checked) {
         g_noas_selector = new NoasSelectorTree("noasTables", meta);
+      } else {
+        g_noas_selector = new NoasSelectorSearch("noasTables", meta);
       }
       g_noas_selector.render();
       if (selection) {
         g_noas_selector.setSelection(selection);
       }
-      document.getElementById("radioNsBoxes").disabled = false;
-      document.getElementById("radioNsTree").disabled  = false;
+      document.getElementById("radioNsBoxes").disabled  = false;
+      document.getElementById("radioNsTree").disabled   = false;
+      document.getElementById("radioNsSearch").disabled = false;
     }
     updateSelector(meta);
-    document.getElementById("radioNsBoxes").onchange = () => updateSelector(meta);
-    document.getElementById("radioNsTree").onchange = () => updateSelector(meta);
+    document.getElementById("radioNsBoxes" ).onchange = () => updateSelector(meta);
+    document.getElementById("radioNsTree"  ).onchange = () => updateSelector(meta);
+    document.getElementById("radioNsSearch").onchange = () => updateSelector(meta);
 
     document.getElementById("version-id").innerHTML = `${meta.version.id}`;
 
