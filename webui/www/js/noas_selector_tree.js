@@ -232,10 +232,13 @@ class NoasSelectorTree extends NoasSelectorBase {
       }
       scmap[e.table_id].push(e.column_id);
     });
-    _nodeSelect(this.root, scmap);
+    const ids_found = [];
+    _nodeSelect(this.root, scmap, ids_found);
     _nodeDisable(this.root, { core: ["subject_id"] });
     this._update(this.root, this);
     _updateSelected(this);
+    const ids_bad = sel_cols.filter(e => !ids_found.includes(x) );
+    return ids_bad;
   }
 
   _update(source, nst) {
@@ -248,9 +251,7 @@ class NoasSelectorTree extends NoasSelectorBase {
 
     // Normalize for fixed-depth.
     nodes.forEach(function(d){ d.y = d.depth * 240});
-
-    // ****************** Nodes section ***************************
-
+    
     // Update the nodes...
     var node = nst.svg.selectAll('g.node')
         .data(nodes, function(d) {return d.id || (d.id = ++nst._node_counter); });
@@ -456,7 +457,7 @@ function _nodeCollapse(d) {
     d.children = null
   }
 }
-function _nodeSelect(d, scmap) {
+function _nodeSelect(d, scmap, ids_found) {
   // is selected?
   let s = true;
   s = s && d.parent;
@@ -464,11 +465,17 @@ function _nodeSelect(d, scmap) {
   s = s && Object.keys(scmap).includes(d.parent.data.id)
   s = s && scmap[d.parent.data.id].includes(d.data.id);
   d.checked = s;
+  if (s) {
+    ids_found.push({ 
+       table_id: d.parent.data.id, 
+       column_id: d.data.id 
+    });
+  }
   if(d._children) {
-    d._children.forEach(dc => _nodeSelect(dc, scmap))
+    d._children.forEach(dc => _nodeSelect(dc, scmap, ids_found))
   }
   if(d.children) {
-    d.children.forEach(dc => _nodeSelect(dc, scmap))
+    d.children.forEach(dc => _nodeSelect(dc, scmap, ids_found))
   }
 }
 function _nodeDisable(d, scmap) {
