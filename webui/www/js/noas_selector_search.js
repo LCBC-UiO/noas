@@ -180,7 +180,6 @@ function createNsRow(textcenter, fasymbol, onclick, tooltip = null) {
   if (tooltip) {
     ecenter.setAttribute("data-toggle", "tooltip");
     ecenter.setAttribute("data-placement", "left");
-    //ecenter.setAttribute("data-container", "body");
     ecenter.setAttribute("title", tooltip);
   }
   let ecaret = document.createElement("div");
@@ -202,7 +201,7 @@ function setIconNsRow(r, fasymbol) {
 /*----------------------------------------------------------------------------*/
 
 function doSearch(e, nss) {
-  const sres = e.data ? nss.fuse.search(e.data) : [];
+  const sres = e.data ? nss.fuse.search(e.target.value) : [];
   let frag = document.createDocumentFragment();
   const maxResults = 40;
   sres.slice(0, maxResults).forEach(r => {
