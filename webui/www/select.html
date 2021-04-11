@@ -278,11 +278,11 @@ NOAS - Query selector
     }); // end query options
     document.querySelector("#queryOpts span").click();
     // enable buttons
-    document.getElementById("btnClear").addEventListener('click', clearSelection);
-    document.getElementById("btnLoad").addEventListener('change', loadSelection);
-    document.getElementById("btnSubmit").addEventListener('click', submitSelection);
-    document.getElementById("btnSubmitTop").addEventListener('click', submitSelection);
-    document.getElementById("btnGetDocPdf").addEventListener('click', () => downloadPdf(meta));
+    document.getElementById("btnClear").onclick = clearSelection;
+    document.getElementById("btnLoad").onchange = loadSelection;
+    document.getElementById("btnSubmit").onclick =    () => submitSelection(meta);
+    document.getElementById("btnSubmitTop").onclick = () => submitSelection(meta);
+    document.getElementById("btnGetDocPdf").onclick = () => downloadPdf(meta);
   }
 
   // clear selection
@@ -341,10 +341,11 @@ NOAS - Query selector
     showAlertBox(AlertType.OK, "Loaded data selection: " + file.name);
   }
 
-  function submitSelection() {
+  function submitSelection(dbmeta) {
     const sel = getSelection();
     // save inside browser session to pass it to next page
     window.sessionStorage.setItem('selection', JSON.stringify(sel));
+    window.sessionStorage.setItem('dbmeta', JSON.stringify(dbmeta));
     // open result page
     window.location.href = `./results.html?prj=${g_prj}`;
   }
