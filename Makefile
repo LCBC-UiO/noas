@@ -20,7 +20,8 @@ websrcs := \
 	webui/www/js/xlsx.full.min.js \
 	webui/www/js/pdfkit.standalone.js \
 	webui/www/js/blob-stream.js \
-	webui/www/js/d3.v6.min.js
+	webui/www/js/d3.v6.min.js \
+	webui/www/js/fuse-6.4.6.js
 
 # ------------------------------------------------------------------------------
 

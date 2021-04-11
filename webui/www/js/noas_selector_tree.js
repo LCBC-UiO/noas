@@ -236,6 +236,13 @@ class NoasSelectorTree extends NoasSelectorBase {
     _nodeDisable(this.root, { core: ["subject_id"] });
     this._update(this.root, this);
     _updateSelected(this);
+    const ids_found = this.getSelection();
+    const ids_bad = sel_cols.filter(x => 
+      !ids_found.some(y =>
+        (y.table_id == x.table_id && y.column_id == x.column_id)
+      )
+    );
+    return ids_bad;
   }
 
   _update(source, nst) {
@@ -248,9 +255,7 @@ class NoasSelectorTree extends NoasSelectorBase {
 
     // Normalize for fixed-depth.
     nodes.forEach(function(d){ d.y = d.depth * 240});
-
-    // ****************** Nodes section ***************************
-
+    
     // Update the nodes...
     var node = nst.svg.selectAll('g.node')
         .data(nodes, function(d) {return d.id || (d.id = ++nst._node_counter); });
@@ -531,6 +536,14 @@ function _nodeMouseover(d) {
         long: "longitudinal",
         repeated: "repeated",
       }[d.data.sampletype];
+    }
+    if (table.repeated_group) {
+      let dt = document.createElement("dt");
+      dl.appendChild(dt);
+      dt.innerHTML = "Data group";
+      let dd = document.createElement("dd");
+      dl.appendChild(dd);
+      dd.innerHTML = `${table.repeated_group.group_id} (column: ${table.repeated_group.col_id})`;
     }
     if (d.data.descr) {
       let dt = document.createElement("dt");

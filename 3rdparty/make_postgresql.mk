@@ -24,6 +24,6 @@ postgresql/bin/postgres: download/postgresql-${PSQLVER}.tar.gz
 		&& tar xf ../download/postgresql-${PSQLVER}.tar.gz \
 		&& cd postgresql-$(PSQLVER) \
 		&& ./configure --prefix=$(BASEDIR)/postgresql --without-readline
-	$(MAKE) -C postgresql_build/postgresql-$(PSQLVER)
-	$(MAKE) -C postgresql_build/postgresql-$(PSQLVER) install
+	$(MAKE) -C postgresql_build/postgresql-$(PSQLVER) MAKELEVEL=0
+	$(MAKE) -C postgresql_build/postgresql-$(PSQLVER) MAKELEVEL=0 install
 	$(RM) -r postgresql_build

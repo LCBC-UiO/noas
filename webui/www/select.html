@@ -8,9 +8,11 @@
 <link rel="stylesheet" href="./css/bootstrap.css" type="text/css"/>
 <link rel="stylesheet" href="./css/optbox.css" type="text/css"/>
 <link rel="stylesheet" href="./css/noas_selector_tree.css" type="text/css"/>
+<link rel="stylesheet" href="./css/noas_selector_search.css" type="text/css"/>
 <script type="text/javascript" src="./js/solid.min.js" ></script>
 <script type="text/javascript" src="./js/fontawesome.min.js"></script>
 <script type="text/javascript" src="./js/d3.v6.min.js"></script>
+<script type="text/javascript" src="./js/fuse-6.4.6.js"></script>
 <script type="text/javascript" src="./js/jquery.min.js"></script>
 <script type="text/javascript" src="./js//popper.min.js"></script>
 <script type="text/javascript" src="./js/bootstrap.min.js"></script>
@@ -19,6 +21,7 @@
 <script type="text/javascript" src="./js/noas_selector_base.js"></script>
 <script type="text/javascript" src="./js/noas_selector_boxes.js"></script>
 <script type="text/javascript" src="./js/noas_selector_tree.js"></script>
+<script type="text/javascript" src="./js/noas_selector_search.js"></script>
 
 
 <title>
@@ -27,6 +30,66 @@ NOAS - Query selector
 <style>
   .tooltip-inner {
     text-align: left;
+    word-wrap: break-word;
+    white-space: pre-line;
+    max-width: 330px;
+  }
+
+
+  .noasswitch label {
+    position:relative;
+    cursor:pointer;
+  }
+  .noasswitch label input {
+    display:none;
+  }
+  .noasswitch label span {
+    position:relative;
+    display:inline-block;
+    margin: 5px 1px;
+    font-weight: normal;
+    /* font-size:30px; */
+    /* padding:20px; */
+    width: 70px;
+    text-align: center;
+    background: #FFF;
+    border: 2px solid var(--colnorm2);
+    color: var(--colnorm2);
+    border-radius: 4px;
+  }
+  .noasswitch label input:checked ~ span {
+    color:#fff;
+    border: 2px solid var(--colnorm2);
+    color:var(--colnorm2);
+    box-shadow: inset 0 0 5px var(--colnorm2);
+    cursor: default;
+  }
+  .noasswitch label input:checked ~ span:before {
+    content:'';
+    width: 100%;
+    height: 100%;
+    position:absolute;
+    top:0;
+    left:0;
+    background:#008eff;
+    z-index:-1;
+    filter: blur(5px);
+  }
+  .noasswitch label input:checked ~ span:after {
+    content:'';
+    width: 100%;
+    height: 100%;
+    position:absolute;
+    top:0;
+    left:0;
+    background:#008eff;
+    z-index:-1;
+    filter: blur(7px);
+  }
+
+  .noasswitch label input:checked ~ span:before,
+  .noasswitch label input:checked ~ span:after {
+    background:var(--colnorm2);
   }
 </style>
 </head>
@@ -59,13 +122,19 @@ NOAS - Query selector
       Select variables
     </div>
     <div class="ml-5">
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radioNsBoxes" value="boxes" checked>
-        <label class="form-check-label" for="inlineRadio1">boxes</label>
-      </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radioNsTree" value="tree">
-        <label class="form-check-label" for="inlineRadio2">tree</label>
+      <div class="noasswitch">
+        <label>
+          <input type="radio" name="view" id="radioNsBoxes" checked>
+          <span>Boxes</span>
+        </label>
+        <label>
+          <input type="radio" name="view" id="radioNsTree">
+          <span>Tree</span>
+        </label>
+        <label>
+          <input type="radio" name="view" id="radioNsSearch">
+          <span>Search</span>
+        </label>
       </div>
     </div>
     <div id="btnClear" class="button button-minwidth ml-auto">Clear selection</div>
@@ -80,7 +149,7 @@ NOAS - Query selector
   <div class="mt-4">
     <div id="btnSubmit" class="button button-minwidth">Submit</div>
   </div>
-  <div class="mb-5"></div>
+  <div class="mb-2"></div>
 <script>
   let g_noas_selector = null;
 
@@ -132,24 +201,29 @@ NOAS - Query selector
       }
     }
     function updateSelector(meta) {
-      document.getElementById("radioNsBoxes").disabled = true;
-      document.getElementById("radioNsTree").disabled  = true;
+      document.getElementById("radioNsBoxes").disabled  = true;
+      document.getElementById("radioNsTree").disabled   = true;
+      document.getElementById("radioNsSearch").disabled = true;
       const selection = g_noas_selector ? g_noas_selector.getSelection() : null;
       if(document.getElementById("radioNsBoxes").checked) {
         g_noas_selector = new NoasSelectorBoxes("noasTables", meta);
-      } else {
+      } else if (document.getElementById("radioNsTree").checked) {
         g_noas_selector = new NoasSelectorTree("noasTables", meta);
+      } else {
+        g_noas_selector = new NoasSelectorSearch("noasTables", meta);
       }
       g_noas_selector.render();
       if (selection) {
         g_noas_selector.setSelection(selection);
       }
-      document.getElementById("radioNsBoxes").disabled = false;
-      document.getElementById("radioNsTree").disabled  = false;
+      document.getElementById("radioNsBoxes").disabled  = false;
+      document.getElementById("radioNsTree").disabled   = false;
+      document.getElementById("radioNsSearch").disabled = false;
     }
     updateSelector(meta);
-    document.getElementById("radioNsBoxes").onchange = () => updateSelector(meta);
-    document.getElementById("radioNsTree").onchange = () => updateSelector(meta);
+    document.getElementById("radioNsBoxes" ).onchange = () => updateSelector(meta);
+    document.getElementById("radioNsTree"  ).onchange = () => updateSelector(meta);
+    document.getElementById("radioNsSearch").onchange = () => updateSelector(meta);
 
     document.getElementById("version-id").innerHTML = `${meta.version.id}`;
 
@@ -204,11 +278,11 @@ NOAS - Query selector
     }); // end query options
     document.querySelector("#queryOpts span").click();
     // enable buttons
-    document.getElementById("btnClear").addEventListener('click', clearSelection);
-    document.getElementById("btnLoad").addEventListener('change', loadSelection);
-    document.getElementById("btnSubmit").addEventListener('click', submitSelection);
-    document.getElementById("btnSubmitTop").addEventListener('click', submitSelection);
-    document.getElementById("btnGetDocPdf").addEventListener('click', () => downloadPdf(meta));
+    document.getElementById("btnClear").onclick = clearSelection;
+    document.getElementById("btnLoad").onchange = loadSelection;
+    document.getElementById("btnSubmit").onclick =    () => submitSelection(meta);
+    document.getElementById("btnSubmitTop").onclick = () => submitSelection(meta);
+    document.getElementById("btnGetDocPdf").onclick = () => downloadPdf(meta);
   }
 
   // clear selection
@@ -267,10 +341,11 @@ NOAS - Query selector
     showAlertBox(AlertType.OK, "Loaded data selection: " + file.name);
   }
 
-  function submitSelection() {
+  function submitSelection(dbmeta) {
     const sel = getSelection();
     // save inside browser session to pass it to next page
     window.sessionStorage.setItem('selection', JSON.stringify(sel));
+    window.sessionStorage.setItem('dbmeta', JSON.stringify(dbmeta));
     // open result page
     window.location.href = `./results.html?prj=${g_prj}`;
   }
