@@ -224,7 +224,7 @@ function setIconNsRow(r, fasymbol) {
 /*----------------------------------------------------------------------------*/
 
 function doSearch(e, nss) {
-  const sres = e.data ? nss.fuse.search(e.target.value) : [];
+  const sres = e.target.value ? nss.fuse.search(e.target.value) : [];
   let frag = document.createDocumentFragment();
   const maxResults = 40;
   sres.slice(0, maxResults).forEach(r => {
