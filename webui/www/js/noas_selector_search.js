@@ -1,5 +1,3 @@
-
-
 class NoasSelectorSearch extends NoasSelectorBase {
   nssSelection = null;
   nssColumns = null;
@@ -441,24 +439,6 @@ class SearchItems{
     }
     if ("column" in h.item) {
       return `Column: ${h.item.column.title}` + ` (${h.item._table.id}_${h.item.column.id})`;
-    } 
-    throw "search result type not implemented"
-  }
-
-  static parseHit(h) {
-    if ("table" in h.item) {
-      return {
-        type: "table",
-        title: h.item.table.title,
-        id: h.item.table.id,
-      };
-    }
-    if ("column" in h.item) {
-      return {
-        type: "column",
-        title: h.item.column.title,
-        id: `${h.item._table.id}_${h.item.column.id}`,
-      };
     } 
     throw "search result type not implemented"
   }
