@@ -252,7 +252,7 @@ function doSearch(e, nss) {
       r.item.column ? r.item.column.id : null
       );
       const mi = SearchItems.getMatchInfo(r);
-      const text = SearchItems.prettyPrintMatchInfo(mi);
+      const text = `${mi.type[0].toUpperCase() + mi.type.slice(1)}: ${mi.title} (${mi.id})`;
       frag.appendChild(
         createNsRow(text, "chevron-right", {
           onclick: rowonclick,
@@ -510,10 +510,6 @@ class SearchItems{
     }
     mi.found_in = SearchItems._search_items[hit.matches[0].key].niceName;
     return mi;
-  }
-
-  static prettyPrintMatchInfo(mi) {
-    return `${mi.type[0].toUpperCase() + mi.type.slice(1)}: ${mi.title} (${mi.id})`;
   }
 }
 
