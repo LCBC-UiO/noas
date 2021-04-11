@@ -388,10 +388,12 @@ class SearchItems{
       "table.category": {
         type: "table",
         niceName: "category",
+        weight: 0.8,
       },
       "column.title": {
         type: "column",
         niceName: "title",
+        weight: 0.8,
       },
       "column.id": {
         type: "column",
@@ -403,10 +405,20 @@ class SearchItems{
         niceName: "description",
         weight: 0.5,
       },
-      "table.descr": {
-        type: "table",
-        niceName: "description",
-        weight: 0.5,
+      "_table.id": {
+        type: "column",
+        niceName: "table ID",
+        weight: 0.2,
+      },
+      "_table.title": {
+        type: "column",
+        niceName: "table title",
+        weight: 0.2,
+      },
+      "_table.category": {
+        type: "column",
+        niceName: "table category",
+        weight: 0.2,
       },
     };
   }
