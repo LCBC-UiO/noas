@@ -537,6 +537,14 @@ function _nodeMouseover(d) {
         repeated: "repeated",
       }[d.data.sampletype];
     }
+    if (table.repeated_group) {
+      let dt = document.createElement("dt");
+      dl.appendChild(dt);
+      dt.innerHTML = "Data group";
+      let dd = document.createElement("dd");
+      dl.appendChild(dd);
+      dd.innerHTML = `${table.repeated_group.group_id} (column: ${table.repeated_group.col_id})`;
+    }
     if (d.data.descr) {
       let dt = document.createElement("dt");
       dl.appendChild(dt);

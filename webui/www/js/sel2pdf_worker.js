@@ -27,6 +27,10 @@ function _writeTables(doc, m, onpageadd) {
       doc.font('Helvetica-Oblique').text('category: ', {continued: true, indent: 10}).font('Helvetica').text(et.category.join(", "));
     }
     doc.font('Helvetica-Oblique').text('type: ', {continued: true, indent: 10}).font('Helvetica').text(et.sampletype);
+    if (et.repeated_group) {
+      doc.font('Helvetica-Oblique').text('data group: ', {continued: true, indent: 10}).font('Helvetica').text(et.repeated_group.group_id);
+      doc.font('Helvetica-Oblique').text('data group column: ', {continued: true, indent: 10}).font('Helvetica').text(et.repeated_group.col_id);
+    }
     doc.font('Helvetica-Oblique').text('num. rows: ', {continued: true, indent: 10}).font('Helvetica').text(et.n);
     if (et.descr) {
       doc.moveDown();
