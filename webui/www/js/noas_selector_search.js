@@ -423,6 +423,11 @@ class SearchItems{
         niceName: "category",
         weight: 0.8,
       },
+      "table.descr": {
+        type: "table",
+        niceName: "description",
+        weight: 0.6,
+      },
       "column.title": {
         type: "column",
         niceName: "title",
@@ -431,12 +436,12 @@ class SearchItems{
       "column.id": {
         type: "column",
         niceName: "ID",
-        weight: 0.5,
+        weight: 0.6,
       },
       "column.descr": {
         type: "column",
         niceName: "description",
-        weight: 0.5,
+        weight: 0.6,
       },
       "_table.id": {
         type: "column",
