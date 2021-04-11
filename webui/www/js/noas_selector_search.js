@@ -158,6 +158,14 @@ class NoasSelectorSearch extends NoasSelectorBase {
       dl.appendChild(dd);
       dd.innerHTML = table.id;
     }
+    if (table.category.length) {
+      let dt = document.createElement("dt");
+      dl.appendChild(dt);
+      dt.innerHTML = "Category";
+      let dd = document.createElement("dd");
+      dl.appendChild(dd);
+      dd.innerHTML = table.category.join(", ");
+    }
     {
       let dt = document.createElement("dt");
       dl.appendChild(dt);
