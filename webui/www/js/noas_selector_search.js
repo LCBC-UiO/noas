@@ -109,6 +109,7 @@ class NoasSelectorSearch extends NoasSelectorBase {
       const icb = idx_tree[b.table_id].columns[b.column_id].i;
       if (ica < icb) return -1;
       if (ica > icb) return  1;
+      throw "something went wrong - does the selection contain duplicated entries?"
       return 0;
     });
     return sel_cols;
