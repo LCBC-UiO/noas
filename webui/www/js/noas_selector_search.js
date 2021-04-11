@@ -86,7 +86,32 @@ class NoasSelectorSearch extends NoasSelectorBase {
   }
 
   getSelection(){
-    return this.nssSelection.getSelection();
+    // how to sort selected columns? 
+    const idx_tree = {}; // this could be cached by building within ctor
+    this.dbmeta.tables.forEach((t,i) => {
+      idx_tree[t.id] = {
+        i: i,
+        columns: {}
+      };
+      t.columns.forEach((c,j) => {
+        idx_tree[t.id].columns[c.id] = {
+          i: j
+        };
+      });
+    });
+    const sel_cols = this.nssSelection.getSelection();
+    sel_cols.sort( (a,b) => {
+      const ita = idx_tree[a.table_id].i;
+      const itb = idx_tree[b.table_id].i;
+      if (ita < itb) return -1;
+      if (ita > itb) return  1;
+      const ica = idx_tree[a.table_id].columns[a.column_id].i;
+      const icb = idx_tree[b.table_id].columns[b.column_id].i;
+      if (ica < icb) return -1;
+      if (ica > icb) return  1;
+      return 0;
+    });
+    return sel_cols;
   }
 
   setSelection(sel_cols){
