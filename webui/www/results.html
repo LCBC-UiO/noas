@@ -239,6 +239,7 @@
         });
         r_ungrouped.forEach(e => {
           msg.push(`${count}) table "${e}"`);
+          count++;
         })
         showAlertBox(AlertType.WARNING, msg);
       }
