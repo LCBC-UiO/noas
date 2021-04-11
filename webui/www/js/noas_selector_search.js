@@ -78,6 +78,7 @@ class NoasSelectorSearch extends NoasSelectorBase {
       includeMatches: true,
       findAllMatches: true,
       shouldSort: true,
+      ignoreLocation: true,
       useExtendedSearch: true,
       keys: SearchItems.searchKeys,
     });
