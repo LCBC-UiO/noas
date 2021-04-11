@@ -265,12 +265,19 @@ class NssSelection {
     this.onUpdate();
   }
   removeCol(tableId, colId) {
+    if (this.selCols[`${tableId}_${colId}`].disabled) {
+      return false;
+    }
     delete this.selCols[`${tableId}_${colId}`];
     this.render();
     this.onUpdate();
+    return true;
   }
   removeCols(cols) {
     cols.forEach(c => {
+      if (this.selCols[`${c.table_id}_${c.column_id}`].disabled) {
+        return;
+      }
       delete this.selCols[`${c.table_id}_${c.column_id}`];
     });
     this.render();
