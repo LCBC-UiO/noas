@@ -202,7 +202,8 @@ class NoasSelectorSearch extends NoasSelectorBase {
 
 /*----------------------------------------------------------------------------*/
 
-function createNsRow(textcenter, fasymbol, onclick, tooltip = null) {
+function createNsRow(textcenter, fasymbol, props) {
+  const { onclick, tooltip, tooltip_pos = "left" } = props;
   let erow = document.createElement("div");
   erow.classList.add("resrow");
   if (onclick === null) erow.classList.add("nssdisabled");
@@ -211,9 +212,9 @@ function createNsRow(textcenter, fasymbol, onclick, tooltip = null) {
   erow.appendChild(ecenter);
   ecenter.innerHTML = textcenter;
   if (tooltip) {
-    ecenter.setAttribute("data-toggle", "tooltip");
-    ecenter.setAttribute("data-placement", "left");
-    ecenter.setAttribute("title", tooltip);
+    erow.setAttribute("data-toggle", "tooltip");
+    erow.setAttribute("data-placement", tooltip_pos);
+    erow.setAttribute("title", tooltip);
   }
   let ecaret = document.createElement("div");
   ecaret.classList.add("resrowright");
@@ -241,13 +242,21 @@ function doSearch(e, nss) {
     const rowonclick = () => nss.showTable(
       r.item.table  ? r.item.table : r.item._table, 
       r.item.column ? r.item.column.id : null
-    );
-    frag.appendChild(
-      createNsRow(SearchItems.prettyPrintHit(r), "chevron-right", rowonclick)
-    );
-  });
+      );
+      const mi = SearchItems.getMatchInfo(r);
+      const text = SearchItems.prettyPrintMatchInfo(mi);
+      frag.appendChild(
+        createNsRow(text, "chevron-right", {
+          onclick: rowonclick,
+          tooltip: `${text} matching "${mi.found_in}"`,
+          tooltip_pos: "right"
+        })
+        );
+      });
+  $('[data-toggle="tooltip"]').tooltip('dispose');
   document.getElementById("nssResults").innerHTML = '';
   document.getElementById("nssResults").appendChild(frag);
+  $('[data-toggle="tooltip"]').tooltip({ boundary: 'window'});
 }
 
 /*----------------------------------------------------------------------------*/
@@ -335,7 +344,7 @@ class NssSelection {
         this.removeCol(c.table_id, c.column_id);
       };
       const tcid = `${c.table_id}_${c.column_id}`;
-      const erow = createNsRow(tcid, NssSelection.SymbolRemove, c.disabled ? null : onRowClick);
+      const erow = createNsRow(tcid, NssSelection.SymbolRemove, {onclick: c.disabled ? null : onRowClick});
       frag.appendChild(erow);
     });
     edst.replaceChildren(frag);
@@ -375,13 +384,15 @@ class NssColumns {
       const s = this.nssselection.isSelected(table.id, c.id);
       const erow = createNsRow(
         c.title, 
-        s ? NssColumns.SymbolRemove : NssColumns.SymbolAdd, 
-        onRowClick, 
-        [
-          (c.descr ? `Description: ${c.descr}` : null),
-          (c.type ? `Type: ${c.type}` : null),
-          `ID: ${table.id}_${c.id}`, 
-        ].filter(e => e).join("; "),
+        s ? NssColumns.SymbolRemove : NssColumns.SymbolAdd, {
+          onclick: onRowClick, 
+          tooltip: [
+              (c.descr ? `Description: ${c.descr}` : null),
+              (c.type ? `Type: ${c.type}` : null),
+              `ID: ${table.id}_${c.id}`, 
+            ].filter(e => e).join("; "),
+          tooltip_pos: "left",
+        }
       );
       erow.noasTableId = table.id;
       erow.noasColumnId = c.id;
@@ -473,14 +484,28 @@ class SearchItems{
     );
   }
 
-  static prettyPrintHit(h) {
-    if ("table" in h.item) {
-      return "Table: " + h.item.table.title + ` (${h.item.table.id})`;
+  static getMatchInfo(hit) {
+    const mi = {
+      type: null,
+      id: null,
+      title: null,
+      found_in: null,
     }
-    if ("column" in h.item) {
-      return `Column: ${h.item.column.title}` + ` (${h.item._table.id}_${h.item.column.id})`;
-    } 
-    throw "search result type not implemented"
+    if ("table" in hit.item) {
+      mi.type = "table";
+      mi.id = hit.item.table.id;
+      mi.title = hit.item.table.title;
+    } else if ("column" in hit.item) {
+      mi.type = "column";
+      mi.id = `${hit.item._table.id}_${hit.item.column.id}`
+      mi.title = hit.item.column.title;
+    }
+    mi.found_in = SearchItems._search_items[hit.matches[0].key].niceName;
+    return mi;
+  }
+
+  static prettyPrintMatchInfo(mi) {
+    return `${mi.type[0].toUpperCase() + mi.type.slice(1)}: ${mi.title} (${mi.id})`;
   }
 }
 
