@@ -124,15 +124,15 @@ NOAS - Query selector
     <div class="ml-5">
       <div class="noasswitch">
         <label>
-          <input type="radio" name="view" id="radioNsBoxes" checked>
+          <input type="radio" name="view" id="radioNsBoxes" checked disabled>
           <span>Boxes</span>
         </label>
         <label>
-          <input type="radio" name="view" id="radioNsTree">
+          <input type="radio" name="view" id="radioNsTree" disabled>
           <span>Tree</span>
         </label>
         <label>
-          <input type="radio" name="view" id="radioNsSearch">
+          <input type="radio" name="view" id="radioNsSearch" disabled>
           <span>Search</span>
         </label>
       </div>
@@ -200,31 +200,6 @@ NOAS - Query selector
         showAlertBox(AlertType.ERROR, errmsg);
       }
     }
-    function updateSelector(meta) {
-      document.getElementById("radioNsBoxes").disabled  = true;
-      document.getElementById("radioNsTree").disabled   = true;
-      document.getElementById("radioNsSearch").disabled = true;
-      const selection = g_noas_selector ? g_noas_selector.getSelection() : null;
-      if(document.getElementById("radioNsBoxes").checked) {
-        g_noas_selector = new NoasSelectorBoxes("noasTables", meta);
-      } else if (document.getElementById("radioNsTree").checked) {
-        g_noas_selector = new NoasSelectorTree("noasTables", meta);
-      } else {
-        g_noas_selector = new NoasSelectorSearch("noasTables", meta);
-      }
-      g_noas_selector.render();
-      if (selection) {
-        g_noas_selector.setSelection(selection);
-      }
-      document.getElementById("radioNsBoxes").disabled  = false;
-      document.getElementById("radioNsTree").disabled   = false;
-      document.getElementById("radioNsSearch").disabled = false;
-    }
-    updateSelector(meta);
-    document.getElementById("radioNsBoxes" ).onchange = () => updateSelector(meta);
-    document.getElementById("radioNsTree"  ).onchange = () => updateSelector(meta);
-    document.getElementById("radioNsSearch").onchange = () => updateSelector(meta);
-
     document.getElementById("version-id").innerHTML = `${meta.version.id}`;
 
     let efooter = document.getElementById("noasSelFooter");
@@ -283,6 +258,30 @@ NOAS - Query selector
     document.getElementById("btnSubmit").onclick =    () => submitSelection(meta);
     document.getElementById("btnSubmitTop").onclick = () => submitSelection(meta);
     document.getElementById("btnGetDocPdf").onclick = () => downloadPdf(meta);
+    function updateSelector(meta) {
+      document.getElementById("radioNsBoxes").disabled  = true;
+      document.getElementById("radioNsTree").disabled   = true;
+      document.getElementById("radioNsSearch").disabled = true;
+      const selection = g_noas_selector ? g_noas_selector.getSelection() : null;
+      if(document.getElementById("radioNsBoxes").checked) {
+        g_noas_selector = new NoasSelectorBoxes("noasTables", meta);
+      } else if (document.getElementById("radioNsTree").checked) {
+        g_noas_selector = new NoasSelectorTree("noasTables", meta);
+      } else {
+        g_noas_selector = new NoasSelectorSearch("noasTables", meta);
+      }
+      g_noas_selector.render();
+      if (selection) {
+        g_noas_selector.setSelection(selection);
+      }
+      document.getElementById("radioNsBoxes").disabled  = false;
+      document.getElementById("radioNsTree").disabled   = false;
+      document.getElementById("radioNsSearch").disabled = false;
+    }
+    updateSelector(meta);
+    document.getElementById("radioNsBoxes" ).onchange = () => updateSelector(meta);
+    document.getElementById("radioNsTree"  ).onchange = () => updateSelector(meta);
+    document.getElementById("radioNsSearch").onchange = () => updateSelector(meta);
   }
 
   // clear selection
