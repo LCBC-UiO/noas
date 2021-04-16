@@ -1,6 +1,7 @@
 {
   "category": [
-    "Genetics", "PGS"
+    "Genetics",
+    "PGS"
   ],
   "title": "Polygenic Scores",
   "descr": "Some description how scores were computed",

@@ -6,7 +6,6 @@
   "columns": [
     {
       "id": "site_name",
-      "idx": 0,
       "type": "text"
     }
   ]

@@ -5,142 +5,96 @@
   ],
   "columns": [
     {
-      "title": "cvlt a1",
       "id": "a1",
-      "type": "integer",
-      "idx": 1
+      "type": "integer"
     },
     {
-      "title": "cvlt a2",
       "id": "a2",
-      "type": "integer",
-      "idx": 2
+      "type": "integer"
     },
     {
-      "title": "cvlt a3",
       "id": "a3",
-      "type": "integer",
-      "idx": 3
+      "type": "integer"
     },
     {
-      "title": "cvlt a4",
       "id": "a4",
-      "type": "integer",
-      "idx": 4
+      "type": "integer"
     },
     {
-      "title": "cvlt a5",
       "id": "a5",
-      "type": "integer",
-      "idx": 5
+      "type": "integer"
     },
     {
-      "title": "cvlt a total intrusions",
       "id": "a_total_intrusions",
-      "type": "integer",
-      "idx": 6
+      "type": "integer"
     },
     {
-      "title": "cvlt a total",
       "id": "a_total",
-      "type": "integer",
-      "idx": 7
+      "type": "integer"
     },
     {
-      "title": "cvlt a total t",
       "id": "a_total_t",
-      "type": "integer",
-      "idx": 8
+      "type": "integer"
     },
     {
-      "title": "cvlt listb",
       "id": "listb",
-      "type": "integer",
-      "idx": 9
+      "type": "integer"
     },
     {
-      "title": "cvlt listb intrusions",
       "id": "listb_intrusions",
-      "type": "integer",
-      "idx": 10
+      "type": "integer"
     },
     {
-      "title": "cvlt 5min free",
       "id": "5min_free",
-      "type": "integer",
-      "idx": 11
+      "type": "integer"
     },
     {
-      "title": "cvlt 5min free scaled",
       "id": "5min_free_scaled",
-      "type": "integer",
-      "idx": 12
+      "type": "integer"
     },
     {
-      "title": "cvlt 5min intrusions",
       "id": "5min_intrusions",
-      "type": "integer",
-      "idx": 13
+      "type": "integer"
     },
     {
-      "title": "cvlt 5min cued",
       "id": "5min_cued",
-      "type": "integer",
-      "idx": 14
+      "type": "integer"
     },
     {
-      "title": "cvlt 5min cued intrusions",
       "id": "5min_cued_intrusions",
-      "type": "integer",
-      "idx": 15
+      "type": "integer"
     },
     {
-      "title": "cvlt 30min free",
       "id": "30min_free",
-      "type": "integer",
-      "idx": 16
+      "type": "integer"
     },
     {
-      "title": "cvlt 30min free scaled",
       "id": "30min_free_scaled",
-      "type": "integer",
-      "idx": 17
+      "type": "integer"
     },
     {
-      "title": "cvlt 30min intrusions",
       "id": "30min_intrusions",
-      "type": "integer",
-      "idx": 18
+      "type": "integer"
     },
     {
-      "title": "cvlt 30min cued",
       "id": "30min_cued",
-      "type": "integer",
-      "idx": 19
+      "type": "integer"
     },
     {
-      "title": "cvlt 30min cued intrusions",
       "id": "30min_cued_intrusions",
-      "type": "integer",
-      "idx": 20
+      "type": "integer"
     },
     {
-      "title": "cvlt recog hits",
       "id": "recog_hits",
-      "type": "integer",
-      "idx": 21
+      "type": "integer"
     },
     {
-      "title": "cvlt recog fp",
       "id": "recog_fp",
-      "type": "integer",
-      "idx": 22
+      "type": "integer"
     },
     {
-      "title": "cvlt recog forced",
       "id": "recog_forced",
-      "type": "integer",
-      "idx": 23
+      "type": "integer"
     }
   ]
 }
