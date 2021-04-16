@@ -439,22 +439,13 @@ BEGIN
   END IF;
   FOR _key, _value IN SELECT * FROM json_each(col_metadata)
   LOOP
-    IF _key = ANY (ARRAY['title','descr','type']) THEN
+    IF _key = ANY (ARRAY['descr','type']) THEN
       EXECUTE format(
         $ex$
           UPDATE metacolumns SET %s = %s WHERE metatable_id = '%s' AND id = '_%s';
         $ex$
         ,_key
         ,quote_literal(_value #>> '{}')
-        ,table_id
-        ,col_metadata->>'id'
-      );
-    ELSIF _key = 'idx' THEN
-      EXECUTE format(
-        $ex$
-          UPDATE metacolumns SET idx = %s WHERE metatable_id = '%s' AND id = '_%s';
-        $ex$
-        ,_value #>> '{}'
         ,table_id
         ,col_metadata->>'id'
       );
