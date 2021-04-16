@@ -336,9 +336,9 @@ class NoasSelectorTree extends NoasSelectorBase {
       .merge(nodeEnter.append("text").style('fill-opacity', 1e-6))
         .text(function (d) {
           if (isTable(d.data)) {
-            return `${d.data.id}; n=${d.data.n}` + (d.data.descr ? " ⓘ" : "");
+            return `${d.data.id}; n=${d.data.n}` + (d.data.descr ? " *" : "");
           }
-          return (d.data.title ?? d.data.id) + (d.data.descr ? " ⓘ" : ""); 
+          return (d.data.title ?? d.data.id) + (d.data.descr ? " *" : ""); 
         })
         .attr("text-anchor", "middle")
         .attr("y", "0.35em")
