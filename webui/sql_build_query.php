@@ -63,7 +63,7 @@ function sql_build_query($dbmeta, $sel) {
   }
   function _get_sql_where_prj($project) {
     if ($project == "all") {
-      return "core.subject_shareable = 1";
+      return "core.subject_shareable = B'1'";
     }
     return "core.project_id = '{$project}'";
   }

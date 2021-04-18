@@ -25,6 +25,7 @@
   * run `make update` - it will pull changes and it will also place the git hash available for the web UI
 
 ## Requirements
+
   * build tools (gcc, make, ...)
   * R
   * git
@@ -39,4 +40,5 @@ These data types are supported as NOAS table columns (in metadata, DB and web UI
   * `float`
   * `integer`
   * `date`
+  * `boolean`
 
