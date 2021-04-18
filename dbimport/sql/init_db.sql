@@ -79,6 +79,7 @@ CREATE TYPE e_columntype AS enum (
   ,'float'
   ,'integer'
   ,'date'
+  ,'boolean'
 );
 
 --------------------------------------------------------------------------------
@@ -96,7 +97,7 @@ BEGIN
       $ex$
         select count(*) from %I t 
           where t.subject_id in 
-          ( select c.subject_id from noas_core c where c.subject_shareable = 1 )
+          ( select c.subject_id from noas_core c where c.subject_shareable = B'1' )
       $ex$, 'noas' || '_' || metatable_id
     ) INTO total;
   else
@@ -466,6 +467,15 @@ BEGIN
           ,col_metadata->>'id'
           ,_value #>> '{}'
         );
+      ELSIF _value #>> '{}' = 'boolean' THEN
+        EXECUTE format(
+          $ex$
+            ALTER TABLE noas_%s ALTER COLUMN _%s TYPE bit(1) USING (_%s::bit(1));
+          $ex$
+          ,table_id
+          ,col_metadata->>'id'
+          ,col_metadata->>'id'
+        );
       ELSIF _value #>> '{}' = 'text' THEN
         -- do nothing - it's already ::text
       ELSE
@@ -545,7 +555,7 @@ CREATE TABLE subjects (
   id int NOT NULL,
   birthdate date NULL,
   sex e_sex NULL,
-  shareable int NULL,
+  shareable bit(1) NULL,
   CONSTRAINT subject_pk PRIMARY KEY (id)
 );
 CREATE INDEX subjects_idx_shr ON subjects (shareable);
@@ -709,7 +719,7 @@ INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'pr
 INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'wave_code',            2, 'float',   'Wave code');
 INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'subject_sex',          3, 'text',    'Sex');
 INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'subject_birthdate',    4, 'date',    'Birth date');
-INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'subject_shareable',    5, 'integer', 'Shareable');
+INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'subject_shareable',    5, 'boolean', 'Shareable');
 INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_alt_subj_id',    6, 'text',    'Alternate Subject ID');
 INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_date',           7, 'date',    'Visit date');
 INSERT INTO metacolumns (metatable_id, id, idx, type, title) VALUES ('core', 'visit_age',            8, 'float',   'Age at visit');
