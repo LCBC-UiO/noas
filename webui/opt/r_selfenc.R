@@ -82,11 +82,12 @@ encrypt_to_source(
   on_decrypt=function() {
     cat("\nDecryption successful!\n")
     cat("These objects have been written to your workspace:\n")
-    cat("  ");
+    cat("  ")
     # list objects, but skip ".noas_objects" object
-    cat(paste(sprintf('"%s"', .noas_objects[-1]), collapse=", "));
+    cat(paste(sprintf('"%s"', .noas_objects[-1]), collapse=", "))
     # rm "objects" object
     rm(".noas_objects", envir=parent.frame())
-    cat("\n");
+    cat("\nMake sure to not save your workspace. More information about that here:\n")
+    cat("  https://github.com/LCBC-UiO/noas/blob/master/doc/r_workspace.md\n")
   }
 )
