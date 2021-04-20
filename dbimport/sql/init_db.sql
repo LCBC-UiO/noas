@@ -230,7 +230,7 @@ BEGIN
     ,table_name_in
   )
   LOOP
-    RAISE warning 'entry not found in % : subject_id=%', noas_data_source, _s;
+    RAISE warning 'missing core data (subject_id=%) in file %', _s, noas_data_source;
   END LOOP;
   PERFORM _add_noas_ds_col(table_name_in, noas_data_source);
   EXECUTE format(
@@ -287,7 +287,7 @@ BEGIN
     ,table_name_in
   )
   LOOP
-    RAISE warning 'entry not found in % : subject_id=% project_id=% wave_code=%', noas_data_source, _s, _p, _w;
+    RAISE warning 'missing core data (subject_id=%, project_id=%, wave_code=%) in file %', _s, _p, _w, noas_data_source;
   END LOOP;
   PERFORM _add_noas_ds_col(table_name_in, noas_data_source);
   EXECUTE format(
@@ -359,7 +359,7 @@ BEGIN
     ,table_name_in
   )
   LOOP
-    RAISE warning 'entry not found in % : subject_id=% project_id=% wave_code=%', noas_data_source, _s, _p, _w;
+    RAISE warning 'missing core data (subject_id=%, project_id=%, wave_code=%) in file %', _s, _p, _w, noas_data_source;
   END LOOP;
   PERFORM _add_noas_ds_col(table_name_in, noas_data_source);
   EXECUTE '
