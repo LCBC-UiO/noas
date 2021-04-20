@@ -179,9 +179,11 @@ for(table_id in table_ids){
     f_tsv_path <- file.path(table_dir_cur, f_tsv)
     table_id_tmp <- sprintf("tmp_%s", table_id)
     cat(f_tsv_path, "\n")
+    # TOT: make SQL deal with renaming --
     noas_table_data <- read_noas_table(f_tsv_path)
     renam_cols_idx <- which(!names(noas_table_data) %in% c("subject_id", "project_id", "wave_code"))
     names(noas_table_data)[renam_cols_idx] <- paste0("_", names(noas_table_data)[renam_cols_idx])
+    # --
     DBI::dbWriteTable(
       con,
       table_id_tmp,

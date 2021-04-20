@@ -1,6 +1,6 @@
 
 ## priority list  
-
+- make SQL add underscore for non-primary key columns during import
 
 ## features
   * other core-like tables
