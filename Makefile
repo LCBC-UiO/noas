@@ -41,7 +41,7 @@ prepare_offline:
 run_dbimport: 3rdparty
 	R_LIBS_USER=$(BASEDIR)/3rdparty/r_packages \
 	LD_LIBRARY_PATH=$(BASEDIR)/3rdparty/postgresql/lib/:$(LD_LIBRARY_PATH) \
-	dbimport/script-populate_db.R
+	dbimport/main.R
 
 .PHONY: run_webui
 run_webui: all

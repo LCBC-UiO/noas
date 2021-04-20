@@ -216,7 +216,8 @@ DECLARE
 BEGIN
   EXECUTE format(
     $ex$
-      ALTER TABLE %s ALTER column subject_id TYPE int
+      ALTER TABLE %s
+        ALTER column subject_id TYPE int USING subject_id::integer;    
     $ex$
     ,table_name_in
   );
@@ -271,9 +272,9 @@ BEGIN
   EXECUTE format(
     $ex$
       ALTER TABLE %s
-        ALTER column subject_id TYPE int,
+        ALTER column subject_id TYPE int USING subject_id::integer,
         ALTER column project_id TYPE text,
-        ALTER column wave_code TYPE numeric(3,1);
+        ALTER column wave_code TYPE numeric(3,1) USING wave_code::numeric(3,1);
     $ex$
     ,table_name_in
   );
@@ -343,9 +344,9 @@ BEGIN
   EXECUTE format(
     $ex$
       ALTER TABLE %s
-        ALTER column subject_id TYPE int,
+        ALTER column subject_id TYPE int USING subject_id::integer,
         ALTER column project_id TYPE text,
-        ALTER column wave_code TYPE numeric(3,1);
+        ALTER column wave_code TYPE numeric(3,1) USING wave_code::numeric(3,1);
     $ex$
     ,table_name_in
   );

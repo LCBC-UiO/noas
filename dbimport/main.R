@@ -124,7 +124,7 @@ con <- DBI::dbConnect(
 )
 
 # start atomic transaction, changes in this con won't be visible until the commit
-# invisible(DBI::dbBegin(con))
+invisible(DBI::dbBegin(con))
 
 # initiate DB
 invisible(DBI::dbExecute(con, read_file("dbimport/sql/init_db.sql")))

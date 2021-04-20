@@ -3,19 +3,9 @@
 
 
 ## features
-  * support PGS data: should be dynamically computed for 
-    * time is imported as integer currently
-    * "duration" type => "as.character" for now?
-  * compute derived data
-    * currently some MOAS data is derived from raw data based on r-functions in two packages:
-      * https://github.com/LCBC-UiO/Questionnaires
-      * https://github.com/LCBC-UiO/Conversions
   * other core-like tables
     * table with project_id and wave_code information (like test versions etc)
     * table with information on MRI scanners
-  * meta-data: add checks for validation of cell values within known correct values (enum)
-  * webui: r_enc on decryption, print "do not save your workspace ..." + link to wiki page
-  * webui: option to selected num per page in results table
 
 
 ## cleanup/refactoring

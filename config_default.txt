@@ -1,7 +1,6 @@
 # To change settings: 
 # Create a new file "config.txt" and override any of the variables below
 
-
 # tables
 TABDIR="data/test/"
 
@@ -19,3 +18,8 @@ INSTANCE_NAME="NOAS example"
 # DBMS
 DBDATADIR="db/data"
 DBLOGFILE="db/logs/log.txt"
+
+# import
+IMPORT_ID=""
+IMPORT_LABEL=""
+IMPORT_DATE=""
