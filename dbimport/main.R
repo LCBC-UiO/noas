@@ -177,19 +177,18 @@ for(table_id in table_ids){
   
   for(f_tsv in cur_file_list){
     f_tsv_path <- file.path(table_dir_cur, f_tsv)
-    table_id_tmp <- sprintf("tmp_%s", table_id)
     cat(f_tsv_path, "\n")
-    # TOT: make SQL deal with renaming --
+    # read table
     noas_table_data <- read_noas_table(f_tsv_path)
-    renam_cols_idx <- which(!names(noas_table_data) %in% c("subject_id", "project_id", "wave_code"))
-    names(noas_table_data)[renam_cols_idx] <- paste0("_", names(noas_table_data)[renam_cols_idx])
-    # --
+    # push as temp table to db
+    table_id_tmp <- sprintf("tmp_%s", table_id)
     DBI::dbWriteTable(
       con,
       table_id_tmp,
       noas_table_data,
       row.name = FALSE
     )
+    # import table to noas
     DBI::dbExecute(
       con, 
       "select import_table($1, $2, $3, $4)", 

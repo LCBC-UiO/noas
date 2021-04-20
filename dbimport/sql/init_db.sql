@@ -211,6 +211,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION _import_cross_table(table_name_in regclass, table_name_dst text, noas_data_source text)
 RETURNS void AS $$
 DECLARE
+  _colid text;
   visit_id_colname text;
   _s integer;
 BEGIN
@@ -221,6 +222,24 @@ BEGIN
     $ex$
     ,table_name_in
   );
+  -- prefix non-pk columns with _
+  FOR _colid IN
+    SELECT column_name
+      FROM information_schema.columns
+      WHERE table_schema = 'public'
+        AND table_name   = table_name_in::text
+        AND column_name NOT IN ('subject_id')
+  LOOP
+    EXECUTE format(
+      $ex$
+        ALTER TABLE %s
+          RENAME COLUMN "%s" TO _%s;
+      $ex$
+      ,table_name_in
+      ,_colid
+      ,_colid
+    );
+  END LOOP;
   -- check if defined 
   FOR _s IN EXECUTE format(
     $ex$
@@ -264,6 +283,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION _import_long_table(table_name_in regclass, table_name_dst text, noas_data_source text)
 RETURNS void AS $$
 DECLARE
+  _colid text;
   visit_id_colname text;
   _s integer;
   _p text;
@@ -278,6 +298,24 @@ BEGIN
     $ex$
     ,table_name_in
   );
+  -- prefix non-pk columns with _
+  FOR _colid IN
+    SELECT column_name
+      FROM information_schema.columns
+      WHERE table_schema = 'public'
+        AND table_name   = table_name_in::text
+        AND column_name NOT IN ('subject_id', 'project_id', 'wave_code')
+  LOOP
+    EXECUTE format(
+      $ex$
+        ALTER TABLE %s
+          RENAME COLUMN "%s" TO _%s;
+      $ex$
+      ,table_name_in
+      ,_colid
+      ,_colid
+    );
+  END LOOP;
   -- check if defined 
   FOR _s, _p, _w IN EXECUTE format(
     $ex$
@@ -335,12 +373,12 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION _import_repeated_table(table_name_in regclass, table_name_dst text, noas_data_source text, repeated_grp text)
 RETURNS void AS $$
 DECLARE
+  _colid text;
   _4th_col_id text;
   _s integer;
   _p text;
   _w float;
 BEGIN
-  SELECT _get_nth_colname(table_name_in::text, 4) INTO _4th_col_id;
   EXECUTE format(
     $ex$
       ALTER TABLE %s
@@ -350,6 +388,25 @@ BEGIN
     $ex$
     ,table_name_in
   );
+  -- prefix non-pk columns with _
+  FOR _colid IN
+    SELECT column_name
+      FROM information_schema.columns
+      WHERE table_schema = 'public'
+        AND table_name   = table_name_in::text
+        AND column_name NOT IN ('subject_id', 'project_id', 'wave_code')
+  LOOP
+    EXECUTE format(
+      $ex$
+        ALTER TABLE %s
+          RENAME COLUMN "%s" TO _%s;
+      $ex$
+      ,table_name_in
+      ,_colid
+      ,_colid
+    );
+  END LOOP;
+  SELECT _get_nth_colname(table_name_in::text, 4) INTO _4th_col_id;
   -- check if defined 
   FOR _s, _p, _w IN EXECUTE format(
     $ex$
