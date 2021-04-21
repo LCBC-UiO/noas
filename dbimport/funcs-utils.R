@@ -1,151 +1,124 @@
-
-#' Read database table
+#' Read config file
 #' 
-#' Convenience function to easily read
-#' db tables without needing to set
-#' extra arguments
+#' The data base has a config.txt
+#' file where some settings for the
+#' data base is set. This function
+#' reads in that file and makes
+#' available these settings for use.
 #'
-#' @param path path to table
-#' @param ... other arguments to read.table()
+#' @return list
+read_config <- function() {
+  cfg <- list()
+  .add_configs <- function(cfg, fn) {
+    lines <- readLines(fn)
+    lines <- lines[!grepl("^#", lines)]  # remove comments
+    lines <- lines[lines != ""] # remove empty lines
+    for (line in lines) {
+      line <- gsub("#.*$", "" , line) # remove comments
+      line <- gsub("\ *$", "" , line) # remove trailing spaces
+      if (line == "") { # skip empy lines
+        next()
+      }
+      key <- gsub("=.*$", "",  line)
+      value_quoted <- gsub("^[^=]*=", "", line)
+      value <- as.character(parse(text=value_quoted))
+      cfg[key] <- value
+    }
+    return(cfg)
+  }
+  cfg <- .add_configs(cfg, "config_default.txt")
+  if (file.exists("config.txt")) {
+    cfg <- .add_configs(cfg, "config.txt")
+  }
+  # override with any existing NOAS_XXX env variables
+  for (key in names(cfg)) {
+    nkey <- sprintf("NOAS_%s", key)
+    v <- Sys.getenv(nkey)
+    # only works for non-empty env vars
+    if (v != "") {
+      cfg[key] <- v
+    }
+  }
+  .set_default <- function(cfg, key, default){
+    if(cfg[key] == "") cfg[key] <- default
+    cfg
+  }
+  curr_date <- date()
+  cfg <- .set_default(cfg, "IMPORT_LABEL", "unnamed version")
+  cfg <- .set_default(cfg, "IMPORT_DATE",  curr_date)
+  cfg <- .set_default(cfg, "IMPORT_ID",  sprintf("undefined (%s)", as.character(curr_date)))
+  cfg
+}
+
+#' Read file as string/character
+#'
+#' @param path path to file
+#'
+#' @return character
+read_file <- function(path){
+  readChar(path, file.info(path)$size)
+}
+
+#' Read noas data table
+#'
+#' @param path path to file
+#' @param ... other arguments to \code{read.table}
+#'
 #' @return data.frame
-#' @export
-read_dbtable <- function(path, ...){
-  read.table(text = readLines(path, warn = FALSE),
-             header = TRUE,
-             sep = "\t",
-             stringsAsFactors = FALSE,
-             quote = "",
+read_noas_table <- function(path, ...){
+  read.table(path, header = TRUE, sep = "\t", 
+             comment.char = "", fill = FALSE, 
+             colClasses = "character", 
+             blank.lines.skip	= FALSE,
+             check.names = FALSE,
              ...)
 }
 
+fail_if <- function(expr, ...){
+  if(expr){
+    stop(..., call. = FALSE)
+  }
+}
 
-
-
-#' List primary keys of the table types
+#' Check if tsv's are NOAS compatible
 #' 
-#' Different table types have different primary keys.
-#' This functions returns a list containing the 
-#' primary keys for each table type
+#' Runs checks on a set of tsv files 
+#' together, to make sure they adhere
+#' to NOAS data standards
+#' 
+#' Checks run:
+#' \itemize{
+#'   \item{All files end with \code{tsv}}
+#'   \item{All files have same number of columns}
+#'   \item{All files have same column order}
+#' }
 #'
-#' @return list of primary keys by table type
-prim_keys <- function(){
-  list(
-    cross = "subject_id",
-    long = c("subject_id", "project_id", "wave_code"),
-    repeated = c("subject_id", "project_id", "wave_code")
+#' @param tsv_list character vector of tsv files
+#' @param tsv_dir path to containing directory
+check_tsvs <- function(tsv_list, tsv_dir){
+  is_tsv <- grepl("tsv$", tsv_list)
+  fail_if(!all(is_tsv), 
+          "Table not ending in 'tsv':\n", 
+          paste(tsv_list[!is_tsv], collapse=" ")
   )
-}
-
-sql_templates <- function(type){
-  switch(type,
-         cross = "dbimport/sql/insert_cross_table.sql",
-         long = "dbimport/sql/insert_long_table.sql",
-         repeated = "dbimport/sql/insert_repeated_table.sql"
-  )
-}
-
-
-
-#' wrap string in character
-#' 
-#' particularly made to wrap strings in
-#' single quotation marks for input to sql
-#'
-#' @param string caracter
-#' @param wrap wrapping character
-#'
-#' @export
-wrap_string <- function(string, wrap = "'"){
-  paste0(wrap, string, wrap, collapse = "")
-}
-
-#' Rename headers
-#'
-#' checks and renames a table header
-#' if it has the exact same name as the 
-#' table it self. 
-#' 
-#' @param ft data
-#' @param table_name tale name
-rename_table_headers <- function(ft, key_vars){
-  fix_names <- function(x){
-    x <- gsub("^X", "", x)
-    x <- tolower(x)
-    paste0("_", x)
+  # column names and order match (across all files)
+  file_heads <- lapply(file.path(tsv_dir, tsv_list), function(x){
+    names(read_noas_table(x, nrow = 1))
+  })
+  names(file_heads) <- tsv_list
+  file_ref <- file.path(tsv_dir, tsv_list[1])
+  file_head_ref <- names(read_noas_table(file_ref, nrow = 1))
+  for(f in tsv_list[-1]){
+    file_cur <- file.path(tsv_dir, f)
+    file_head <- names(read_noas_table(file_cur, nrow = 1))
+    # Fail on differing column length and name/order
+    fail_if(length(file_head_ref) != length(file_head),
+            "Differing number of columns in files:\n",
+            file_cur, " ", file_ref
+    )
+    fail_if(!all(file_head_ref == file_head),
+            "Files do not have equally names columns:\n",
+            file_cur, " ", file_ref
+    )
   }
-  
-  .renm_cols <- function(data, cols){
-    idx <- !(names(data) %in% cols)
-    names(data)[idx] <- fix_names(names(data)[idx])
-    data
-  }
-  
-  lapply(ft, .renm_cols, cols = key_vars)
-}
-
-
-get_rows <- function(con, table){
-  if(DBI::dbExistsTable(con, table)){
-    query <- sprintf("select * from %s;", table)
-    res <- DBI::dbSendQuery(con, query)
-    x <- DBI::dbFetch(res)
-    DBI::dbClearResult(res)
-    return(nrow(x))
-  }else{
-    return(0)
-  }
-}
-
-#' Count characters in string
-#' 
-#' function to count the number of 
-#' a given character in a string.
-#'
-#' @param char character to count
-#' @param s string to count in
-#'
-#' @return integer
-str_count <- function(char, s) {
-  s2 <- gsub(char,"",s)
-  nchar(s) - nchar(s2)
-}
-
-
-# convenience function to assign "default" value if 
-# input value is NA
-`%||%` <- function(a, b){
-  if( !any(c(is.null(a), is.na(a)))) a else b
-}
-
-# noas json ----
-
-# find if _noas.json is there
-# Read it in and check fields
-read_noas_json <- function(dir_path){
-  noas <- file.path(dir_path, "_noas.json")
-  # check if we have the file
-  if(!file.exists(noas))
-    stop("Table '", basename(dir_path), "' does not have a '_noas.json' file, and cannot be added")
-  # read json
-  jsn <- jsonlite::read_json(noas, simplifyVector = TRUE) 
-  # check if we have table_type
-  if (! jsn$table_type %in% names(k_noas_table_types())) {
-    stop(sprintf("Unrecognised table type \"%s\" in file \"%s\"", jsn$table_type, dir_path))
-  }
-  jsn
-}
-
-k_noas_table_types <- function(){
-  c(
-    "longitudinal" = "long",
-    "cross-sectional" = "cross",
-    "repeated" = "repeated"
-  )
-}
-
-# translate JOSN table_type to short db table_type
-noas_dbtable_type <- function(jsntable_type){
-  type <- k_noas_table_types()[jsntable_type]
-  stopifnot(!is.na(type))
-  type
 }
