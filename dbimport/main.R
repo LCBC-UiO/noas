@@ -38,12 +38,11 @@ for(pre in core_pre_seq){
   check_tsvs(core_files_cur, core_dir)
   
   for(f in core_files_cur){
-    f_path <- file.path(core_dir, f)
-    cat(f_path, "\n")
+    cat(file.path("core", f), "\n")
     DBI::dbWriteTable(
       con, 
       pre, 
-      read_noas_table(f_path),
+      read_noas_table(file.path(core_dir, f)),
       append = TRUE,
       row.name = FALSE
     )
@@ -70,10 +69,9 @@ for(table_id in table_ids){
   check_tsvs(cur_file_list, table_dir_cur)
   
   for(f_tsv in cur_file_list){
-    f_tsv_path <- file.path(table_dir_cur, f_tsv)
-    cat(f_tsv_path, "\n")
+    cat(file.path("non_core", table_id, f_tsv), "\n")
     # read table
-    noas_table_data <- read_noas_table(f_tsv_path)
+    noas_table_data <- read_noas_table(file.path(table_dir_cur, f_tsv))
     # push as temp table to db
     table_id_tmp <- sprintf("tmp_%s", table_id)
     DBI::dbWriteTable(
