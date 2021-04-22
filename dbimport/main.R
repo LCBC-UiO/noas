@@ -98,6 +98,7 @@ for(table_id in table_ids){
       sprintf("drop table if exists tmp_%s;", table_id)
     )
   } # end f_tsv
+  cat(file.path("non_core", table_id, "_metadata.json"), "\n")
   DBI::dbExecute(
     con, 
     "select import_metadata($1, $2)", 
