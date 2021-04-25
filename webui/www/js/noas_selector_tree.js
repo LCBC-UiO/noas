@@ -551,6 +551,7 @@ function _nodeMouseover(d) {
       dt.innerHTML = "Description";
       let dd = document.createElement("dd");
       dl.appendChild(dd);
+      dd.classList.add("pre");
       dd.innerHTML = d.data.descr;
     }
   } else if (isCategory(d.data)) {
@@ -593,6 +594,7 @@ function _nodeMouseover(d) {
       dt.innerHTML = "Description";
       let dd = document.createElement("dd");
       dl.appendChild(dd);
+      dd.classList.add("pre");
       dd.innerHTML = d.data.descr;
     }
   }

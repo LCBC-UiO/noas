@@ -201,6 +201,7 @@ class NoasSelectorSearch extends NoasSelectorBase {
       dt.innerHTML = "Description";
       let dd = document.createElement("dd");
       dl.appendChild(dd);
+      dd.classList.add("pre");
       dd.innerHTML = table.descr;
     }
     document.getElementById("nssTable").replaceChildren(frag);
