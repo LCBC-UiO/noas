@@ -58,6 +58,7 @@ table_ids <- list.dirs(ncore_dir, recursive = FALSE, full.names = FALSE)
 if(getOption("noas")$IMPORT_DEBUG == "1") 
   table_ids <- table_ids[order(file.info(file.path(ncore_dir, table_ids))$mtime, decreasing = TRUE)]
 for(table_id in table_ids){
+  metadata_j <- NULL
   table_dir_cur <- file.path(ncore_dir, table_id) 
   cur_file_list <- list.files(table_dir_cur)
   fail_if(!"_noas.json" %in% cur_file_list, 
@@ -98,15 +99,17 @@ for(table_id in table_ids){
       sprintf("drop table if exists tmp_%s;", table_id)
     )
   } # end f_tsv
-  cat(file.path("non_core", table_id, "_metadata.json"), "\n")
-  DBI::dbExecute(
-    con, 
-    "select import_metadata($1, $2)", 
-    params=list(
-      table_id,
-      metadata_j
+  if (!is.null(metadata_j)) {
+    cat(file.path("non_core", table_id, "_metadata.json"), "\n")
+    DBI::dbExecute(
+      con, 
+      "select import_metadata($1, $2)", 
+      params=list(
+        table_id,
+        metadata_j
+      )
     )
-  )
+  }
 } # end table_id
 
 
