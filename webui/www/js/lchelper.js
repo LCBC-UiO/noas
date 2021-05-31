@@ -34,25 +34,27 @@ function lcGetDataVersionFnStr(sel) {
 }
 
 function lcProgressInit(parentId) {
-  let ep = document.getElementById(parentId);
+  const e_frag = document.createDocumentFragment();
   {
-    let el = document.createElement("h4");
-    ep.appendChild(el);
-    el.classList.add("pt-lg-5");
-    el.innerHTML = "Loading...";
+    const e_row = document.createElement("div");
+    ["row", "justify-content-center", "mt-5"].forEach(c => e_row.classList.add(c));
+    e_frag.appendChild(e_row);
+    {
+      const e_col = document.createElement("div");
+      ["col-sm-2", "text-center"].forEach(c => e_col.classList.add(c));
+      e_row.appendChild(e_col);
+      {
+        const e_h = document.createElement("h4");
+        ["text-muted", "mb-0"].forEach(c => e_h.classList.add(c));
+        e_h.innerHTML = "loading..."
+        e_col.appendChild(e_h);
+        const e_i = document.createElement("img");
+        ["img-fluid", "lcfadein"].forEach(c => e_i.classList.add(c));
+        e_i.id = "imgProgress"
+        e_i.src = "./img/progress_lcbc_363x347.gif"
+        e_col.appendChild(e_i);
+      }
+    }
   }
-  {
-    let es = document.createElement("div");
-    ep.appendChild(es);
-    es.id = "noasProgressText";
-    es.classList.add("progress");
-    es.classList.add("mx-5");
-    let e = document.createElement("div");
-    es.appendChild(e);
-    e.id = "noasProgress";
-    e.classList.add("progress-bar");
-    e.classList.add("progress-bar-striped");
-    e.classList.add("progress-bar-animated");
-    e.style.width = "100%";
-  }
+  document.getElementById(parentId).replaceChildren(e_frag);
 }

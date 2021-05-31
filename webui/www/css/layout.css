@@ -110,3 +110,21 @@ body {
 }
 
 /*----------------------------------------------------------------------------*/
+
+@keyframes fadein {
+  0% {
+    opacity: 0%;
+  }
+  100% {
+    opacity: 100%;
+  }
+}
+#noasTables > *, #queryOpts { 
+  animation: fadein 1.5s;
+}
+#noasTable > * { 
+  animation: fadein 1.5s;
+}
+#imgProgress {
+  filter: opacity(70%);
+}
