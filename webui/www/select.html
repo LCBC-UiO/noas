@@ -117,32 +117,36 @@ NOAS - Query selector
   <div class="container">
     <div id="alerts"></div>
   </div>
-  <div class="d-flex">
-    <div class="h4 mt-1 ml-3">
-      Select variables
-    </div>
-    <div class="ml-5">
-      <div class="noasswitch">
-        <label>
-          <input type="radio" name="view" id="radioNsBoxes" checked disabled>
-          <span>Boxes</span>
+  <div class="container-fluid">
+    <div class="row justify-content-between align-items-start mt-1">
+      <div class="col-2 h4 text-left">
+        Select variables
+      </div>
+      <div class="col-3">
+        <div class="noasswitch">
+          <label>
+            <input type="radio" name="view" id="radioNsBoxes" checked disabled>
+            <span>Boxes</span>
+          </label>
+          <label>
+            <input type="radio" name="view" id="radioNsTree" disabled>
+            <span>Tree</span>
+          </label>
+          <label>
+            <input type="radio" name="view" id="radioNsSearch" disabled>
+            <span>Search</span>
+          </label>
+        </div>
+      </div>
+      <div class="col-sm-7 text-right" align="center">
+        <div id="btnClear" class="button button-minwidth">Clear selection</div>
+        <label id="btnLoad" class="button button-minwidth">
+          Load selection<input id="fileLoad" name="file" type="file" style="display: none;">
         </label>
-        <label>
-          <input type="radio" name="view" id="radioNsTree" disabled>
-          <span>Tree</span>
-        </label>
-        <label>
-          <input type="radio" name="view" id="radioNsSearch" disabled>
-          <span>Search</span>
-        </label>
+        <div id="btnGetDocPdf" class="button button-minwidth">Download docu</div>
+        <div id="btnSubmitTop" class="button button-minwidth">Submit</div>
       </div>
     </div>
-    <div id="btnClear" class="button button-minwidth ml-auto">Clear selection</div>
-    <label id="btnLoad" class="button button-minwidth">
-      Load selection<input id="fileLoad" name="file" type="file" style="display: none;">
-    </label>
-    <div id="btnGetDocPdf" class="button button-minwidth">Download docu</div>
-    <div id="btnSubmitTop" class="button button-minwidth">Submit</div>
   </div>
   <div id="noasTables"></div>
   <div id="noasSelFooter"></div>
