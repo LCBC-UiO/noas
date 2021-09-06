@@ -9,10 +9,10 @@ _all: all
 # packages
 
 # note: the non-Archive urls will break over time. this wil need updates
-r_pkg_urls := https://cran.r-project.org/src/contrib/Archive/digest/digest_0.6.25.tar.gz \
-	https://cran.r-project.org/src/contrib/Archive/jsonlite/jsonlite_1.7.1.tar.gz \
-	https://cran.r-project.org/src/contrib/RPostgreSQL_0.6-2.tar.gz \
-	https://cran.r-project.org/src/contrib/DBI_1.1.0.tar.gz
+r_pkg_urls := https://cran.r-project.org/src/contrib/00Archive/digest/digest_0.6.25.tar.gz \
+	https://cran.r-project.org/src/contrib/00Archive/jsonlite/jsonlite_1.7.1.tar.gz \
+	https://cran.r-project.org/src/contrib/00Archive/RPostgreSQL/RPostgreSQL_0.6-2.tar.gz \
+	https://cran.r-project.org/src/contrib/00Archive/DBI/DBI_1.1.0.tar.gz
 
 r_pkgs := $(patsubst %.tar.gz,%, $(notdir $(r_pkg_urls)))
 
