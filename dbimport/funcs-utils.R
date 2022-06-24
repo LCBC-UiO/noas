@@ -118,7 +118,7 @@ check_tsvs <- function(tsv_list, tsv_dir){
             file_cur, " ", file_ref
     )
     fail_if(!all(file_head_ref == file_head),
-            "Files do not have equally names columns:\n",
+            "Files do not have equally named columns:\n",
             file_cur, " ", file_ref
     )
   }
