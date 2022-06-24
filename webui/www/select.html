@@ -125,7 +125,7 @@ NOAS - Query selector
       <div class="col-3">
         <div class="noasswitch">
           <label>
-            <input type="radio" name="view" id="radioNsBoxes" checked disabled>
+            <input type="radio" name="view" id="radioNsBoxes" disabled>
             <span>Boxes</span>
           </label>
           <label>
@@ -262,17 +262,21 @@ NOAS - Query selector
     document.getElementById("btnSubmit").onclick =    () => submitSelection(meta);
     document.getElementById("btnSubmitTop").onclick = () => submitSelection(meta);
     document.getElementById("btnGetDocPdf").onclick = () => downloadPdf(meta);
-    function updateSelector(meta) {
+    const kViewSelectorId = "viewSelectorId";
+    function updateViewSelector(meta) {
       document.getElementById("radioNsBoxes").disabled  = true;
       document.getElementById("radioNsTree").disabled   = true;
       document.getElementById("radioNsSearch").disabled = true;
       const selection = g_noas_selector ? g_noas_selector.getSelection() : null;
       if(document.getElementById("radioNsBoxes").checked) {
         g_noas_selector = new NoasSelectorBoxes("noasTables", meta);
+        localStorage.setItem(kViewSelectorId, "radioNsBoxes")
       } else if (document.getElementById("radioNsTree").checked) {
         g_noas_selector = new NoasSelectorTree("noasTables", meta);
+        localStorage.setItem(kViewSelectorId, "radioNsTree")
       } else {
         g_noas_selector = new NoasSelectorSearch("noasTables", meta);
+        localStorage.setItem(kViewSelectorId, "radioNsSearch")
       }
       g_noas_selector.render();
       if (selection) {
@@ -282,10 +286,18 @@ NOAS - Query selector
       document.getElementById("radioNsTree").disabled   = false;
       document.getElementById("radioNsSearch").disabled = false;
     }
-    updateSelector(meta);
-    document.getElementById("radioNsBoxes" ).onchange = () => updateSelector(meta);
-    document.getElementById("radioNsTree"  ).onchange = () => updateSelector(meta);
-    document.getElementById("radioNsSearch").onchange = () => updateSelector(meta);
+    // init view selector 
+    {
+      const idViewSelector = localStorage.getItem(kViewSelectorId) || "radioNsBoxes"
+      const eRadio = document.getElementById(idViewSelector)
+      if (eRadio) {
+        eRadio.checked = true
+      }
+    }
+    updateViewSelector(meta);
+    document.getElementById("radioNsBoxes" ).onchange = () => updateViewSelector(meta);
+    document.getElementById("radioNsTree"  ).onchange = () => updateViewSelector(meta);
+    document.getElementById("radioNsSearch").onchange = () => updateViewSelector(meta);
   }
 
   // clear selection
