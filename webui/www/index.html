@@ -16,26 +16,33 @@ NOAS
 </head>
 <body>
   <div id="main" class="cover-container d-flex w-100 h-100 p-5 my-lg-5 mx-auto flex-column">
-    <div class="py-5 text-center container">
-      <h1>NOAS</h1>
-      the Nephew Of All Spreadsheets
-    </div>
-    <div id="alerts"></div>
-    <section class="py-4 text-center container">
-      <div class="row py-lg-4 my-md-4">
-        <div class="col-auto mx-auto form-group">
-          <label for="exampleFormControlSelect1">Select a project</label>
-          <select id="selProject" class="form-control" id="exampleFormControlSelect1" disabled>
-            <option>loading...</option>
-          </select>
-        </div>
+
+
+    <div class="container my-5 mx-auto">
+      <div class="py-5 text-center container">
+        <h1>NOAS</h1>
+        the Nephew Of All Spreadsheets
       </div>
-    </section>
-  </div>
-  <div class="container my-5 mx-auto">
-    <hr>
-    <div class="row justify-content-md-center">
-      <div id="docu" class="col-8"></div>
+      <div id="alerts"></div>
+      <div class="alert alert-primary" role="alert">
+        The NOAS contains all available LCBC data.
+        No data is excluded based on cognitive scores, answers to questionnaire, or MRI incidental findings.
+        These data checks and exclusions should be done on a per-paper basis, so be dilligent in checking your data.
+      </div>
+      <section class="py-4 text-center container">
+        <div class="row py-lg-4 my-md-4">
+          <div class="col-auto mx-auto form-group">
+            <label for="exampleFormControlSelect1">Select a project</label>
+            <select id="selProject" class="form-control" id="exampleFormControlSelect1" disabled>
+              <option>loading...</option>
+            </select>
+          </div>
+        </div>
+      </section>
+      <hr>
+      <div class="row justify-content-md-center">
+        <div id="docu" class="col-8"></div>
+      </div>
     </div>
   </div>
   <script>
