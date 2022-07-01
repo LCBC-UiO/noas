@@ -166,6 +166,7 @@ CREATE OR REPLACE FUNCTION _write_default_metadata(table_name_dst text, sample_t
 RETURNS void AS $$
 DECLARE
 	_colid text;
+  _col_counter int := 1;
 BEGIN
   EXECUTE format(
     $ex$
@@ -187,13 +188,15 @@ BEGIN
     EXECUTE format(
       $ex$
         INSERT INTO metacolumns (metatable_id, id, idx, title) 
-          VALUES ('%s', '%s',  1, INITCAP(REPLACE(SUBSTRING('%s', 2), '_', ' '))) 
+          VALUES ('%s', '%s', '%s', INITCAP(REPLACE(SUBSTRING('%s', 2), '_', ' ')))
           ON CONFLICT DO NOTHING;
       $ex$
       ,table_name_dst
       ,_colid
+      ,_col_counter
       ,_colid
     );
+    SELECT _col_counter + 1 INTO _col_counter;
   END LOOP;
   -- fix metadata
   EXECUTE format(
