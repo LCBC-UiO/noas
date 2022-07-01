@@ -166,6 +166,7 @@ CREATE OR REPLACE FUNCTION _write_default_metadata(table_name_dst text, sample_t
 RETURNS void AS $$
 DECLARE
 	_colid text;
+  _col_counter int := 1;
 BEGIN
   EXECUTE format(
     $ex$
@@ -187,13 +188,15 @@ BEGIN
     EXECUTE format(
       $ex$
         INSERT INTO metacolumns (metatable_id, id, idx, title) 
-          VALUES ('%s', '%s',  1, INITCAP(REPLACE(SUBSTRING('%s', 2), '_', ' '))) 
+          VALUES ('%s', '%s', '%s', INITCAP(REPLACE(SUBSTRING('%s', 2), '_', ' ')))
           ON CONFLICT DO NOTHING;
       $ex$
       ,table_name_dst
       ,_colid
+      ,_col_counter
       ,_colid
     );
+    SELECT _col_counter + 1 INTO _col_counter;
   END LOOP;
   -- fix metadata
   EXECUTE format(
@@ -436,16 +439,6 @@ BEGIN
   );
   -- auto create metadata
   PERFORM _write_default_metadata(table_name_dst, 'repeated');
-  -- fix 4th column
-  EXECUTE format(
-    $ex$
-      UPDATE metacolumns 
-        SET idx = -1 
-        WHERE metatable_id = '%s' AND id = '%s';
-    $ex$
-    ,table_name_dst
-    ,_4th_col_id
-  );
   -- add repeated group?
   IF repeated_grp IS NOT NULL THEN
     INSERT INTO meta_repeated_grps (metatable_id, metacolumn_id, repeated_group) 
