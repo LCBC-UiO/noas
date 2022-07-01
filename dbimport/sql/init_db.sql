@@ -439,16 +439,6 @@ BEGIN
   );
   -- auto create metadata
   PERFORM _write_default_metadata(table_name_dst, 'repeated');
-  -- fix 4th column
-  EXECUTE format(
-    $ex$
-      UPDATE metacolumns 
-        SET idx = -1 
-        WHERE metatable_id = '%s' AND id = '%s';
-    $ex$
-    ,table_name_dst
-    ,_4th_col_id
-  );
   -- add repeated group?
   IF repeated_grp IS NOT NULL THEN
     INSERT INTO meta_repeated_grps (metatable_id, metacolumn_id, repeated_group) 
