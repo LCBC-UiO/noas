@@ -1,13 +1,16 @@
 :root {
   --blue:   #009fe3;
   --lblue:  #66bfdd;
-  --lgreen: #9cbd4c;
+  --lgreen: #c6d984;
   --green:  #94c11e;
   --gray:   #636363;
   --lgray:  #b2b2b2;
+  --black:  #444;
 }
 
-
+body{
+  color: var(--black);
+}
 /*----------------------------------------------------------------------------*/
 
 /* font awesome */
@@ -25,12 +28,16 @@
 
 /* bootstrap */
 
-a{
+a {
   color: var(--blue) !important;
 }
 
+input {
+  margin-right: 5px !important;
+}
+
 .modal {
-  color: black;
+  color: var(--black);
 }
 
 .btn{
@@ -38,13 +45,17 @@ a{
 }
 
 .btn-primary {
-  background-color: var(--lgreen) !important;
-  border: none;
+  background-color: var(--green) !important;
 }
 
 .btn-primary:hover {
   cursor: pointer;
-  color: var(--blue) !important;
+  background-color: var(--lgreen) !important;
+  color: var(--gray);
+}
+
+.flex-even {
+  width: 100px;
 }
 
 .accordion-button:not(.collapsed)::after,

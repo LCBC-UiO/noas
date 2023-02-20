@@ -60,11 +60,11 @@ class NoasSelectorBoxes extends NoasSelectorBase {
       // columns
       let eRow = document.createElement("div");
       eOptcontent.appendChild(eRow);
-      eRow.classList.add("row");
+      eRow.classList = "row";
       e.columns.forEach((ec,i) => {
         let eCol = document.createElement("div");
         eRow.appendChild(eCol);
-        eCol.classList = "col-sm-3 mb-2 mr-2 form-group form-check";
+        eCol.classList = "col-sm-6 col-md-4 col-lg-3 mb-2 mr-2 form-group form-check";
         let eLabel = document.createElement("label");
         eCol.appendChild(eLabel);
         eLabel.classList = "form-check-label font-weight-normal";

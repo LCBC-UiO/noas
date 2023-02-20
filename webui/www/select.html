@@ -23,9 +23,9 @@
 </head>
 <body>
   
-  <nav class="navbar navbar-expand navbar-dark bg-dark p-4 ">
+  <nav class="navbar navbar-expand navbar-dark bg-dark px-2 py-3 ">
     <div class="container-fluid">
-      <a class="navbar-brand font-weight-bold p-2" href="./index.html">
+      <a class="navbar-brand font-weight-bold px-2" href="./index.html">
         <img src="img/favicon.ico" width="30" height="30" alt="">
         <script language="JavaScript">
           var request = new XMLHttpRequest()
@@ -41,12 +41,13 @@
           <p class="navbar-text" id="version-label"></p>
           <a href="./index.html">
             <p class="navbar-text">Project:
-              <span id="spPrj"></span>
-            </p>
+            <span class="navbar-text" id="spPrj"></span>
+          </p>
           </a>
         </div>
     </div>
   </nav>
+  <span class="d-none" id="version-id">.</span>
 
   <div class="container">
     <div id="alerts"></div>
@@ -84,9 +85,54 @@
 <script>
   let g_noas_selector = null;
 
+  const g_prj = (function() {
+    const prj = (new URLSearchParams(window.location.search)).get("prj");
+    if (!prj) {
+      window.location.href = './index.html';
+    }
+    document.getElementById("spPrj").innerHTML = prj;
+    return prj;
+  })();
+
+  async function getMetaData() {
+    async function _getData(url) {
+      const response = await fetch(url, {
+        method: 'GET'
+      });
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      return response.json();
+    }
+    try {
+      let jsn = await _getData(`./dbmeta.php?prj=${g_prj}`);
+      if (!jsn.status_ok) {
+        throw Error(jsn.status_msg);
+      }
+      return jsn.data;
+    } catch (e) {
+      showAlertBox(AlertType.ERROR, ["Unable to load data.", e.toString()]);
+      console.log("err: " + e.toString());
+    };
+    return {};
+  }
+
   async function start() {
     lcProgressInit("noasTables");
-    const meta = await get_version();
+    const meta = await getMetaData();
+    // set version
+    {
+      const vdateStr = (new Date(meta.version.ts)).toLocaleString();
+      document.getElementById("version-label").innerHTML = `${meta.version.label} (${vdateStr})`;
+      if (!meta.version.import_completed) {
+        const errmsg = [ 
+          `Either the last update of the database (${vdateStr}) had an error or the update has not finished yet.`,
+          `The data shown here will be incomplete.`
+        ];
+        showAlertBox(AlertType.ERROR, errmsg);
+      }
+    }
+    document.getElementById("version-id").innerHTML = `${meta.version.id}`;
 
     let efooter = document.getElementById("noasSelFooter");
     // query options
@@ -194,8 +240,6 @@
       date: (new Date()).toISOString(),
       version: document.getElementById("version-id").innerHTML,
     };
-    console.log(sel)
-
     sel.project = g_prj;
     // query options
     sel.set_op = document.querySelector('input[name="setOps"]:checked').value;

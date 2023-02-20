@@ -8,18 +8,15 @@ db/*
 config.txt
 singularity/*.simg
 
-webui/www/css/bootstrap-theme.css
-webui/www/css/bootstrap.css
-webui/www/css/bootstrap.min.css
-webui/www/css/bootstrap.min.css.map
-webui/www/css/tabulator.min.css
-webui/www/js/bootstrap.min.js
-webui/www/js/fontawesome.min.js
-webui/www/js/jquery.min.js
-webui/www/js/popper.min.js
-webui/www/js/solid.min.js
-webui/www/js/showdown.min.js
-webui/www/js/tabulator.min.js
+webui/www/css/bootstrap*
+webui/www/css/tabulator*
+webui/www/js/bootstrap*
+webui/www/js/fontawesome*
+webui/www/js/jquery*
+webui/www/js/popper*
+webui/www/js/solid*
+webui/www/js/showdown*
+webui/www/js/tabulator*
 webui/www/js/xlsx.full.min.js
 webui/www/static_info.json
 webui/www/js/pdfkit.standalone.js

@@ -5,9 +5,7 @@
   <link rel="shortcut icon" href="./img/favicon.ico">
   <link rel="stylesheet" href="./css/bootstrap.min.css" type="text/css"/>
   <link rel="stylesheet" href="./css/tabulator.min.css" type="text/css"/>
-  <link rel="stylesheet" href="./css/tabulator_bs5.min.css" type="text/css"/>
-  <link rel="stylesheet" href="./css/noas_selector_search.css" type="text/css"/>
-  <link rel="stylesheet" href="./css/noas_selector_tree.css" type="text/css"/>
+  <link rel="stylesheet" href="./css/tabulator_bootstrap5.min.css" type="text/css"/>
   <link rel="stylesheet" href="./css/layout.css" type="text/css"/>
   <script type="text/javascript" src="./js/tabulator.min.js"></script>
   <script type="text/javascript" src="./js/solid.min.js" ></script>
@@ -17,7 +15,6 @@
   <script type="text/javascript" src="./js/jquery.min.js"></script>
   <script type="text/javascript" src="./js//popper.min.js"></script>
   <script type="text/javascript" src="./js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="./js/noas_selector_base.js"></script>
   <script type="text/javascript" src="./js/lcalerts.js"></script>
   <script type="text/javascript" src="./js/lchelper.js"></script>
 <title>
@@ -26,9 +23,9 @@
 </head>
 <body>
     
-  <nav class="navbar navbar-expand navbar-dark bg-dark p-4 ">
+  <nav class="navbar navbar-expand navbar-dark bg-dark px-2 py-3 ">
     <div class="container-fluid">
-      <a class="navbar-brand font-weight-bold p-2" href="./index.html">
+      <a class="navbar-brand font-weight-bold px-2" href="./index.html">
         <img src="img/favicon.ico" width="30" height="30" alt="">
         <script language="JavaScript">
           var request = new XMLHttpRequest()
@@ -44,12 +41,13 @@
           <p class="navbar-text" id="version-label"></p>
           <a href="./index.html">
             <p class="navbar-text">Project:
-              <span id="spPrj"></span>
-            </p>
+            <span class="navbar-text" id="spPrj"></span>
+          </p>
           </a>
         </div>
     </div>
   </nav>
+  <span class="d-none" id="version-id">.</span>
 
   <div class="container">
     <div id="alerts"></div>
@@ -57,32 +55,31 @@
 
   <div class="container">
     <h4 class="text-left my-4">Database Results</h4>
-    <div class="d-flex  align-items-center justify-content-between">
-      <div id="btnSave" class="btn btn-primary">Save selection</div>
-      <div id="btnDlCsv" class="btn btn-primary">Download CSV</div>
-      <div id="btnDlXlsx" class="btn btn-primary">Download Excel</div>
-      <div type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalExportR" id="btnModalEncR">Download R</div>
-      <div type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalImportR">Import to R</div>
-      <div id="btnBack" class="btn btn-primary">Back</div>
+    <div class="d-flex gap-3 align-content-around flex-wrap pt-2" height="250px">
+      <div id="btnSave"   class="btn btn-primary flex-even">Save selection</div>
+      <div id="btnDlCsv"  class="btn btn-primary flex-even">Download CSV</div>
+      <!--<div id="btnDlXlsx" class="btn btn-primary flex-even">Download Excel</div>-->
+      <div type="button"  class="btn btn-primary flex-even" data-bs-toggle="modal" data-bs-target="#modalExportR" id="btnModalEncR">Download R</div>
+      <div type="button"  class="btn btn-primary flex-even" data-bs-toggle="modal" data-bs-target="#modalImportR">Import to R</div>
+      <div id="btnBack"   class="btn btn-primary flex-even">Back</div>
     </div>
 
-  <div id="noasTable" class="table table-sm table-striped table-responsive fw"></div>
+  <div id="noasTable" class="table table-sm table-striped table-responsive fw py-4"></div>
 
   <div class="modal" id="modalImportR">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Copy&paste into R</h4>
+          <h4 class="modal-title">Copy & paste into R</h4>
           <span data-toggle="tooltip" data-placement="top" title="Select all">
             <button id="btnMarkAllR" type="button" class="ml-4 btn">
               <span class="fas fa-paint-roller fa-lg"></span> 
             </button>
           </span>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
-        <div class="modal-body"><code id="codeImportR" style="white-space: pre-wrap;"></code></div>
+        <pre class="modal-body"><code id="codeImportR" style="white-space: pre-wrap;"></code></pre>
         <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -93,28 +90,35 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Download encrypted .R file</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body">
           <p>This file contains the password-protected data for safe and easy use outside of TSD.</p>
           <hr>
-          <div class="row px-5">
-            <div class="col-lg-7">
-              <span class="h4 text-muted">data ID:</span>
-              <span class="h4 text-muted" id="spExportRId">cc59fb2_9a02e6f</span>
-              <div class="mt-3"></div>
-              <span class="h4 text-muted">password:</span>
-              <span class="display-4 text-monospace" id="spExportRPw"></span>
+
+          <div class="input-group mb-2">
+            <div class="input-group-prepend w-25">
+              <span class="input-group-text">Data ID</span>
             </div>
-            <div class="col-lg-5 mt-3">
-              <button type="button" class="btn btn-lg btn-secondary" id="btnDlEncR">Download encrypted .R file</button>
-              <div id="dProgress" class="progress w-100">
+            <p type="text" class="form-control" id="spExportRId" aria-describedby="spExportRId"></p>
+          </div>
+
+          <div class="input-group mb-2">
+            <div class="input-group-prepend w-25">
+              <span class="input-group-text">Password</span>
+            </div>
+            <code type="text" class="form-control" id="spExportRPw" aria-describedby="spExportRId"></code>
+          </div>
+
+          <div class="row px-2">
+            <div class="col-lg-5 my-3 ">
+              <button type="button" class="btn btn-lg btn-secondary w-100" id="btnDlEncR">Download encrypted .R file</button>
+              <div id="dProgress" class="progress w-100 mt-1">
                 <div class="progress-bar progress-bar-striped progress-bar-animated w-100">
                   preparing download...
                 </div>
               </div>
               <!-- hidden download link, will get clicked by js -->
-              <a class="hidden" id="aDlEncR"></a>
+              <a class="d-none hidden" id="aDlEncR"></a>
             </div>
           </div>
           <hr>
@@ -134,14 +138,13 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-
     var g_table = null;
 
     async function getTableData(selection) {
@@ -362,7 +365,6 @@
     }
 
     loadTable();
-    get_version();
 
     document.getElementById("btnSave").addEventListener('click', () => lcSaveSelection(getDataSelection()));
     document.getElementById("btnDlCsv").addEventListener('click', function() {
@@ -389,5 +391,6 @@
       );
     };
     document.getElementById("btnBack").addEventListener('click', () => {history.back()});
+    
   </script>
 </body>
