@@ -10,7 +10,7 @@ singularity/*.simg
 
 webui/www/css/bootstrap*
 webui/www/css/tabulator**
-webui/www/js/bootstrap*
+webui/www/js/bootstrap**
 webui/www/js/fontawesome*
 webui/www/js/jquery*
 webui/www/js/popper*
