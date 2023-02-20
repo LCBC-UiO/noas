@@ -162,9 +162,7 @@
     eOptbody.classList.add("optbody");
     let eOptcontent = document.createElement('div');
     eOptbody.appendChild(eOptcontent);
-    eOptcontent.classList.add("optcontent");
-    eOptcontent.classList.add("container");
-    eOptcontent.classList.add("mx-1");
+    eOptcontent.classList = "optcontent container mx-1";
     [
       { id: "all",       text: "all visits (all n and many missing values)"},
       { id: "union",     text: "union of non-core datasets"},

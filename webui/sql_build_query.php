@@ -126,12 +126,17 @@ function sql_build_query($dbmeta, $sel) {
         ,"table_id" => $tid
       );
     }
+    if ($set_op == "all") {
+      return _get_sql_where_prj($project);
+    }
+    $conj = $set_op == "intersect" ? "AND" :  "OR ";
+
     // generate where conditions; tab0.col=tabn.col
     $sqls = array();
     foreach ($rgroups as $rg) {
       for ($i=1; $i < count($rg); $i++) { 
         array_push($sqls, 
-          "AND ". $rg[0 ]["table_id"] . "._" . $rg[0 ]["col_id"] .
+          $conj . $rg[0 ]["table_id"] . "._" . $rg[0 ]["col_id"] .
           " = " . $rg[$i]["table_id"] . "._" . $rg[$i]["col_id"]
         );
       }
