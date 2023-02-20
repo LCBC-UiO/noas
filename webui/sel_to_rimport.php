@@ -23,7 +23,7 @@ $sc
   write(sprintf('%s\\r\\n\\r\\n%s', header, selection), con);
   pl_str <- paste0(readLines(con), collapse='\\n'); # receive data
   table_str <- substr(pl_str, regexpr('\\n\\n', pl_str)+2, nchar(pl_str)); # skip http header
-  return(read.table(text=table_str, header=T, sep='\\t', na.strings='None', stringsAsFactors=F))
+  return(read.table(text=table_str, header=TRUE, sep='\\t', na.strings='None', stringsAsFactors=FALSE))
 })()\n
 EOD;
     return $s;

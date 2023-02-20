@@ -1,74 +1,12 @@
 :root {
-  --colnorm0: #FFFFFF;
-  --colnorm1: #9162A1;
-  --colnorm2: #2b80b4;
-  --colnorm3: #1F7FC3;
-  --colnorm4: rgb(60, 206, 255);
-  --colnorm5: #E1207D;
-  --colnorm6: #000000;
-  --colbackground0:#fff;
-  --colbackground2:rgb(236, 240, 224);
-  --colbackground3:#ddd;
-  --colbackground4:rgb(206, 224, 151);
-  --colborder1:#2b80b4;
-  --coltext:#444;
+  --blue:   #009fe3;
+  --lblue:  #66bfdd;
+  --lgreen: #9cbd4c;
+  --green:  #94c11e;
+  --gray:   #636363;
+  --lgray:  #b2b2b2;
 }
 
-/*----------------------------------------------------------------------------*/
-
-html {
-  height: 100%;
-  margin-left: 10px;
-  margin-right: 10px;
-}
-
-body {
-  background: var(--colbackground0);
-  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-  color: var(--coltext);
-  padding-right: 0 !important; /* fix for bootstrap modal */
-}
-
-/*----------------------------------------------------------------------------*/
-
-.navbar {
-  background: var(--colnorm2);
-  margin-bottom: 40px !important;
-  border-radius: 0px  !important;
-}
-
-/*----------------------------------------------------------------------------*/
-
-.button {
-  border: 2px solid var(--colborder1);
-  border-radius: 8px;
-  margin: 4px;
-  box-shadow: 2px 2px 4px 4px #AAA;
-  font-weight: bold;
-  font-size: 105%;
-  background: var(--colnorm2);
-  padding: 4px;
-  color: var(--colnorm0);
-  /* margin-left: 10px; */
-  display: inline-block;
-  text-decoration: none;
-  min-width: 55px;
-  text-align: center;
-}
-
-.button:hover {
-  cursor: pointer;
-  color: var(--colnorm4);
-}
-
-.button:active {
-  box-shadow: 1px 1px 1px 1px #AAA;
-  transform: translateY(2px);
-}
-
-.button-minwidth {
-  min-width: 130px; 
-}
 
 /*----------------------------------------------------------------------------*/
 
@@ -80,33 +18,47 @@ body {
 }
 
 .fac-warning {
-  color: var(--colnorm5);
+  color: #E1207D;
 }
 
 /*----------------------------------------------------------------------------*/
 
 /* bootstrap */
 
-.table {
-  width: auto !important;
-}
-
-.text-sm-right th { /* fix for reports header */
-  text-align: right;
+a{
+  color: var(--blue) !important;
 }
 
 .modal {
   color: black;
 }
 
-.btn-primary:hover {
-  cursor: pointer;
-  color: var(--colnorm4) !important;
+.btn{
+  border: none;
 }
 
-.bluehover:hover{
+.btn-primary {
+  background-color: var(--lgreen) !important;
+  border: none;
+}
+
+.btn-primary:hover {
   cursor: pointer;
-  color: var(--colnorm4);
+  color: var(--blue) !important;
+}
+
+.accordion-button:not(.collapsed)::after,
+.accordion-button::after  {
+  fill: white !important;
+  color: white !important;
+}
+
+.accordion-button{
+  background-color: var(--lblue) !important;
+}
+
+.accordion-button small{
+  color: var(--gray);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -127,4 +79,225 @@ body {
 }
 #imgProgress {
   filter: opacity(70%);
+}
+
+
+.fw {
+  width: 95vw;
+  position: relative;
+  left: calc(-49vw + 52%);
+}
+
+/*----------------------------*/
+.tabulator-calcs-holder{
+  font-size: 12px;
+  font-weight: 300;
+}
+
+.tabulator-footer .tabulator-page.active  {
+  background-color: var(--lblue) !important;
+  border: none;
+}
+
+
+/*------------- Tree --------------------*/
+
+#nst .node {
+  cursor: pointer;
+  font-family: sans-serif;
+  font-size: 12px;
+}
+
+#nst .node circle,
+#nst g.node.column rect  {
+  stroke: var(--lblue);
+  stroke-width: 2px;
+  fill: #fff;
+}
+
+#nst .node circle{
+  fill: var(--lblue);
+  opacity: .8;
+}
+#nst g.node.emph circle,
+#nst g.node.column.emph rect {
+  stroke: var(--blue);
+}
+
+#nst g.node.emph.disabled {
+  fill: var(--lgreen);
+  cursor: default;
+}
+
+#nst .column path {
+  fill: none;
+  stroke: var(--lgray);
+  stroke-width: 0;
+}
+
+#nst .column.checked path,
+#nst .column.checked.disabled path  {
+  fill: none;
+  stroke: var(--gray);
+  stroke-width: 3;
+}
+
+#nst .link {
+  fill: none;
+  stroke: #ddd;
+  stroke-width: 2px;
+}
+
+#nst #sideinner {
+  border: 2px solid var(--lgreen);
+  border-radius: 8px;
+  padding: 10px;
+  padding-top: 16px;
+  margin-left: 10px;
+  height: 100%;
+  overflow-y: hidden;
+}
+
+#nst {
+  height: calc(100vh - 300px);
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+#nst .row {  
+  height: 100%;
+  display: flex;
+  margin-right: 0px;
+}
+
+#nst .side {
+  word-wrap: break-word;
+  overflow-x: hidden;
+  flex: 0 0 300px;
+  height: 100%;
+  padding-right: 8px;
+  padding-left: 5px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+#nst .main {
+  height: 100%;
+  align-self: stretch;
+  flex: 1;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+#nst #tree {
+  height: 100%;
+  overflow: hidden;
+  border: 2px solid var(--lblue);
+  border-radius: 8px;
+}
+#nst svg {
+  cursor: grab;
+}
+
+#nst svg.grabbing {
+  cursor: grabbing;
+}
+
+#nst .pre {
+  white-space: pre-line;
+}
+
+
+
+/*------------- search --------------------*/
+#nss {
+  display: flex;
+  width: calc(100% - 4px);
+  align-items: stretch;
+  flex-direction: row;
+  height: calc(100vh - 370px);
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+#nss .nsscol {
+  flex: 25%;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  flex-direction: column;
+  align-items: stretch;
+  display: flex;
+  border: 2px solid var(--lblue);
+  border-radius: 8px;
+  margin: 2px;
+  padding: 8px;
+}
+
+#nss .nsscolinner {
+  overflow-y: scroll;
+  flex: 100%;
+}
+
+
+#nss .nsscol .nsscolheader {
+  flex: 50px;
+  margin-bottom: 4px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+#nss .nsscol div.nsscolheader {
+  font-size: large;
+}
+
+
+#nss .resrow {
+  display: flex;
+  flex-direction: row;
+  padding: 4px;
+}
+#nss .resrow:nth-child(even) {
+  background-color: #66bfdd44;
+}
+
+#nss .resrow:hover, #nss .resrow.emph:hover {
+  display: flex;
+  background-color: var(--lblue);
+  color: white;
+  cursor: pointer;
+}
+
+#nss .resrow.emph {
+  display: flex;
+  background-color: var(--lgreen);
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#nss .resrow.nssdisabled {
+  color: var(--lgrey);
+  cursor: default;
+}
+
+#nss .resrowcenter {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-x: hidden;
+  flex: 100%;
+}
+
+#nss .resrowright {
+  margin-left: 4px;
+  flex: 20px;
+  text-align: center;
+}
+
+#nss #nssColumns {
+  margin-top: 10px;
+  height: 100%;
+  overflow-y: scroll;
+}
+
+#nss .pre {
+  white-space: pre-line;
 }

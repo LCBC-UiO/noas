@@ -2,62 +2,71 @@
 <html>
 <head>
 <meta charset="utf-8"/>
-<link rel="shortcut icon" href="./img/favicon.ico">
-<link rel="stylesheet" href="./css/layout.css" type="text/css"/>
-<link rel="stylesheet" href="./css/bootstrap.min.css" type="text/css"/>
-<link rel="stylesheet" href="./css/bootstrap.css" type="text/css"/>
-<link rel="stylesheet" href= "./css/optbox.css" type="text/css"/>
-<link  rel="stylesheet" href="./css/tabulator_lcbc.css" type="text/css">
-<script type="text/javascript" src="./js/xlsx.full.min.js"></script>
-<script type="text/javascript" src="./js/tabulator.min.js"></script>
-<script type="text/javascript" src="./js/lcalerts.js"></script>
-<script type="text/javascript" src="./js/lchelper.js"></script>
-<script type="text/javascript" src="./js/jquery.min.js"></script>
-<script type="text/javascript" src="./js//popper.min.js"></script>
-<script type="text/javascript" src="./js//bootstrap.min.js"></script>
-<script type="text/javascript" src="./js/solid.min.js" ></script>
-<script type="text/javascript" src="./js/fontawesome.min.js"></script>
-
+  <link rel="shortcut icon" href="./img/favicon.ico">
+  <link rel="stylesheet" href="./css/bootstrap.min.css" type="text/css"/>
+  <link rel="stylesheet" href="./css/tabulator.min.css" type="text/css"/>
+  <link rel="stylesheet" href="./css/tabulator_bs5.min.css" type="text/css"/>
+  <link rel="stylesheet" href="./css/noas_selector_search.css" type="text/css"/>
+  <link rel="stylesheet" href="./css/noas_selector_tree.css" type="text/css"/>
+  <link rel="stylesheet" href="./css/layout.css" type="text/css"/>
+  <script type="text/javascript" src="./js/tabulator.min.js"></script>
+  <script type="text/javascript" src="./js/solid.min.js" ></script>
+  <script type="text/javascript" src="./js/fontawesome.min.js"></script>
+  <script type="text/javascript" src="./js/d3.v6.min.js"></script>
+  <script type="text/javascript" src="./js/fuse-6.4.6.js"></script>
+  <script type="text/javascript" src="./js/jquery.min.js"></script>
+  <script type="text/javascript" src="./js//popper.min.js"></script>
+  <script type="text/javascript" src="./js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="./js/noas_selector_base.js"></script>
+  <script type="text/javascript" src="./js/lcalerts.js"></script>
+  <script type="text/javascript" src="./js/lchelper.js"></script>
 <title>
   NOAS - Query results
 </title>
 </head>
 <body>
     
-  <nav class="navbar navbar-expand navbar-dark">
-    <a class="navbar-brand font-weight-bold" href="./index.html">
-      <script language="JavaScript">
-        var request = new XMLHttpRequest()
-        request.open('GET', './static_info.json', false); 
-        request.send(null);
-        if (request.status === 200) {
-          document.write(JSON.parse(request.responseText).instance_name);
-        }
-      </script>
-    </a>
-    <span class="navbar-text" id="version-label">&nbsp;</span>
-    <a class="ml-auto" href="./index.html">
-      <span class="navbar-text">Project:</span>
-      <span class="navbar-text ml-1" id="spPrj"></span>
-    </a>
+  <nav class="navbar navbar-expand navbar-dark bg-dark p-4 ">
+    <div class="container-fluid">
+      <a class="navbar-brand font-weight-bold p-2" href="./index.html">
+        <img src="img/favicon.ico" width="30" height="30" alt="">
+        <script language="JavaScript">
+          var request = new XMLHttpRequest()
+          request.open('GET', './static_info.json', false); 
+          request.send(null);
+          if (request.status === 200) {
+            document.write(JSON.parse(request.responseText).instance_name);
+          }
+        </script>
+      </a>
+      <div>
+        <div class="container justify-content-end">
+          <p class="navbar-text" id="version-label"></p>
+          <a href="./index.html">
+            <p class="navbar-text">Project:
+              <span id="spPrj"></span>
+            </p>
+          </a>
+        </div>
+    </div>
   </nav>
 
   <div class="container">
     <div id="alerts"></div>
   </div>
-  <div class="d-flex">
-    <div class="h4 mt-1">
-      Database Results
+
+  <div class="container">
+    <h4 class="text-left my-4">Database Results</h4>
+    <div class="d-flex  align-items-center justify-content-between">
+      <div id="btnSave" class="btn btn-primary">Save selection</div>
+      <div id="btnDlCsv" class="btn btn-primary">Download CSV</div>
+      <div id="btnDlXlsx" class="btn btn-primary">Download Excel</div>
+      <div type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalExportR" id="btnModalEncR">Download R</div>
+      <div type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalImportR">Import to R</div>
+      <div id="btnBack" class="btn btn-primary">Back</div>
     </div>
-    <div id="btnSave" class="button button-minwidth ml-auto">Save selection</div>
-    <div id="btnDlCsv" class="button button-minwidth">Download CSV</div>
-    <div id="btnDlXlsx" class="button button-minwidth">Download Excel</div>
-    <div type="button" class="button button-minwidth" data-toggle="modal" data-target="#modalExportR" id="btnModalEncR">Download R</div>
-    <div type="button" class="button button-minwidth" data-toggle="modal" data-target="#modalImportR">Import to R</div>
-    <div id="btnBack" class="button button-minwidth">Back</div>
-  </div>
-  <div id="noasTable" class="mt-2"></div>
-  <div class="mb-5"></div>
+
+  <div id="noasTable" class="table table-sm table-striped table-responsive fw"></div>
 
   <div class="modal" id="modalImportR">
     <div class="modal-dialog modal-lg">
@@ -132,6 +141,7 @@
   </div>
 
   <script>
+
     var g_table = null;
 
     async function getTableData(selection) {
@@ -160,14 +170,14 @@
       let colCalcAvg = function(values, data, calcParams){
         values = values.filter(e => e !== null);
         const mean = values.reduce( (a,b) => a + parseFloat(b), 0) / values.length;
-        return "avg=" + (mean).toPrecision(4);
+        return "m=" + (mean).toPrecision(4);
       }
       let colCalcAvgSd = function(values, data, calcParams){
         values = values.filter(e => e !== null);
         const n = values.length;
         const mean = values.reduce( (a,b) => a + parseFloat(b), 0) / n;
         const sd = Math.sqrt(values.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / n);
-        return `avg=${mean.toPrecision(3)};SD=${sd.toPrecision(3)}`;
+        return `m=${mean.toPrecision(2)} sd=${sd.toPrecision(2)}`;
       }
       return coldefs.map( e => {
         let r = {
@@ -352,6 +362,7 @@
     }
 
     loadTable();
+    get_version();
 
     document.getElementById("btnSave").addEventListener('click', () => lcSaveSelection(getDataSelection()));
     document.getElementById("btnDlCsv").addEventListener('click', function() {
@@ -378,8 +389,5 @@
       );
     };
     document.getElementById("btnBack").addEventListener('click', () => {history.back()});
-    
-    // enable bs tooltips
-    $('[data-toggle="tooltip"]').tooltip({ boundary: 'window' });
   </script>
 </body>

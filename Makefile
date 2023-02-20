@@ -4,13 +4,14 @@ include config_default.txt
 -include config.txt
 
 websrcs := \
-	webui/www/css/bootstrap-theme.css \
-	webui/www/css/bootstrap.css \
 	webui/www/css/bootstrap.min.css \
 	webui/www/css/bootstrap.min.css.map \
 	webui/www/css/tabulator.min.css \
 	webui/www/css/tabulator.min.css.map \
+	webui/www/css/tabulator_bs5.min.css \
+	webui/www/css/tabulator_bs5.min.css.map \
 	webui/www/js/bootstrap.min.js \
+	webui/www/js/bootstrap.min.js.map \
 	webui/www/js/fontawesome.min.js \
 	webui/www/js/jquery.min.js \
 	webui/www/js/popper.min.js \

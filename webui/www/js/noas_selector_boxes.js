@@ -8,56 +8,55 @@ class NoasSelectorBoxes extends NoasSelectorBase {
     this.dbmeta.tables.forEach((e,i) => {
       let eOptbox = document.createElement('div');
       frag.appendChild(eOptbox);
-      eOptbox.classList.add("optbox");
+      eOptbox.classList.add("accordion-item");
       // hide box if n=0
       if (!e.n) {
         eOptbox.classList.add("hidden");
       }
       eOptbox.id = `noasTable_${e.id}`;
       // box header
-      let eOpthead = document.createElement('div');
+      let eOpthead = document.createElement('h2');
       eOptbox.appendChild(eOpthead);
-      eOpthead.classList.add("opthead");
-      let eOptheadSpan = document.createElement('span');
+      eOpthead.id = `head-${e.id}`; 
+      eOpthead.classList = "accordion-header";
+      let eOptheadSpan = document.createElement('button');
       eOpthead.appendChild(eOptheadSpan);
-      eOptheadSpan.classList.add("optopener");
-      let eArrow = document.createElement('i');
-      eOptheadSpan.append(eArrow);
-      eArrow.classList.add("ddarrow");
+      eOptheadSpan.classList = "accordion-button bg-primary text-white collapsed";
+      eOptheadSpan.type = "button";
+      eOptheadSpan.setAttribute("data-bs-toggle", "collapse");
+      eOptheadSpan.setAttribute("data-bs-target", `#collapse-${e.id}`);
+      eOptheadSpan.setAttribute("aria-expanded", "false");
+      eOptheadSpan.setAttribute("aria-controls", `collapse-${e.id}`);
+      
       const strCategory = e.category.length ? `[${e.category.join(", ")}] ` : '';
       eOptheadSpan.insertAdjacentHTML('beforeend',
-        `${strCategory}${e.title} (${e.id}; n=${e.n})`
+        `<small>${strCategory}</small>&nbsp;${e.title} (${e.id}; n=${e.n})&nbsp;`
       );
-      // open / close
-      eOptheadSpan.addEventListener('click', () => {
-        eOptbody.classList.toggle('openoptbody');
-        eArrow.classList.toggle('openddarrow');
-      });
+
       // tooltip
       if (e.descr) {
         let eDescr = document.createElement('span');
-        eOpthead.appendChild(eDescr);
-        eDescr.classList.add("ml-3");
-        eDescr.setAttribute("data-toggle", "tooltip");
-        eDescr.setAttribute("data-placement", "top");
+        eOptheadSpan.appendChild(eDescr);
+        eDescr.setAttribute("data-bs-toggle", "tooltip");
+        eDescr.setAttribute("data-bs-placement", "top");
         eDescr.setAttribute("title", e.descr);
         {
           let eIcon = document.createElement('span');
           eDescr.appendChild(eIcon);
-          eIcon.classList.add("fas");
-          eIcon.classList.add("fa-info-circle");
-          eIcon.classList.add("small");
+          eIcon.classList = "fas fa-info-circle small";
+          eIcon.style = "z-index: 99;"
         }
       }
       // box body (columns)
       let eOptbody = document.createElement('div');
       eOptbox.appendChild(eOptbody);
-      eOptbody.classList.add("optbody");
+      eOptbody.classList = "accordion-collapse collapse";
+      eOptbody.id = `collapse-${e.id}`;
+      eOptbody.setAttribute("aria-labelledby", `head-${e.id}`)
+      eOptbody.setAttribute("data-bs-parent", "#noasTables")
       let eOptcontent = document.createElement('div');
       eOptbody.appendChild(eOptcontent);
-      eOptcontent.classList.add("optcontent");
-      eOptcontent.classList.add("container");
-      eOptcontent.classList.add("mx-1");
+      eOptcontent.classList = "accordion-body";
       // columns
       let eRow = document.createElement("div");
       eOptcontent.appendChild(eRow);
@@ -65,19 +64,15 @@ class NoasSelectorBoxes extends NoasSelectorBase {
       e.columns.forEach((ec,i) => {
         let eCol = document.createElement("div");
         eRow.appendChild(eCol);
-        eCol.classList.add("col-sm-3");
-        eCol.classList.add("mb-2");
-        eCol.classList.add("form-group");
-        eCol.classList.add("form-check");
+        eCol.classList = "col-sm-3 mb-2 mr-2 form-group form-check";
         let eLabel = document.createElement("label");
         eCol.appendChild(eLabel);
-        eLabel.classList.add("form-check-label");
-        eLabel.classList.add("font-weight-normal");
+        eLabel.classList = "form-check-label font-weight-normal";
         let eCheck = document.createElement("input");
         eLabel.appendChild(eCheck);
         eCheck.id = `colcheck_${e.id}_${ec.id}`;
         eCheck.type = 'checkbox';
-        eCheck.classList.add("mr-3");
+        eCheck.classList = "mr-3";
         eCheck.noasTableId = e.id;
         eCheck.noasColId = ec.id;
         eCheck.value = "1";
@@ -87,16 +82,13 @@ class NoasSelectorBoxes extends NoasSelectorBase {
           eLabel.insertAdjacentHTML('beforeend', "&nbsp;")
           let eDescr = document.createElement('span');
           eLabel.appendChild(eDescr);
-          eDescr.setAttribute("data-toggle", "tooltip");
-          eDescr.setAttribute("data-placement", "top");
+          eDescr.setAttribute("data-bs-toggle", "tooltip");
+          eDescr.setAttribute("data-bs-placement", "top");
           eDescr.setAttribute("title", ec.descr);
           {
             let eIcon = document.createElement('span');
             eDescr.appendChild(eIcon);
-            eIcon.classList.add("fas");
-            eIcon.classList.add("fa-info-circle");
-            eIcon.classList.add("text-muted");
-            eIcon.classList.add("small");
+            eIcon.classList = "fas fa-info-circletext-muted small";
           }
         }
       });
@@ -126,10 +118,6 @@ class NoasSelectorBoxes extends NoasSelectorBase {
     document.querySelector("#colcheck_core_project_id").checked = true;
     document.querySelector("#colcheck_core_wave_code").checked = true;
     document.querySelector("#colcheck_core_subject_sex").checked  = true;
-    // open default boxes
-    document.querySelector("#noasTable_core span").click();
-    // enable bs tooltips
-    $('[data-toggle="tooltip"]').tooltip({ boundary: 'window' });
   }
 
   getSelection() {
