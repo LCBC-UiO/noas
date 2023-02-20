@@ -1,6 +1,6 @@
 <?php
 
-require '../sel_to_rimport.php';
+require '../../sel_to_rimport.php';
 
 header("Content-Type: text/plain; charset=UTF-8");
 

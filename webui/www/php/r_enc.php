@@ -6,7 +6,7 @@
 #   -X POST http://localhost:3880/r_enc.php?password="lcbclcbc" \ 
 #   > /tmp/my_encrypted_sensitive_data.R
 
-require '../sel_to_rimport.php';
+require '../../sel_to_rimport.php';
 
 header("Content-Type: text/plain; charset=UTF-8");
 

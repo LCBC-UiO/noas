@@ -105,7 +105,7 @@
       return response.json();
     }
     try {
-      let jsn = await _getData(`./dbmeta.php?prj=${g_prj}`);
+      let jsn = await _getData(`./php/dbmeta.php?prj=${g_prj}`);
       if (!jsn.status_ok) {
         throw Error(jsn.status_msg);
       }

@@ -148,7 +148,7 @@
     var g_table = null;
 
     async function getTableData(selection) {
-      const response = await fetch("./query_json.php", {
+      const response = await fetch("./php/query_json.php", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -288,7 +288,7 @@
         });
         // load "import to r" code
         document.getElementById("codeImportR").innerHTML = await (async function() {
-          r = await fetch("./r_import.php", { 
+          r = await fetch("./php/r_import.php", { 
             method: "POST",
             headers: {
               'Content-Type': 'application/json'
@@ -341,7 +341,7 @@
           document.getElementById("btnDlEncR").onclick = async () => {
             document.getElementById("dProgress").classList.remove("hidden");
             document.getElementById("btnDlEncR").classList.add("hidden");
-            const r = await fetch(`r_enc.php?password=${encodeURIComponent(password)}`, {
+            const r = await fetch(`./php/r_enc.php?password=${encodeURIComponent(password)}`, {
               method: "POST",
               headers: {
                 'Content-Type': 'application/json'
