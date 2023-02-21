@@ -123,22 +123,12 @@ END;
 $total$ LANGUAGE plpgsql;
 
 -- get duration in years - used for age at visit
-CREATE OR REPLACE FUNCTION _decimal_years (d interval)
-RETURNS float AS $yrs$
-DECLARE
-	yrs float;
+CREATE OR REPLACE FUNCTION age_to_decimal_years(age INTERVAL)
+RETURNS NUMERIC AS $$
 BEGIN
-  SELECT ROUND((
-      date_part('years', d)::float + (
-        date_part('month', d)::float * (365::float/12) +
-        date_part('day', d)
-      ) / 365
-    )::numeric
-    , 2
-  ) INTO yrs;
-  RETURN yrs;
+    RETURN (EXTRACT(YEAR FROM age) + EXTRACT(MONTH FROM age) / 12.0 + EXTRACT(DAY FROM age) / 365.25);
 END;
-$yrs$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql;
 
 -- add column "noas data source"
 CREATE OR REPLACE FUNCTION _add_noas_ds_col(table_name_in regclass, noas_data_source text)
@@ -620,8 +610,6 @@ CREATE TABLE visits (
   wave_code float,
   alt_subj_id text,
   "date"  date,
-  "number" int,
-  interval_bl float,
   CONSTRAINT visit_pk PRIMARY KEY(subject_id, wave_code, project_id),
   CONSTRAINT visit_subject_fk FOREIGN KEY (subject_id) REFERENCES subjects(id),
   CONSTRAINT visit_wave_fk FOREIGN KEY (wave_code, project_id) REFERENCES waves(code, project_id)
@@ -677,87 +665,41 @@ CREATE TABLE versions (
 
 --------------------------------------------------------------------------------
 
--- Triggers
-
-CREATE OR REPLACE FUNCTION _update_visitnumber()
-  RETURNS trigger 
-  LANGUAGE PLPGSQL
-  AS
-$$
-BEGIN
-	UPDATE visits v1
-  SET "number" = (
-    with t as (
-      select *
-        , row_number() over ( 
-          partition by v2.subject_id order by v2.date
-        ) as vn 
-      from visits v2
-    )
-    select t.vn
-    from t
-    where v1.subject_id=t.subject_id 
-      and v1.wave_code=t.wave_code 
-      and v1.project_id=t.project_id
-  );
-  UPDATE visits v1
-    SET interval_bl = (
-    with t as (
-      select *
-      	, _decimal_years(age(
-      	    v1.date
-      		  , min(v1.date) over(partition by v1.subject_id order by v1.date)
-      	)) as ib
-      from visits v1
-    )
-    select t.ib
-    from t
-    where v1.subject_id=t.subject_id 
-      and v1.wave_code=t.wave_code 
-      and v1.project_id=t.project_id
-  );
-  RETURN NULL;
-END;
-$$;
-
-CREATE TRIGGER trigger_visitnumber
-  AFTER INSERT
-  ON visits
-  FOR EACH STATEMENT
-  EXECUTE PROCEDURE _update_visitnumber();
-
---------------------------------------------------------------------------------
-
 -- Combine core tables
+
 
 CREATE VIEW noas_core AS
   SELECT
-    subjects.id        AS subject_id,
-    subjects.birthdate AS subject_birthdate,
-    subjects.sex       AS subject_sex,
-    subjects.shareable AS subject_shareable,
-    visits.alt_subj_id AS visit_alt_subj_id,
-    visits.date        AS visit_date,
-    visits.number      AS visit_number,
-    visits.interval_bl AS visit_interval_bl,
-    waves.reknr        AS wave_reknr,
-    waves.description  AS wave_description,
-    waves.code         AS wave_code,
-    projects.id          AS project_id,
-    projects.name        AS project_name,
-    projects.code        AS project_code,
-    projects.description AS project_description,
-    _decimal_years(age(visits.date, subjects.birthdate)) AS visit_age
-  FROM
-    visits
-  LEFT OUTER JOIN waves ON
-    visits.wave_code = waves.code
-    AND visits.project_id = waves.project_id
-  LEFT OUTER JOIN subjects ON
-    visits.subject_id = subjects.id
-  LEFT OUTER JOIN projects ON
-    visits.project_id = projects.id
-;
+    v.subject_id,
+    s.birthdate AS subject_birthdate,
+    s.sex AS subject_sex,
+    s.shareable AS subject_shareable,
+    v.alt_subj_id AS visit_alt_subj_id,
+    v.date AS visit_date,
+    v.number AS visit_number,
+    (v.interval_bl/ 60 / 60 / 24 / 365.25) AS visit_interval_bl,
+    w.reknr AS wave_reknr,
+    w.description AS wave_description,
+    w.code AS wave_code,
+    p.id AS project_id,
+    p.name AS project_name,
+    p.code AS project_code,
+    p.description AS project_description,
+    age_to_decimal_years(age(v.date, s.birthdate)) AS visit_age
+  FROM (
+    SELECT 
+      subject_id, 
+      project_id, 
+      wave_code,
+      alt_subj_id,
+      date,
+      ROW_NUMBER() OVER (PARTITION BY subject_id ORDER BY date) AS number,
+      EXTRACT(EPOCH FROM (date::timestamp - LAG(date::timestamp) OVER (PARTITION BY subject_id ORDER BY date))) AS interval_bl
+    FROM visits
+  ) AS v
+  LEFT JOIN waves AS w ON v.wave_code = w.code AND v.project_id = w.project_id
+  LEFT JOIN subjects AS s ON v.subject_id = s.id
+  LEFT JOIN projects AS p ON v.project_id = p.id;
 
 
 -- Add metadata for core table
