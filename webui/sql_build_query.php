@@ -30,6 +30,8 @@ function sql_build_query($dbmeta, $sel) {
       $rs = _get_sql_select_table($t, $sel_cols);
       $r = array_merge($r, $rs);
     } 
+    $rg = _get_sql_select_repeated($dbmeta, $sel_tabs, $sel_cols);
+    $r = array_merge($r, $rg);
     return join(",\n", $r);
   }
   function _get_sql_join($dbmeta, $sel_tabs) {
@@ -103,7 +105,7 @@ function sql_build_query($dbmeta, $sel) {
     $sql_where_prj = _get_sql_where_prj($project);
     return "(\n{$b}\n{$sql_conjunction_conditions}\n) AND {$sql_where_prj}";
   }
-  function _get_sql_where_repeated($dbmeta, $sel_tabs) {
+  function _get_repeated_groups($dbmeta, $sel_tabs, $sel_cols){
     $rgroups = array();
     // collect arrays for each group; group_id => [{tab_id, col_id}, ...]
     foreach ($dbmeta->{"tables"} as $t) {
@@ -117,31 +119,52 @@ function sql_build_query($dbmeta, $sel) {
         continue;
       }
       // init result?
-      if (!array_key_exists($t->repeated_group->group_id, $rgroups)) {
-        $rgroups[$t->repeated_group->group_id] = array();
+      $gid = $t->repeated_group->group_id;
+      if (!array_key_exists($gid, $rgroups)) {
+        $rgroups[$gid] = array();
       }
+      $cols = array();
+      foreach ($t->{"columns"} as $c){
+        $cid = $tid . "_" . $c->{"id"};
+        if(array_key_exists($cid , $sel_cols)){
+          $cols[] = $cid;
+        }
+      };
+
       // add new entry
-      $rgroups[$t->repeated_group->group_id][] = array(
+      $rgroups[$gid][] = array(
         "col_id" => $t->repeated_group->col_id
         ,"table_id" => $tid
+        ,"cols" => $cols 
       );
     }
-    if ($set_op == "all") {
-      return _get_sql_where_prj($project);
-    }
-    $conj = $set_op == "intersect" ? "AND" :  "OR ";
-
+    return($rgroups);
+  }
+  function _get_sql_where_repeated($dbmeta, $sel_tabs, $sel_cols) {
+    $rgroups = _get_repeated_groups($dbmeta, $sel_tabs, $sel_cols);
     // generate where conditions; tab0.col=tabn.col
     $sqls = array();
     foreach ($rgroups as $rg) {
       for ($i=1; $i < count($rg); $i++) { 
         array_push($sqls, 
-          $conj . $rg[0 ]["table_id"] . "._" . $rg[0 ]["col_id"] .
-          " = " . $rg[$i]["table_id"] . "._" . $rg[$i]["col_id"]
+          "AND " . $rg[0 ]["table_id"] . "." . $rg[0 ]["col_id"] .
+          " = " . $rg[$i]["table_id"] . "." . $rg[$i]["col_id"]
         );
       }
     }
     return join("\n", $sqls);
+  }
+
+  function _get_sql_select_repeated($dbmeta, $sel_tabs, $sel_cols) {
+    $rgroups = _get_repeated_groups($dbmeta, $sel_tabs, $sel_cols);
+
+    foreach (array_keys($rgroups) as $rg){
+      $gid = $rg;
+      $tbid = $rgroups[$rg][0]["table_id"];
+      $rc = $rgroups[$rg][0]["col_id"];
+      $rcols[] = "${tbid}.${rc} AS ${gid}_${rc}";
+    }
+    return($rcols);
   }
 
   // prepare selection
@@ -158,7 +181,7 @@ function sql_build_query($dbmeta, $sel) {
   $sql_select = _get_sql_select($dbmeta, $sel_tabs, $sel_cols);
   $sql_join   = _get_sql_join($dbmeta, $sel_tabs);
   $sql_where  = _get_sql_where($dbmeta, $sel_tabs, $sel->{"set_op"}, $sel->{"project"});
-  $sql_where_repeated = _get_sql_where_repeated($dbmeta, $sel_tabs);
+  $sql_where_repeated = _get_sql_where_repeated($dbmeta, $sel_tabs, $sel_cols);
   
   $sql = "
 SELECT DISTINCT 
@@ -170,7 +193,6 @@ WHERE TRUE AND
 {$sql_where_repeated}
 ORDER BY core.subject_id
 ";
-
   return $sql;
 }
 
