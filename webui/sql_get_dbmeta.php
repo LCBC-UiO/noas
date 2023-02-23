@@ -30,7 +30,7 @@ from (
     (
       select jsonb_build_object(
         'col_id'
-        , substr(metacolumn_id, 2) -- skip '_'-prefix in column ID
+        , metacolumn_id
         ,'group_id'
         , repeated_group
       )
@@ -50,7 +50,14 @@ from (
       from
         metacolumns mc
       where
-        mt.id = mc.metatable_id
+        mt.id = mc.metatable_id AND
+        -- do not include the 4th col if its repeated
+        NOT EXISTS (
+          SELECT 1
+          FROM meta_repeated_grps
+          WHERE metatable_id = mt.id
+            AND metacolumn_id = mc.id
+        )
       order by
         mc.idx, mc.id
       ) d 
