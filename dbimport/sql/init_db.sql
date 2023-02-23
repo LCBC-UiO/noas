@@ -152,7 +152,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- create auto generated metadata
-CREATE OR REPLACE FUNCTION _write_default_metadata(table_name_dst text, sample_type e_sampletype)
+CREATE OR REPLACE FUNCTION _write_default_metadata(table_name_dst text, sample_type e_sampletype, _4th_col_id TEXT DEFAULT NULL)
 RETURNS void AS $$
 DECLARE
 	_colid text;
@@ -168,6 +168,20 @@ BEGIN
     ,sample_type
     ,table_name_dst
   );
+  IF _4th_col_id IS NOT NULL THEN
+    EXECUTE format(
+      $ex$
+        INSERT INTO metacolumns (metatable_id, id, idx, title) 
+          VALUES ('%s', '%s', '%s', '%s')
+          ON CONFLICT DO NOTHING;
+      $ex$
+      ,table_name_dst
+      ,_4th_col_id
+      ,_col_counter
+      ,_4th_col_id
+    );
+    SELECT _col_counter + 1 INTO _col_counter;
+  END IF;
   FOR _colid IN
     SELECT column_name
       FROM information_schema.columns
@@ -381,25 +395,26 @@ BEGIN
     $ex$
     ,table_name_in
   );
+  SELECT _get_nth_colname(table_name_in::text, 4) INTO _4th_col_id;
   -- prefix non-pk columns with _
   FOR _colid IN
-    SELECT column_name
-      FROM information_schema.columns
-      WHERE table_schema = 'public'
-        AND table_name   = table_name_in::text
-        AND column_name NOT IN ('subject_id', 'project_id', 'wave_code')
-  LOOP
-    EXECUTE format(
-      $ex$
-        ALTER TABLE %s
-          RENAME COLUMN "%s" TO _%s;
-      $ex$
-      ,table_name_in
-      ,_colid
-      ,_colid
-    );
-  END LOOP;
-  SELECT _get_nth_colname(table_name_in::text, 4) INTO _4th_col_id;
+      SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name   = table_name_in::text
+          AND column_name NOT IN ('subject_id', 'project_id', 'wave_code', _4th_col_id)
+    LOOP
+      RAISE warning '%', _colid;
+      EXECUTE format(
+        $ex$
+          ALTER TABLE %s
+            RENAME COLUMN "%s" TO _%s;
+        $ex$
+        ,table_name_in
+        ,_colid
+        ,_colid
+      );
+    END LOOP;
   -- check if defined 
   FOR _s, _p, _w IN EXECUTE format(
     $ex$
@@ -428,13 +443,14 @@ BEGIN
     ,table_name_in
   );
   -- auto create metadata
-  PERFORM _write_default_metadata(table_name_dst, 'repeated');
+  PERFORM _write_default_metadata(table_name_dst, 'repeated', _4th_col_id);
   -- add repeated group?
   IF repeated_grp IS NOT NULL THEN
     INSERT INTO meta_repeated_grps (metatable_id, metacolumn_id, repeated_group) 
       VALUES (table_name_dst, _4th_col_id, repeated_grp);
   END IF;
 END;
+
 $$ LANGUAGE plpgsql;
 
 -- import table
@@ -666,7 +682,6 @@ CREATE TABLE versions (
 --------------------------------------------------------------------------------
 
 -- Combine core tables
-
 
 CREATE VIEW noas_core AS
   SELECT
