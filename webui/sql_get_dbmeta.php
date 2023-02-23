@@ -58,8 +58,6 @@ from (
           WHERE metatable_id = mt.id
             AND metacolumn_id = mc.id
         )
-      order by
-        mc.idx, mc.id
       ) d 
     ) as columns
   from
