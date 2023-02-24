@@ -24,7 +24,6 @@ subject_id	project_id	wave_code	site_name	volume_rh_hippocampus	volume_lh_hippoc
 9900384	Proj2	1	ousSkyra	1030	11126	15460	12382
 9900410	Proj1	2	ousAvanto	1491	9369	14616	9582
 9900412	Proj1	2	ousAvanto	1458	9004	14073	9424
-9900412	Proj2	1	ousAvanto	NA	NA	NA	NA
 9900444	NA	1	ousAvanto	1800	12726	21326	14646
 9900444	Proj1	2	ousAvanto	1720	12344	19221	13746
 9900501	Proj2	1	ousSkyra	1926	13545	19196	14330
@@ -41,7 +40,6 @@ subject_id	project_id	wave_code	site_name	volume_rh_hippocampus	volume_lh_hippoc
 9900550	Proj2	1	ousAvanto	1533	7756	15309	9641
 9900579	Proj1	1	ousAvanto	1540	7612	14833	9231
 9900579	Proj1	2	ousSkyra	1370	7771	15777	9591
-9900595	Proj1	2	ousAvanto	NA	NA	NA	NA
 9900604	Proj2	1	ousAvanto	3411	11956	16232	13105
 9900636	Proj1	1	ousSkyra	2999	13323	17897	13564
 9900636	Proj1	2	ousAvanto	2149	10643	16800	14552
@@ -56,7 +54,6 @@ subject_id	project_id	wave_code	site_name	volume_rh_hippocampus	volume_lh_hippoc
 9900674	Proj1	2	ousAvanto	2494	14522	21999	15572
 9900681	Proj1	1	ousAvanto	2600	13440	19764	14567
 9900681	Proj1	2	ousSkyra	2252	14993	21343	15109
-9900708	Proj1	2	ousAvanto	NA	NA	NA	NA
 9900708	Proj3	1	ousAvanto	2870	13413	25122	15129
 9900718	Proj1	1	ousAvanto	2902	12598	23351	14382
 9900718	Proj1	2	ousSkyra	2938	13852	24223	14643
@@ -70,8 +67,6 @@ subject_id	project_id	wave_code	site_name	volume_rh_hippocampus	volume_lh_hippoc
 9900883	Proj1	2	ousAvanto	1504	9804	15433	12886
 9900883	Proj3	1	ousAvanto	1445	9269	13870	11888
 9900885	Proj1	2	ousSkyra	1427	10321	14960	12330
-9900889	Proj1	2	ousAvanto	1995	11178	23756	14085
-9900889	Proj2	1	ousAvanto	1920	11133	23518	14063
 9900895	Proj1	2	ousAvanto	1964	10440	21772	13424
 9900895	Proj3	1	ousSkyra	1687	12217	22377	14835
 9900900	Proj1	2	ousAvanto	2145	11244	18816	14038
@@ -90,12 +85,9 @@ subject_id	project_id	wave_code	site_name	volume_rh_hippocampus	volume_lh_hippoc
 9901027	Proj1	2	ousSkyra	2667	10075	21089	16083
 9901034	Proj1	1	ousAvanto	2493	9403	18421	12177
 9901034	Proj1	2	ousAvanto	2419	9257	17277	11881
-9901035	Proj1	2	ousAvanto	2398	8952	15721	11327
-9901035	Proj2	1	ousSkyra	2158	9878	17216	11966
 9901038	Proj1	2	ousAvanto	1742	12766	19808	12459
 9901038	Proj2	1	ousAvanto	1709	12874	19887	12910
 9901135	Proj2	1	ousAvanto	1588	11840	17327	11667
 9901149	Proj1	1	ousSkyra	1624	13210	17505	12351
 9901149	Proj1	2	ousAvanto	2048	11132	16930	13141
 9901225	Proj1	2	ousAvanto	2062	10764	15962	12526
-9901225	Proj2	1	ousAvanto	NA	NA	NA	NA

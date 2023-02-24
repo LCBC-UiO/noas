@@ -1,0 +1,12 @@
+{
+  "title": "DBS Fatty acids",
+  "category": [
+    "dbs"
+  ],
+  "columns": [
+    {
+      "id": "id",
+      "type": "text"
+    }
+  ]
+}

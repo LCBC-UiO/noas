@@ -79,6 +79,7 @@ CREATE TYPE e_columntype AS enum (
   ,'float'
   ,'integer'
   ,'date'
+  ,'time'
   ,'boolean'
 );
 
@@ -123,22 +124,12 @@ END;
 $total$ LANGUAGE plpgsql;
 
 -- get duration in years - used for age at visit
-CREATE OR REPLACE FUNCTION _decimal_years (d interval)
-RETURNS float AS $yrs$
-DECLARE
-	yrs float;
+CREATE OR REPLACE FUNCTION age_to_decimal_years(age INTERVAL)
+RETURNS NUMERIC AS $$
 BEGIN
-  SELECT ROUND((
-      date_part('years', d)::float + (
-        date_part('month', d)::float * (365::float/12) +
-        date_part('day', d)
-      ) / 365
-    )::numeric
-    , 2
-  ) INTO yrs;
-  RETURN yrs;
+    RETURN (EXTRACT(YEAR FROM age) + EXTRACT(MONTH FROM age) / 12.0 + EXTRACT(DAY FROM age) / 365.25);
 END;
-$yrs$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql;
 
 -- add column "noas data source"
 CREATE OR REPLACE FUNCTION _add_noas_ds_col(table_name_in regclass, noas_data_source text)
@@ -162,7 +153,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- create auto generated metadata
-CREATE OR REPLACE FUNCTION _write_default_metadata(table_name_dst text, sample_type e_sampletype)
+CREATE OR REPLACE FUNCTION _write_default_metadata(table_name_dst text, sample_type e_sampletype, _4th_col_id TEXT DEFAULT NULL)
 RETURNS void AS $$
 DECLARE
 	_colid text;
@@ -178,6 +169,20 @@ BEGIN
     ,sample_type
     ,table_name_dst
   );
+  IF _4th_col_id IS NOT NULL THEN
+    EXECUTE format(
+      $ex$
+        INSERT INTO metacolumns (metatable_id, id, idx, title) 
+          VALUES ('%s', '%s', '%s', '%s')
+          ON CONFLICT DO NOTHING;
+      $ex$
+      ,table_name_dst
+      ,_4th_col_id
+      ,_col_counter
+      ,_4th_col_id
+    );
+    SELECT _col_counter + 1 INTO _col_counter;
+  END IF;
   FOR _colid IN
     SELECT column_name
       FROM information_schema.columns
@@ -391,25 +396,26 @@ BEGIN
     $ex$
     ,table_name_in
   );
+  SELECT _get_nth_colname(table_name_in::text, 4) INTO _4th_col_id;
   -- prefix non-pk columns with _
   FOR _colid IN
-    SELECT column_name
-      FROM information_schema.columns
-      WHERE table_schema = 'public'
-        AND table_name   = table_name_in::text
-        AND column_name NOT IN ('subject_id', 'project_id', 'wave_code')
-  LOOP
-    EXECUTE format(
-      $ex$
-        ALTER TABLE %s
-          RENAME COLUMN "%s" TO _%s;
-      $ex$
-      ,table_name_in
-      ,_colid
-      ,_colid
-    );
-  END LOOP;
-  SELECT _get_nth_colname(table_name_in::text, 4) INTO _4th_col_id;
+      SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name   = table_name_in::text
+          AND column_name NOT IN ('subject_id', 'project_id', 'wave_code', _4th_col_id)
+    LOOP
+      RAISE warning '%', _colid;
+      EXECUTE format(
+        $ex$
+          ALTER TABLE %s
+            RENAME COLUMN "%s" TO _%s;
+        $ex$
+        ,table_name_in
+        ,_colid
+        ,_colid
+      );
+    END LOOP;
   -- check if defined 
   FOR _s, _p, _w IN EXECUTE format(
     $ex$
@@ -438,13 +444,14 @@ BEGIN
     ,table_name_in
   );
   -- auto create metadata
-  PERFORM _write_default_metadata(table_name_dst, 'repeated');
+  PERFORM _write_default_metadata(table_name_dst, 'repeated', _4th_col_id);
   -- add repeated group?
   IF repeated_grp IS NOT NULL THEN
     INSERT INTO meta_repeated_grps (metatable_id, metacolumn_id, repeated_group) 
       VALUES (table_name_dst, _4th_col_id, repeated_grp);
   END IF;
 END;
+
 $$ LANGUAGE plpgsql;
 
 -- import table
@@ -507,7 +514,7 @@ BEGIN
       RAISE EXCEPTION 'Unknown metadata column field "%"', _key; 
     END IF;
     IF _key = 'type' THEN
-      IF _value #>> '{}' = ANY (ARRAY['float','integer','date']) THEN -- might need to translate type at some point
+      IF _value #>> '{}' = ANY (ARRAY['float','integer','date','time']) THEN -- might need to translate type at some point
         EXECUTE format(
           $ex$
             ALTER TABLE noas_%s ALTER COLUMN _%s TYPE %s USING (_%s::%s);
@@ -620,8 +627,6 @@ CREATE TABLE visits (
   wave_code float,
   alt_subj_id text,
   "date"  date,
-  "number" int,
-  interval_bl float,
   CONSTRAINT visit_pk PRIMARY KEY(subject_id, wave_code, project_id),
   CONSTRAINT visit_subject_fk FOREIGN KEY (subject_id) REFERENCES subjects(id),
   CONSTRAINT visit_wave_fk FOREIGN KEY (wave_code, project_id) REFERENCES waves(code, project_id)
@@ -677,87 +682,40 @@ CREATE TABLE versions (
 
 --------------------------------------------------------------------------------
 
--- Triggers
-
-CREATE OR REPLACE FUNCTION _update_visitnumber()
-  RETURNS trigger 
-  LANGUAGE PLPGSQL
-  AS
-$$
-BEGIN
-	UPDATE visits v1
-  SET "number" = (
-    with t as (
-      select *
-        , row_number() over ( 
-          partition by v2.subject_id order by v2.date
-        ) as vn 
-      from visits v2
-    )
-    select t.vn
-    from t
-    where v1.subject_id=t.subject_id 
-      and v1.wave_code=t.wave_code 
-      and v1.project_id=t.project_id
-  );
-  UPDATE visits v1
-    SET interval_bl = (
-    with t as (
-      select *
-      	, _decimal_years(age(
-      	    v1.date
-      		  , min(v1.date) over(partition by v1.subject_id order by v1.date)
-      	)) as ib
-      from visits v1
-    )
-    select t.ib
-    from t
-    where v1.subject_id=t.subject_id 
-      and v1.wave_code=t.wave_code 
-      and v1.project_id=t.project_id
-  );
-  RETURN NULL;
-END;
-$$;
-
-CREATE TRIGGER trigger_visitnumber
-  AFTER INSERT
-  ON visits
-  FOR EACH STATEMENT
-  EXECUTE PROCEDURE _update_visitnumber();
-
---------------------------------------------------------------------------------
-
 -- Combine core tables
 
 CREATE VIEW noas_core AS
   SELECT
-    subjects.id        AS subject_id,
-    subjects.birthdate AS subject_birthdate,
-    subjects.sex       AS subject_sex,
-    subjects.shareable AS subject_shareable,
-    visits.alt_subj_id AS visit_alt_subj_id,
-    visits.date        AS visit_date,
-    visits.number      AS visit_number,
-    visits.interval_bl AS visit_interval_bl,
-    waves.reknr        AS wave_reknr,
-    waves.description  AS wave_description,
-    waves.code         AS wave_code,
-    projects.id          AS project_id,
-    projects.name        AS project_name,
-    projects.code        AS project_code,
-    projects.description AS project_description,
-    _decimal_years(age(visits.date, subjects.birthdate)) AS visit_age
-  FROM
-    visits
-  LEFT OUTER JOIN waves ON
-    visits.wave_code = waves.code
-    AND visits.project_id = waves.project_id
-  LEFT OUTER JOIN subjects ON
-    visits.subject_id = subjects.id
-  LEFT OUTER JOIN projects ON
-    visits.project_id = projects.id
-;
+    v.subject_id,
+    s.birthdate AS subject_birthdate,
+    s.sex AS subject_sex,
+    s.shareable AS subject_shareable,
+    v.alt_subj_id AS visit_alt_subj_id,
+    v.date AS visit_date,
+    v.number AS visit_number,
+    (v.interval_bl/ 60 / 60 / 24 / 365.25) AS visit_interval_bl,
+    w.reknr AS wave_reknr,
+    w.description AS wave_description,
+    w.code AS wave_code,
+    p.id AS project_id,
+    p.name AS project_name,
+    p.code AS project_code,
+    p.description AS project_description,
+    age_to_decimal_years(age(v.date, s.birthdate)) AS visit_age
+  FROM (
+    SELECT 
+      subject_id, 
+      project_id, 
+      wave_code,
+      alt_subj_id,
+      date,
+      ROW_NUMBER() OVER (PARTITION BY subject_id ORDER BY date) AS number,
+      EXTRACT(EPOCH FROM (date::timestamp - LAG(date::timestamp) OVER (PARTITION BY subject_id ORDER BY date))) AS interval_bl
+    FROM visits
+  ) AS v
+  LEFT JOIN waves AS w ON v.wave_code = w.code AND v.project_id = w.project_id
+  LEFT JOIN subjects AS s ON v.subject_id = s.id
+  LEFT JOIN projects AS p ON v.project_id = p.id;
 
 
 -- Add metadata for core table

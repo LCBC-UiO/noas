@@ -2,158 +2,86 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<link rel="shortcut icon" href="./img/favicon.ico">
-<link rel="stylesheet" href="./css/layout.css" type="text/css"/>
-<link rel="stylesheet" href="./css/bootstrap.min.css" type="text/css"/>
-<link rel="stylesheet" href="./css/bootstrap.css" type="text/css"/>
-<link rel="stylesheet" href="./css/optbox.css" type="text/css"/>
-<link rel="stylesheet" href="./css/noas_selector_tree.css" type="text/css"/>
-<link rel="stylesheet" href="./css/noas_selector_search.css" type="text/css"/>
-<script type="text/javascript" src="./js/solid.min.js" ></script>
-<script type="text/javascript" src="./js/fontawesome.min.js"></script>
-<script type="text/javascript" src="./js/d3.v6.min.js"></script>
-<script type="text/javascript" src="./js/fuse-6.4.6.js"></script>
-<script type="text/javascript" src="./js/jquery.min.js"></script>
-<script type="text/javascript" src="./js//popper.min.js"></script>
-<script type="text/javascript" src="./js/bootstrap.min.js"></script>
-<script type="text/javascript" src="./js/lcalerts.js"></script>
-<script type="text/javascript" src="./js/lchelper.js"></script>
-<script type="text/javascript" src="./js/noas_selector_base.js"></script>
-<script type="text/javascript" src="./js/noas_selector_boxes.js"></script>
-<script type="text/javascript" src="./js/noas_selector_tree.js"></script>
-<script type="text/javascript" src="./js/noas_selector_search.js"></script>
+  <link rel="shortcut icon" href="./img/favicon.ico">
+  <link rel="stylesheet" href="./css/bootstrap.min.css" type="text/css"/>
+  <link rel="stylesheet" href="./css/layout.css" type="text/css"/>
+  <script type="text/javascript" src="./js/solid.min.js" ></script>
+  <script type="text/javascript" src="./js/fontawesome.min.js"></script>
+  <script type="text/javascript" src="./js/d3.v6.min.js"></script>
+  <script type="text/javascript" src="./js/fuse-6.4.6.js"></script>
+  <script type="text/javascript" src="./js/jquery.min.js"></script>
+  <script type="text/javascript" src="./js//popper.min.js"></script>
+  <script type="text/javascript" src="./js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="./js/lcalerts.js"></script>
+  <script type="text/javascript" src="./js/lchelper.js"></script>
+  <script type="text/javascript" src="./js/noas_selector_base.js"></script>
+  <script type="text/javascript" src="./js/noas_selector_boxes.js"></script>
+  <script type="text/javascript" src="./js/noas_selector_tree.js"></script>
+  <script type="text/javascript" src="./js/noas_selector_search.js"></script>
 
-
-<title>
-NOAS - Query selector
-</title>
-<style>
-  .tooltip-inner {
-    text-align: left;
-    word-wrap: break-word;
-    white-space: pre-line;
-    max-width: 330px;
-  }
-
-
-  .noasswitch label {
-    position:relative;
-    cursor:pointer;
-  }
-  .noasswitch label input {
-    display:none;
-  }
-  .noasswitch label span {
-    position:relative;
-    display:inline-block;
-    margin: 5px 1px;
-    font-weight: normal;
-    /* font-size:30px; */
-    /* padding:20px; */
-    width: 70px;
-    text-align: center;
-    background: #FFF;
-    border: 2px solid var(--colnorm2);
-    color: var(--colnorm2);
-    border-radius: 4px;
-  }
-  .noasswitch label input:checked ~ span {
-    color:#fff;
-    border: 2px solid var(--colnorm2);
-    color:var(--colnorm2);
-    box-shadow: inset 0 0 5px var(--colnorm2);
-    cursor: default;
-  }
-  .noasswitch label input:checked ~ span:before {
-    content:'';
-    width: 100%;
-    height: 100%;
-    position:absolute;
-    top:0;
-    left:0;
-    background:#008eff;
-    z-index:-1;
-    filter: blur(5px);
-  }
-  .noasswitch label input:checked ~ span:after {
-    content:'';
-    width: 100%;
-    height: 100%;
-    position:absolute;
-    top:0;
-    left:0;
-    background:#008eff;
-    z-index:-1;
-    filter: blur(7px);
-  }
-
-  .noasswitch label input:checked ~ span:before,
-  .noasswitch label input:checked ~ span:after {
-    background:var(--colnorm2);
-  }
-</style>
+  <title>NOAS - Query selector</title>
 </head>
 <body>
   
-  <nav class="navbar navbar-expand navbar-dark">
-    <a class="navbar-brand font-weight-bold" href="./index.html">
-      <script language="JavaScript">
-        var request = new XMLHttpRequest()
-        request.open('GET', './static_info.json', false); 
-        request.send(null);
-        if (request.status === 200) {
-          document.write(JSON.parse(request.responseText).instance_name);
-        }
-      </script>
-    </a>
-    <span class="navbar-text" id="version-label">&nbsp;</span>
-    <span class="hidden" id="version-id">.</span>
-    <a class="ml-auto" href="./index.html">
-      <span class="navbar-text">Project:</span>
-      <span class="navbar-text ml-1" id="spPrj"></span>
-    </a>
+  <nav class="navbar navbar-expand navbar-dark bg-dark px-2 py-3 ">
+    <div class="container-fluid">
+      <a class="navbar-brand font-weight-bold px-2" href="./index.html">
+        <img src="img/favicon.ico" width="30" height="30" alt="">
+        <script language="JavaScript">
+          var request = new XMLHttpRequest()
+          request.open('GET', './static_info.json', false); 
+          request.send(null);
+          if (request.status === 200) {
+            document.write(JSON.parse(request.responseText).instance_name);
+          }
+        </script>
+      </a>
+      <div>
+        <div class="container justify-content-end">
+          <p class="navbar-text" id="version-label"></p>
+          <a href="./index.html">
+            <p class="navbar-text">Project:
+            <span class="navbar-text" id="spPrj"></span>
+          </p>
+          </a>
+        </div>
+    </div>
   </nav>
+  <span class="d-none" id="version-id">.</span>
 
   <div class="container">
     <div id="alerts"></div>
   </div>
-  <div class="container-fluid">
-    <div class="row justify-content-between align-items-start mt-1">
-      <div class="col-2 h4 text-left">
-        Select variables
+  <div class="container">
+    <h4 class="text-left  my-4">Select variables</h4>
+    <div class="row justify-content-between pt-1">
+      <div class="col noasswitch">
+          <input type="radio" class="btn-check" name="options" id="radioNsBoxes" autocomplete="off" checked>
+          <label class="btn btn-secondary mb-2" for="radioNsBoxes">Boxes</label>
+
+          <input type="radio" class="btn-check" name="options" id="radioNsTree" autocomplete="off" disabled>
+          <label class="btn btn-secondary mb-2" for="radioNsTree">Tree</label>
+
+          <input type="radio" class="btn-check" name="options" id="radioNsSearch" autocomplete="off">
+          <label class="btn btn-secondary mb-2" for="radioNsSearch">Search</label>
       </div>
-      <div class="col-3">
-        <div class="noasswitch">
-          <label>
-            <input type="radio" name="view" id="radioNsBoxes" disabled>
-            <span>Boxes</span>
-          </label>
-          <label>
-            <input type="radio" name="view" id="radioNsTree" disabled>
-            <span>Tree</span>
-          </label>
-          <label>
-            <input type="radio" name="view" id="radioNsSearch" disabled>
-            <span>Search</span>
-          </label>
-        </div>
-      </div>
-      <div class="col-sm-7 text-right" align="center">
-        <div id="btnClear" class="button button-minwidth">Clear selection</div>
-        <label id="btnLoad" class="button button-minwidth">
-          Load selection<input id="fileLoad" name="file" type="file" style="display: none;">
+      <div class="col-7" align="right">
+        <div id="btnClear" class="btn btn-primary mb-2">Clear selection</div>
+        <label id="btnLoad" class="btn btn-primary mb-2">
+          Load selection
+          <input id="fileLoad" name="file" type="file" style="display: none;">
         </label>
-        <div id="btnGetDocPdf" class="button button-minwidth">Download docu</div>
-        <div id="btnSubmitTop" class="button button-minwidth">Submit</div>
+        <div id="btnGetDocPdf" class="btn btn-primary mb-2">Download docu</div>
+        <div id="btnSubmitTop" class="btn btn-primary mb-2">Submit</div>
       </div>
     </div>
+    <div id="noasTables" class="accordion"></div>
+    <div id="noasSelFooter" class="mt-4"></div>
+    <div class="row my-4">
+      <div id="btnSubmit" class="btn btn-primary">Submit</div>
+    </div>
   </div>
-  <div id="noasTables"></div>
-  <div id="noasSelFooter"></div>
-  <div class="mt-4">
-    <div id="btnSubmit" class="button button-minwidth">Submit</div>
-  </div>
-  <div class="mb-2"></div>
+
 <script>
   let g_noas_selector = null;
 
@@ -177,7 +105,7 @@ NOAS - Query selector
       return response.json();
     }
     try {
-      let jsn = await _getData(`./dbmeta.php?prj=${g_prj}`);
+      let jsn = await _getData(`./php/dbmeta.php?prj=${g_prj}`);
       if (!jsn.status_ok) {
         throw Error(jsn.status_msg);
       }
@@ -234,9 +162,7 @@ NOAS - Query selector
     eOptbody.classList.add("optbody");
     let eOptcontent = document.createElement('div');
     eOptbody.appendChild(eOptcontent);
-    eOptcontent.classList.add("optcontent");
-    eOptcontent.classList.add("container");
-    eOptcontent.classList.add("mx-1");
+    eOptcontent.classList = "optcontent container mx-1";
     [
       { id: "all",       text: "all visits (all n and many missing values)"},
       { id: "union",     text: "union of non-core datasets"},
@@ -377,6 +303,10 @@ NOAS - Query selector
     }
   }
   
+  $(document).ready(function() {
+    $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+  });
+
   start();
 
 </script>

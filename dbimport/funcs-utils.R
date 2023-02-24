@@ -71,7 +71,7 @@ read_noas_table <- function(path, ...){
              colClasses = "character", 
              blank.lines.skip	= FALSE,
              check.names = FALSE,
-             quote = "", dec= ".",
+             quote = "", dec = ".",
              ...)
 }
 

@@ -1,0 +1,12 @@
+{
+  "title": "DBS Lipidomics",
+  "category": [
+    "dbs"
+  ],
+  "columns": [
+    {
+      "id": "id",
+      "type": "text"
+    }
+  ]
+}

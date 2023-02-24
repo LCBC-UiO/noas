@@ -16,8 +16,6 @@ NOAS
 </head>
 <body>
   <div id="main" class="cover-container d-flex w-100 h-100 p-5 my-lg-5 mx-auto flex-column">
-
-
     <div class="container my-5 mx-auto">
       <div class="py-5 text-center container">
         <h1>NOAS</h1>
@@ -49,7 +47,7 @@ NOAS
     // get data
     (async function(){
       try {
-        const r = await fetch("./projects.php", {
+        const r = await fetch("./php/projects.php", {
           method: "GET"
         });
         if (!r.ok) {

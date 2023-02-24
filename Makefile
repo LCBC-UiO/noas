@@ -4,19 +4,22 @@ include config_default.txt
 -include config.txt
 
 websrcs := \
-	webui/www/css/bootstrap-theme.css \
-	webui/www/css/bootstrap.css \
 	webui/www/css/bootstrap.min.css \
 	webui/www/css/bootstrap.min.css.map \
 	webui/www/css/tabulator.min.css \
 	webui/www/css/tabulator.min.css.map \
+	webui/www/css/tabulator_bootstrap5.min.css \
+	webui/www/css/tabulator_bootstrap5.min.css.map \
 	webui/www/js/bootstrap.min.js \
+	webui/www/js/bootstrap.min.js.map \
 	webui/www/js/fontawesome.min.js \
 	webui/www/js/jquery.min.js \
 	webui/www/js/popper.min.js \
+	webui/www/js/popper.min.js.map \
 	webui/www/js/solid.min.js \
 	webui/www/js/showdown.min.js \
 	webui/www/js/tabulator.min.js \
+	webui/www/js/tabulator.min.js.map \
 	webui/www/js/xlsx.full.min.js \
 	webui/www/js/pdfkit.standalone.js \
 	webui/www/js/blob-stream.js \
