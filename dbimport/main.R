@@ -13,7 +13,7 @@ con <- DBI::dbConnect(
   RPostgreSQL::'PostgreSQL'(), #":memory:",
   user   = getOption("noas")$DBUSER,
   port   = getOption("noas")$DBPORT,
-  dbname = getOption("noas")$DBNAME, 
+  dbname = getOption("noas")$DBNAME,
   host   = getOption("noas")$DBHOST
 )
 
@@ -33,15 +33,15 @@ core_pre_seq <- c("projects", "waves", "subjects", "visits")
 #   - loop through prefixes (order by sequences needed)
 for(pre in core_pre_seq){
   core_files_cur <- core_files[grep(pre, core_files)]
-  core_files <- setdiff(core_files, core_files_cur)  
-  
+  core_files <- setdiff(core_files, core_files_cur) 
+
   check_tsvs(core_files_cur, core_dir)
-  
+
   for(f in core_files_cur){
     cat(file.path("core", f), "\n")
     DBI::dbWriteTable(
-      con, 
-      pre, 
+      con,
+      pre,
       read_noas_table(file.path(core_dir, f)),
       append = TRUE,
       row.name = FALSE
@@ -59,9 +59,9 @@ if(getOption("noas")$IMPORT_DEBUG == "1")
   table_ids <- table_ids[order(file.info(file.path(ncore_dir, table_ids))$mtime, decreasing = TRUE)]
 for(table_id in table_ids){
   metadata_j <- NULL
-  table_dir_cur <- file.path(ncore_dir, table_id) 
+  table_dir_cur <- file.path(ncore_dir, table_id)
   cur_file_list <- list.files(table_dir_cur)
-  fail_if(!"_noas.json" %in% cur_file_list, 
+  fail_if(!"_noas.json" %in% cur_file_list,
           "There is no _noas.json for table ", table_id)
   noas_j <- read_file(file.path(table_dir_cur, "_noas.json"))
   cur_file_list <- setdiff(cur_file_list, "_noas.json")
@@ -70,7 +70,7 @@ for(table_id in table_ids){
     cur_file_list <- setdiff(cur_file_list, "_metadata.json")
   }
   check_tsvs(cur_file_list, table_dir_cur)
-  
+
   for(f_tsv in cur_file_list){
     cat(file.path("non_core", table_id, f_tsv), "\n")
     # read table
@@ -85,9 +85,9 @@ for(table_id in table_ids){
     )
     # import table to noas
     DBI::dbExecute(
-      con, 
-      "select import_table($1, $2, $3, $4)", 
-      params=list(
+      con,
+      "select import_table($1, $2, $3, $4)",
+      params = list(
         table_id_tmp,
         table_id,
         noas_j,
@@ -103,8 +103,8 @@ for(table_id in table_ids){
     cat(file.path("non_core", table_id, "_metadata.json"), "\n")
     DBI::dbExecute(
       con, 
-      "select import_metadata($1, $2)", 
-      params=list(
+      "select import_metadata($1, $2)",
+      params = list(
         table_id,
         metadata_j
       )
@@ -117,7 +117,7 @@ for(table_id in table_ids){
 invisible(DBI::dbExecute(
   con,
   "INSERT INTO versions (id, label, ts, import_completed) VALUES ($1, $2, $3, TRUE)",
-  params=list(
+  params = list(
     getOption("noas")$IMPORT_ID,
     getOption("noas")$IMPORT_LABEL,
     getOption("noas")$IMPORT_DATE
@@ -131,5 +131,3 @@ invisible(DBI::dbDisconnect(con))
 
 # declare ended import
 cat("import complete\n")
-
-
