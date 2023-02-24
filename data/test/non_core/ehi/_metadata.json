@@ -64,5 +64,11 @@
       "id": "10",
       "type": "integer"
     }
+    ,
+    {
+      "descr": "ehi 10",
+      "id": "answertime",
+      "type": "time"
+    }
   ]
 }

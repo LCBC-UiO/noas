@@ -79,6 +79,7 @@ CREATE TYPE e_columntype AS enum (
   ,'float'
   ,'integer'
   ,'date'
+  ,'time'
   ,'boolean'
 );
 
@@ -513,7 +514,7 @@ BEGIN
       RAISE EXCEPTION 'Unknown metadata column field "%"', _key; 
     END IF;
     IF _key = 'type' THEN
-      IF _value #>> '{}' = ANY (ARRAY['float','integer','date']) THEN -- might need to translate type at some point
+      IF _value #>> '{}' = ANY (ARRAY['float','integer','date','time']) THEN -- might need to translate type at some point
         EXECUTE format(
           $ex$
             ALTER TABLE noas_%s ALTER COLUMN _%s TYPE %s USING (_%s::%s);
