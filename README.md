@@ -40,5 +40,6 @@ These data types are supported as NOAS table columns (in metadata, DB and web UI
   * `float`
   * `integer`
   * `date`
+  * `time` (HH:MM:SS)
   * `boolean`
 
