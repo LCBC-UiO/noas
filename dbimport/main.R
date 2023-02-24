@@ -69,6 +69,11 @@ for(table_id in table_ids){
     metadata_j <- read_file(file.path(table_dir_cur, "_metadata.json"))
     cur_file_list <- setdiff(cur_file_list, "_metadata.json")
   }
+  if(any(grepl("^_", cur_file_list))){
+    ignore_files <- cur_file_list[grepl("^_", cur_file_list)]
+    message(paste("IGNORED: ", ignore_files))
+    cur_file_list <- setdiff(cur_file_list, ignore_files)
+  }
   check_tsvs(cur_file_list, table_dir_cur)
 
   for(f_tsv in cur_file_list){
