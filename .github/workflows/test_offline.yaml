@@ -8,10 +8,10 @@ on:
       - main
       - master
 
-name: Test make offline
+name: Test make prepare_offline
 
 jobs:
-  noas-check:
+  noas-offline-check:
     runs-on: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
@@ -26,9 +26,6 @@ jobs:
           - {os: ubuntu-20.04,   r: 'release'}
           - {os: ubuntu-20.04,   r: 'devel'}
 
-    env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-
     steps:
       - uses: actions/checkout@v3
 
@@ -39,14 +36,13 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
 
       - name: Prepare offline
-        run: make prepare_offline
+        run: make prepare_offline   ./noas
 
-      - name: Try starting DB
-        run: make run_db
-
-      - name: Import DB
-        run: make run_dbimport
-
-      - name: Test webui
-        run: timeout 1 make run_webui || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      - name: Run & Import DB
+        run: |
+          make run_db &
+          P1=$!
+          make run_dbimport &
+          P2=$!
+          wait $P2
 

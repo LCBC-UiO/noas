@@ -17,8 +17,8 @@
     `make run_webui`
 
 ### Installing on TSD
-  * Outside TSD: After cloning the repo, run `make prepare_offline`
-  * Copy the whole directory into TSD and proceed with the steps above
+  * Outside TSD: run `make prepare_offline [path/to/end/file]`
+  * Move the zip file into TSD and sync it to the noas repo on Gitea
 
 ### updating
 

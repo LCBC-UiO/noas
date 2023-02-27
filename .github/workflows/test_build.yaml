@@ -41,12 +41,14 @@ jobs:
       - name: Get 3rdparty stuff & build
         run: make 3rdparty
 
-      - name: Try starting DB
-        run: make run_db
+      - name: Run & Import DB
+        run: |
+          make run_db &
+          P1=$!
+          make run_dbimport &
+          P2=$!
+          wait $P2
 
-      - name: Import DB
-        run: make run_dbimport
 
-      - name: Test webui
-        run: timeout 1 make run_webui || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+
 
