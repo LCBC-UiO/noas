@@ -405,7 +405,6 @@ BEGIN
           AND table_name   = table_name_in::text
           AND column_name NOT IN ('subject_id', 'project_id', 'wave_code', _4th_col_id)
     LOOP
-      RAISE warning '%', _colid;
       EXECUTE format(
         $ex$
           ALTER TABLE %s
