@@ -34,7 +34,12 @@ all: 3rdparty webui/www/static_info.json
 
 PHONY: prepare_offline
 prepare_offline:
-	make -C 3rdparty download
+	$(eval TMPDIR := $(shell mktemp -d))
+	DIR=${TMPDIR}/noas
+	git clone ${BASEDIR} ${TMPDIR}/noas && cd ${TMPDIR}/noas && make -C 3rdparty download
+	cd $(TMPDIR)/ && zip -FSr $(basename $(notdir ${TMPDIR}/noas)).zip $(basename $(notdir ${TMPDIR}/noas))
+	mv ${TMPDIR}/noas.zip $(dest).zip
+
 
 # ------------------------------------------------------------------------------
 
