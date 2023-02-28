@@ -101,7 +101,6 @@ update:
 # internal
 
 webui/www/%: 3rdparty/%.gz
-	echo $*.gz $@
 	zcat < 3rdparty/$*.gz > $@ 
 
 # we depend on git index
