@@ -11,8 +11,8 @@ _all: all
 # note: the non-Archive urls will break over time. this wil need updates
 r_pkg_urls := https://cran.r-project.org/src/contrib/00Archive/digest/digest_0.6.30.tar.gz \
 	https://cran.r-project.org/src/contrib/00Archive/jsonlite/jsonlite_1.8.3.tar.gz \
-	https://cran.r-project.org/src/contrib/00Archive/DBI/DBI_1.1.2.tar.gz \
-	https://cran.r-project.org/src/contrib/00Archive/RPostgreSQL/RPostgreSQL_0.7-4.tar.gz 
+	https://cran.r-project.org/src/contrib/00Archive/DBI/DBI_1.1.0.tar.gz \ # version for RPostgreSQL
+	https://cran.r-project.org/src/contrib/00Archive/RPostgreSQL/RPostgreSQL_0.6-2.tar.gz #rhel7 compatible 
 
 r_pkgs := $(patsubst %.tar.gz,%, $(notdir $(r_pkg_urls)))
 
