@@ -10,14 +10,14 @@ include make_lighttpd.mk
 include make_php.mk
 
 all: $(addsuffix _build, $(modules))
-	$(MAKE) -f r_pgks.mk all
+	$(MAKE) -f make_rpacs.mk all
 
 .PHONY: download
 download: $(addsuffix _download, $(modules))
-	$(MAKE) -f r_pgks.mk download
+	$(MAKE) -f make_rpacs.mk download
 
 
 .PHONY: clean
 clean: $(addsuffix _clean, $(modules))
-	$(MAKE) -f r_pgks.mk clean
+	$(MAKE) -f make_rpacs.mk clean
 
