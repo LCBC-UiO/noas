@@ -63,6 +63,10 @@ from (
     ) as columns
   from
     metatables mt
+    where
+    (
+      select row_count(mt.sampletype, mt.id, '{$prj}')
+    ) > 0
   order by
     mt.idx,
     array_length(mt.category, 1) > 0,
