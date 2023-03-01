@@ -1,0 +1,16 @@
+{
+  "title": "Psykinematix time series",
+  "category": [
+    "computer"
+  ],
+  "columns": [
+    {
+      "id": "id",
+      "type": "text"
+    },
+    {
+      "id": "counter",
+      "type": "integer"
+    }
+  ]
+}

@@ -444,13 +444,19 @@ BEGIN
   );
   -- auto create metadata
   PERFORM _write_default_metadata(table_name_dst, 'repeated', _4th_col_id);
-  -- add repeated group?
+  -- add repeated group
   IF repeated_grp IS NOT NULL THEN
     INSERT INTO meta_repeated_grps (metatable_id, metacolumn_id, repeated_group) 
       VALUES (table_name_dst, _4th_col_id, repeated_grp);
+  ELSE
+  -- check if table_name_dst already exists in meta_repeated_grps
+  IF (SELECT COUNT(*) FROM meta_repeated_grps WHERE metatable_id = table_name_dst) = 0 THEN
+    INSERT INTO meta_repeated_grps (metatable_id, metacolumn_id, repeated_group) 
+      VALUES (table_name_dst, _4th_col_id, table_name_dst);  
+  END IF;
+
   END IF;
 END;
-
 $$ LANGUAGE plpgsql;
 
 -- import table
@@ -491,21 +497,32 @@ RETURNS void AS $$
 DECLARE
    _key   text;
    _value json;
+   col_id text;
+
 BEGIN
   IF col_metadata->>'id' IS NULL THEN
     RAISE EXCEPTION 'Metadata is missing column ID field';
   END IF;
+
+  -- assign col_id with underscore prefix if column does not exist in table
+  col_id := col_metadata->>'id'; -- assign col_metadata->>'id' to a variable 'col_id'
+  col_id := CASE
+              WHEN EXISTS(SELECT 1 FROM information_schema.columns WHERE table_name='noas_' || table_id AND column_name=col_id::text)
+              THEN col_id
+              ELSE '_' || col_id
+            END;
+  
   FOR _key, _value IN SELECT * FROM json_each(col_metadata)
   LOOP
     IF _key = ANY (ARRAY['descr','type']) THEN
       EXECUTE format(
         $ex$
-          UPDATE metacolumns SET %s = %s WHERE metatable_id = '%s' AND id = '_%s';
+          UPDATE metacolumns SET %s = %s WHERE metatable_id = '%s' AND id = '%s';
         $ex$
         ,_key
         ,quote_literal(_value #>> '{}')
         ,table_id
-        ,col_metadata->>'id'
+        ,col_id
       );
     ELSIF _key = 'id' THEN
       -- do nothing
@@ -516,22 +533,22 @@ BEGIN
       IF _value #>> '{}' = ANY (ARRAY['float','integer','date','time']) THEN -- might need to translate type at some point
         EXECUTE format(
           $ex$
-            ALTER TABLE noas_%s ALTER COLUMN _%s TYPE %s USING (_%s::%s);
+            ALTER TABLE noas_%s ALTER COLUMN %s TYPE %s USING (%s::%s);
           $ex$
           ,table_id
-          ,col_metadata->>'id'
+          ,col_id
           ,_value #>> '{}'
-          ,col_metadata->>'id'
+          ,col_id
           ,_value #>> '{}'
         );
       ELSIF _value #>> '{}' = 'boolean' THEN
         EXECUTE format(
           $ex$
-            ALTER TABLE noas_%s ALTER COLUMN _%s TYPE bit(1) USING (_%s::bit(1));
+            ALTER TABLE noas_%s ALTER COLUMN %s TYPE bit(1) USING (%s::bit(1));
           $ex$
           ,table_id
-          ,col_metadata->>'id'
-          ,col_metadata->>'id'
+          ,col_id
+          ,col_id
         );
       ELSIF _value #>> '{}' = 'text' THEN
         -- do nothing - it's already ::text
