@@ -1,4 +1,4 @@
-# To change settings: 
+# To change settings:
 # Create a new file "config.txt" and override any of the variables below
 
 # tables
@@ -6,7 +6,8 @@ TABDIR="data/test/"
 
 # DB connection info
 DBHOST="localhost"
-DBPORT="3832"
+DBPORT="5432"
+# DBPORT="3832"
 DBUSER="dbuser"
 DBNAME="lcbcdb"
 DBROUSER="lcbcuser"
@@ -14,6 +15,7 @@ DBROUSER="lcbcuser"
 # web UI
 WEBSERVERPORT="3880"
 INSTANCE_NAME="NOAS example"
+PHP_CGI_BIN_PATH="/usr/bin/php-cgi" # /3rdparty/php/bin/php-cgi
 
 # DBMS
 DBDATADIR="db/data"

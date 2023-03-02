@@ -60,6 +60,7 @@ run_webui: all
 	DBPORT=$(DBPORT) \
 	DBNAME=$(DBNAME) \
 	DBUSER=$(DBUSER) \
+	PHP_CGI_BIN_PATH=$(PHP_CGI_BIN_PATH) \
 	R_LIBS_USER=$(BASEDIR)/3rdparty/r_packages \
 	3rdparty/lighttpd/sbin/lighttpd -D -f lighttpd.conf
 
@@ -72,7 +73,7 @@ run_db: ${DBDATADIR}/postgresql.conf
 
 # clean
 
-.PHONY: 
+.PHONY:
 dberase:
 	3rdparty/postgresql/bin/pg_ctl -D ${DBDATADIR} stop || true
 	$(RM) -r ${DBDATADIR}
@@ -101,7 +102,7 @@ update:
 # internal
 
 webui/www/%: 3rdparty/%.gz
-	zcat < 3rdparty/$*.gz > $@ 
+	zcat < 3rdparty/$*.gz > $@
 
 # we depend on git index
 webui/www/static_info.json: .git/index

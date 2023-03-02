@@ -1,0 +1,658 @@
+phpinfo()
+PHP Version => 7.4.6
+
+System => Linux codespaces-b7baf4 5.4.0-1103-azure #109~18.04.1-Ubuntu SMP Wed Jan 25 20:53:00 UTC 2023 x86_64
+Build Date => Mar  2 2023 09:01:49
+Configure Command =>  './configure'  '--prefix=/workspaces/noas/3rdparty/php' '--without-iconv' '--without-libxml' '--without-sqlite3' '--disable-dom' '--without-pdo-sqlite' '--disable-simplexml' '--disable-xml' '--disable-xmlreader' '--disable-xmlwriter' '--with-pgsql=/workspaces/noas/3rdparty/postgresql' '--with-pdo-pgsql=/workspaces/noas/3rdparty/postgresql'
+Server API => Command Line Interface
+Virtual Directory Support => disabled
+Configuration File (php.ini) Path => /workspaces/noas/3rdparty/php/lib
+Loaded Configuration File => (none)
+Scan this dir for additional .ini files => (none)
+Additional .ini files parsed => (none)
+PHP API => 20190902
+PHP Extension => 20190902
+Zend Extension => 320190902
+Zend Extension Build => API320190902,NTS
+PHP Extension Build => API20190902,NTS
+Debug Build => no
+Thread Safety => disabled
+Zend Signal Handling => enabled
+Zend Memory Manager => enabled
+Zend Multibyte Support => disabled
+IPv6 Support => enabled
+DTrace Support => disabled
+
+Registered PHP Streams => php, file, glob, data, http, ftp, phar
+Registered Stream Socket Transports => tcp, udp, unix, udg
+Registered Stream Filters => string.rot13, string.toupper, string.tolower, string.strip_tags, convert.*, consumed, dechunk
+
+This program makes use of the Zend Scripting Language Engine:
+Zend Engine v3.4.0, Copyright (c) Zend Technologies
+
+
+ _______________________________________________________________________
+
+
+Configuration
+
+Core
+
+PHP Version => 7.4.6
+
+Directive => Local Value => Master Value
+allow_url_fopen => On => On
+allow_url_include => Off => Off
+arg_separator.input => & => &
+arg_separator.output => & => &
+auto_append_file => no value => no value
+auto_globals_jit => On => On
+auto_prepend_file => no value => no value
+browscap => no value => no value
+default_charset => UTF-8 => UTF-8
+default_mimetype => text/html => text/html
+disable_classes => no value => no value
+disable_functions => no value => no value
+display_errors => STDOUT => STDOUT
+display_startup_errors => Off => Off
+doc_root => no value => no value
+docref_ext => no value => no value
+docref_root => no value => no value
+enable_dl => On => On
+enable_post_data_reading => On => On
+error_append_string => no value => no value
+error_log => no value => no value
+error_prepend_string => no value => no value
+error_reporting => no value => no value
+expose_php => On => On
+extension_dir => /workspaces/noas/3rdparty/php/lib/php/extensions/no-debug-non-zts-20190902 => /workspaces/noas/3rdparty/php/lib/php/extensions/no-debug-non-zts-20190902
+file_uploads => On => On
+hard_timeout => 2 => 2
+highlight.comment => <font style="color: #FF8000">#FF8000</font> => <font style="color: #FF8000">#FF8000</font>
+highlight.default => <font style="color: #0000BB">#0000BB</font> => <font style="color: #0000BB">#0000BB</font>
+highlight.html => <font style="color: #000000">#000000</font> => <font style="color: #000000">#000000</font>
+highlight.keyword => <font style="color: #007700">#007700</font> => <font style="color: #007700">#007700</font>
+highlight.string => <font style="color: #DD0000">#DD0000</font> => <font style="color: #DD0000">#DD0000</font>
+html_errors => Off => Off
+ignore_repeated_errors => Off => Off
+ignore_repeated_source => Off => Off
+ignore_user_abort => Off => Off
+implicit_flush => On => On
+include_path => .: => .:
+input_encoding => no value => no value
+internal_encoding => no value => no value
+log_errors => Off => Off
+log_errors_max_len => 1024 => 1024
+mail.add_x_header => Off => Off
+mail.force_extra_parameters => no value => no value
+mail.log => no value => no value
+max_execution_time => 0 => 0
+max_file_uploads => 20 => 20
+max_input_nesting_level => 64 => 64
+max_input_time => -1 => -1
+max_input_vars => 1000 => 1000
+memory_limit => 128M => 128M
+open_basedir => no value => no value
+output_buffering => 0 => 0
+output_encoding => no value => no value
+output_handler => no value => no value
+post_max_size => 8M => 8M
+precision => 14 => 14
+realpath_cache_size => 4096K => 4096K
+realpath_cache_ttl => 120 => 120
+register_argc_argv => On => On
+report_memleaks => On => On
+report_zend_debug => Off => Off
+request_order => no value => no value
+sendmail_from => no value => no value
+sendmail_path =>  -t -i  =>  -t -i 
+serialize_precision => -1 => -1
+short_open_tag => On => On
+SMTP => localhost => localhost
+smtp_port => 25 => 25
+sys_temp_dir => no value => no value
+syslog.facility => LOG_USER => LOG_USER
+syslog.filter => no-ctrl => no-ctrl
+syslog.ident => php => php
+track_errors => Off => Off
+unserialize_callback_func => no value => no value
+upload_max_filesize => 2M => 2M
+upload_tmp_dir => no value => no value
+user_dir => no value => no value
+user_ini.cache_ttl => 300 => 300
+user_ini.filename => .user.ini => .user.ini
+variables_order => EGPCS => EGPCS
+xmlrpc_error_number => 0 => 0
+xmlrpc_errors => Off => Off
+zend.assertions => 1 => 1
+zend.detect_unicode => On => On
+zend.enable_gc => On => On
+zend.exception_ignore_args => Off => Off
+zend.multibyte => Off => Off
+zend.script_encoding => no value => no value
+zend.signal_check => Off => Off
+
+ctype
+
+ctype functions => enabled
+
+date
+
+date/time support => enabled
+timelib version => 2018.03
+"Olson" Timezone Database Version => 2020.1
+Timezone Database => internal
+Default timezone => UTC
+
+Directive => Local Value => Master Value
+date.default_latitude => 31.7667 => 31.7667
+date.default_longitude => 35.2333 => 35.2333
+date.sunrise_zenith => 90.583333 => 90.583333
+date.sunset_zenith => 90.583333 => 90.583333
+date.timezone => no value => no value
+
+fileinfo
+
+fileinfo support => enabled
+libmagic => 537
+
+filter
+
+Input Validation and Filtering => enabled
+
+Directive => Local Value => Master Value
+filter.default => unsafe_raw => unsafe_raw
+filter.default_flags => no value => no value
+
+hash
+
+hash support => enabled
+Hashing Engines => md2 md4 md5 sha1 sha224 sha256 sha384 sha512/224 sha512/256 sha512 sha3-224 sha3-256 sha3-384 sha3-512 ripemd128 ripemd160 ripemd256 ripemd320 whirlpool tiger128,3 tiger160,3 tiger192,3 tiger128,4 tiger160,4 tiger192,4 snefru snefru256 gost gost-crypto adler32 crc32 crc32b crc32c fnv132 fnv1a32 fnv164 fnv1a64 joaat haval128,3 haval160,3 haval192,3 haval224,3 haval256,3 haval128,4 haval160,4 haval192,4 haval224,4 haval256,4 haval128,5 haval160,5 haval192,5 haval224,5 haval256,5 
+
+json
+
+json support => enabled
+
+pcre
+
+PCRE (Perl Compatible Regular Expressions) Support => enabled
+PCRE Library Version => 10.34 2019-11-21
+PCRE Unicode Version => 12.1.0
+PCRE JIT Support => enabled
+PCRE JIT Target => x86 64bit (little endian + unaligned)
+
+Directive => Local Value => Master Value
+pcre.backtrack_limit => 1000000 => 1000000
+pcre.jit => 1 => 1
+pcre.recursion_limit => 100000 => 100000
+
+PDO
+
+PDO support => enabled
+PDO drivers => pgsql
+
+pdo_pgsql
+
+PDO Driver for PostgreSQL => enabled
+PostgreSQL(libpq) Version => 10.9
+
+pgsql
+
+PostgreSQL Support => enabled
+PostgreSQL(libpq) Version => 10.9
+PostgreSQL(libpq)  => PostgreSQL 10.9 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0, 64-bit
+Multibyte character support => enabled
+SSL support => disabled
+Active Persistent Links => 0
+Active Links => 0
+
+Directive => Local Value => Master Value
+pgsql.allow_persistent => On => On
+pgsql.auto_reset_persistent => Off => Off
+pgsql.ignore_notice => Off => Off
+pgsql.log_notice => Off => Off
+pgsql.max_links => Unlimited => Unlimited
+pgsql.max_persistent => Unlimited => Unlimited
+
+Phar
+
+Phar: PHP Archive support => enabled
+Phar API version => 1.1.1
+Phar-based phar archives => enabled
+Tar-based phar archives => enabled
+ZIP-based phar archives => enabled
+gzip compression => disabled (install ext/zlib)
+bzip2 compression => disabled (install ext/bz2)
+OpenSSL support => disabled (install ext/openssl)
+
+
+Phar based on pear/PHP_Archive, original concept by Davey Shafik.
+Phar fully realized by Gregory Beaver and Marcus Boerger.
+Portions of tar implementation Copyright (c) 2003-2009 Tim Kientzle.
+Directive => Local Value => Master Value
+phar.cache_list => no value => no value
+phar.readonly => On => On
+phar.require_hash => On => On
+
+posix
+
+POSIX support => enabled
+
+Reflection
+
+Reflection => enabled
+
+session
+
+Session Support => enabled
+Registered save handlers => files user 
+Registered serializer handlers => php_serialize php php_binary 
+
+Directive => Local Value => Master Value
+session.auto_start => Off => Off
+session.cache_expire => 180 => 180
+session.cache_limiter => nocache => nocache
+session.cookie_domain => no value => no value
+session.cookie_httponly => 0 => 0
+session.cookie_lifetime => 0 => 0
+session.cookie_path => / => /
+session.cookie_samesite => no value => no value
+session.cookie_secure => 0 => 0
+session.gc_divisor => 100 => 100
+session.gc_maxlifetime => 1440 => 1440
+session.gc_probability => 1 => 1
+session.lazy_write => On => On
+session.name => PHPSESSID => PHPSESSID
+session.referer_check => no value => no value
+session.save_handler => files => files
+session.save_path => no value => no value
+session.serialize_handler => php => php
+session.sid_bits_per_character => 4 => 4
+session.sid_length => 32 => 32
+session.upload_progress.cleanup => On => On
+session.upload_progress.enabled => On => On
+session.upload_progress.freq => 1% => 1%
+session.upload_progress.min_freq => 1 => 1
+session.upload_progress.name => PHP_SESSION_UPLOAD_PROGRESS => PHP_SESSION_UPLOAD_PROGRESS
+session.upload_progress.prefix => upload_progress_ => upload_progress_
+session.use_cookies => 1 => 1
+session.use_only_cookies => 1 => 1
+session.use_strict_mode => 0 => 0
+session.use_trans_sid => 0 => 0
+
+SPL
+
+SPL support => enabled
+Interfaces => OuterIterator, RecursiveIterator, SeekableIterator, SplObserver, SplSubject
+Classes => AppendIterator, ArrayIterator, ArrayObject, BadFunctionCallException, BadMethodCallException, CachingIterator, CallbackFilterIterator, DirectoryIterator, DomainException, EmptyIterator, FilesystemIterator, FilterIterator, GlobIterator, InfiniteIterator, InvalidArgumentException, IteratorIterator, LengthException, LimitIterator, LogicException, MultipleIterator, NoRewindIterator, OutOfBoundsException, OutOfRangeException, OverflowException, ParentIterator, RangeException, RecursiveArrayIterator, RecursiveCachingIterator, RecursiveCallbackFilterIterator, RecursiveDirectoryIterator, RecursiveFilterIterator, RecursiveIteratorIterator, RecursiveRegexIterator, RecursiveTreeIterator, RegexIterator, RuntimeException, SplDoublyLinkedList, SplFileInfo, SplFileObject, SplFixedArray, SplHeap, SplMinHeap, SplMaxHeap, SplObjectStorage, SplPriorityQueue, SplQueue, SplStack, SplTempFileObject, UnderflowException, UnexpectedValueException
+
+standard
+
+Dynamic Library Support => enabled
+Path to sendmail =>  -t -i 
+
+Directive => Local Value => Master Value
+assert.active => 1 => 1
+assert.bail => 0 => 0
+assert.callback => no value => no value
+assert.exception => 0 => 0
+assert.quiet_eval => 0 => 0
+assert.warning => 1 => 1
+auto_detect_line_endings => 0 => 0
+default_socket_timeout => 60 => 60
+from => no value => no value
+session.trans_sid_hosts => no value => no value
+session.trans_sid_tags => a=href,area=href,frame=src,form= => a=href,area=href,frame=src,form=
+unserialize_max_depth => 4096 => 4096
+url_rewriter.hosts => no value => no value
+url_rewriter.tags => form= => form=
+user_agent => no value => no value
+
+tokenizer
+
+Tokenizer Support => enabled
+
+Additional Modules
+
+Module Name
+
+Environment
+
+Variable => Value
+SHELL => /bin/bash
+NUGET_XMLDOC_MODE => skip
+COLORTERM => truecolor
+CLOUDENV_ENVIRONMENT_ID => ee5961a6-303e-4c14-85da-ec77c77bd506
+NVM_INC => /usr/local/share/nvm/versions/node/v19.7.0/include/node
+TERM_PROGRAM_VERSION => 1.75.1
+GITHUB_USER => kasbohm
+rvm_prefix => /usr/local
+CODESPACE_NAME => kasbohm-animated-spoon-pqvjq5x66rfr5w6
+HOSTNAME => codespaces-b7baf4
+RepositoryName => noas
+JAVA_ROOT => /home/codespace/java
+JAVA_HOME => /usr/local/sdkman/candidates/java/current
+DOTNET_ROOT => /usr/local/dotnet/current
+CODESPACES => true
+PYTHON_ROOT => /home/codespace/.python
+GRADLE_HOME => /usr/local/sdkman/candidates/gradle/current
+NVS_DIR => /usr/local/nvs
+NVS_OS => linux
+DOTNET_SKIP_FIRST_TIME_EXPERIENCE => 1
+MY_RUBY_HOME => /usr/local/rvm/rubies/ruby-3.1.3
+NVS_USE_XZ => 1
+SDKMAN_CANDIDATES_DIR => /usr/local/sdkman/candidates
+RUBY_VERSION => ruby-3.1.3
+PWD => /workspaces/noas
+PIPX_BIN_DIR => /usr/local/py-utils/bin
+rvm_version => 1.29.12 (latest)
+ORYX_DIR => /usr/local/oryx
+ContainerVersion => 12
+VSCODE_GIT_ASKPASS_NODE => /vscode/bin/linux-x64/441438abd1ac652551dbe4d408dfcec8a499b8bf/node
+HUGO_ROOT => /home/codespace/.hugo
+GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN => preview.app.github.dev
+NPM_GLOBAL => /home/codespace/.npm-global
+HOME => /home/codespace
+GITHUB_API_URL => https://api.github.com
+LANG => C.UTF-8
+GITHUB_TOKEN => ghu_cbotvR7WdnBNYDFhvsGQuE0ZzIs2lg0k6Bih
+LS_COLORS => rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
+DYNAMIC_INSTALL_ROOT_DIR => /opt
+NVM_SYMLINK_CURRENT => true
+PHP_PATH => /usr/local/php/current
+DEBIAN_FLAVOR => focal-scm
+SDKMAN_VERSION => 5.17.0
+GIT_ASKPASS => /vscode/bin/linux-x64/441438abd1ac652551dbe4d408dfcec8a499b8bf/extensions/git/dist/askpass.sh
+PHP_ROOT => /home/codespace/.php
+ORYX_ENV_TYPE => vsonline-present
+HUGO_DIR => /usr/local/hugo/bin
+DOCKER_BUILDKIT => 1
+GOROOT => /usr/local/go
+INTERNAL_VSCS_TARGET_URL => https://westeurope.online.visualstudio.com
+SHELL_LOGGED_IN => true
+PYTHON_PATH => /usr/local/python/current
+NVM_DIR => /usr/local/share/nvm
+VSCODE_GIT_ASKPASS_EXTRA_ARGS =>  
+rvm_bin_path => /usr/local/rvm/bin
+GEM_PATH => /usr/local/rvm/gems/ruby-3.1.3:/usr/local/rvm/gems/ruby-3.1.3@global
+GEM_HOME => /usr/local/rvm/gems/ruby-3.1.3
+GITHUB_CODESPACE_TOKEN => ABXDWYKK2ZK4ZETPJW2NL5DEAEJVPANCNFSM4AC7ZTJA
+LESSCLOSE => /usr/bin/lesspipe %s %s
+NVS_ROOT => /usr/local/nvs
+GITHUB_GRAPHQL_URL => https://api.github.com/graphql
+TERM => xterm-256color
+LESSOPEN => | /usr/bin/lesspipe %s
+USER => codespace
+NODE_ROOT => /home/codespace/nvm
+VSCODE_GIT_IPC_HANDLE => /tmp/vscode-git-da2eaf4566.sock
+PYTHONIOENCODING => UTF-8
+GITHUB_SERVER_URL => https://github.com
+NVS_HOME => /usr/local/nvs
+PIPX_HOME => /usr/local/py-utils
+CONDA_SCRIPT => /opt/conda/etc/profile.d/conda.sh
+MAVEN_HOME => /usr/local/sdkman/candidates/maven/current
+SDKMAN_DIR => /usr/local/sdkman
+SHLVL => 2
+NVM_CD_FLAGS =>  
+ORYX_SDK_STORAGE_BASE_URL => https://oryx-cdn.microsoft.io
+GIT_EDITOR => code --wait
+CONDA_DIR => /opt/conda
+PROMPT_DIRTRIM => 4
+SDKMAN_CANDIDATES_API => https://api.sdkman.io/2
+ENABLE_DYNAMIC_INSTALL => true
+MAVEN_ROOT => /home/codespace/.maven
+ORYX_PREFER_USER_INSTALLED_SDKS => true
+JUPYTERLAB_PATH => /home/codespace/.local/bin
+RVM_PATH => /usr/local/rvm
+GITHUB_REPOSITORY => LCBC-UiO/noas
+RAILS_DEVELOPMENT_HOSTS => .githubpreview.dev,.preview.app.github.dev,.app.github.dev
+VSCODE_GIT_ASKPASS_MAIN => /vscode/bin/linux-x64/441438abd1ac652551dbe4d408dfcec8a499b8bf/extensions/git/dist/askpass-main.js
+RUBY_ROOT => /home/codespace/.ruby
+RUBY_HOME => /usr/local/rvm/rubies/default
+BROWSER => /vscode/bin/linux-x64/441438abd1ac652551dbe4d408dfcec8a499b8bf/bin/helpers/browser.sh
+PATH => /usr/local/rvm/gems/ruby-3.1.3/bin:/usr/local/rvm/gems/ruby-3.1.3@global/bin:/usr/local/rvm/rubies/ruby-3.1.3/bin:/vscode/bin/linux-x64/441438abd1ac652551dbe4d408dfcec8a499b8bf/bin/remote-cli:/home/codespace/.local/bin:/home/codespace/.dotnet:/home/codespace/nvm/current/bin:/home/codespace/.php/current/bin:/home/codespace/.python/current/bin:/home/codespace/java/current/bin:/home/codespace/.ruby/current/bin:/home/codespace/.local/bin:/usr/local/oryx:/usr/local/go/bin:/go/bin:/usr/local/sdkman/bin:/usr/local/sdkman/candidates/java/current/bin:/usr/local/sdkman/candidates/gradle/current/bin:/usr/local/sdkman/candidates/maven/current/bin:/usr/local/sdkman/candidates/ant/current/bin:/usr/local/rvm/gems/default/bin:/usr/local/rvm/gems/default@global/bin:/usr/local/rvm/rubies/default/bin:/usr/local/share/rbenv/bin:/opt/conda/bin:/usr/local/php/current/bin:/usr/local/python/current/bin:/usr/local/py-utils/bin:/usr/local/nvs:/usr/local/share/nvm/versions/node/v19.7.0/bin:/usr/local/hugo/bin:/usr/local/dotnet/current:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/codespace/.dotnet/tools:/usr/local/rvm/bin
+CODESPACE_VSCODE_FOLDER => /workspaces/noas
+SDKMAN_PLATFORM => linuxx64
+NVM_BIN => /usr/local/share/nvm/versions/node/v19.7.0/bin
+IRBRC => /usr/local/rvm/rubies/ruby-3.1.3/.irbrc
+VSCDC_FIXED_SECRETS => true
+rvm_path => /usr/local/rvm
+OLDPWD => /workspaces/noas/3rdparty
+GOPATH => /go
+TERM_PROGRAM => vscode
+VSCODE_IPC_HOOK_CLI => /tmp/vscode-ipc-689b86c1-f558-46df-946e-e9a12422c29a.sock
+_ => ./3rdparty/php/bin/php
+
+PHP Variables
+
+Variable => Value
+$_SERVER['SHELL'] => /bin/bash
+$_SERVER['NUGET_XMLDOC_MODE'] => skip
+$_SERVER['COLORTERM'] => truecolor
+$_SERVER['CLOUDENV_ENVIRONMENT_ID'] => ee5961a6-303e-4c14-85da-ec77c77bd506
+$_SERVER['NVM_INC'] => /usr/local/share/nvm/versions/node/v19.7.0/include/node
+$_SERVER['TERM_PROGRAM_VERSION'] => 1.75.1
+$_SERVER['GITHUB_USER'] => kasbohm
+$_SERVER['rvm_prefix'] => /usr/local
+$_SERVER['CODESPACE_NAME'] => kasbohm-animated-spoon-pqvjq5x66rfr5w6
+$_SERVER['HOSTNAME'] => codespaces-b7baf4
+$_SERVER['RepositoryName'] => noas
+$_SERVER['JAVA_ROOT'] => /home/codespace/java
+$_SERVER['JAVA_HOME'] => /usr/local/sdkman/candidates/java/current
+$_SERVER['DOTNET_ROOT'] => /usr/local/dotnet/current
+$_SERVER['CODESPACES'] => true
+$_SERVER['PYTHON_ROOT'] => /home/codespace/.python
+$_SERVER['GRADLE_HOME'] => /usr/local/sdkman/candidates/gradle/current
+$_SERVER['NVS_DIR'] => /usr/local/nvs
+$_SERVER['NVS_OS'] => linux
+$_SERVER['DOTNET_SKIP_FIRST_TIME_EXPERIENCE'] => 1
+$_SERVER['MY_RUBY_HOME'] => /usr/local/rvm/rubies/ruby-3.1.3
+$_SERVER['NVS_USE_XZ'] => 1
+$_SERVER['SDKMAN_CANDIDATES_DIR'] => /usr/local/sdkman/candidates
+$_SERVER['RUBY_VERSION'] => ruby-3.1.3
+$_SERVER['PWD'] => /workspaces/noas
+$_SERVER['PIPX_BIN_DIR'] => /usr/local/py-utils/bin
+$_SERVER['rvm_version'] => 1.29.12 (latest)
+$_SERVER['ORYX_DIR'] => /usr/local/oryx
+$_SERVER['ContainerVersion'] => 12
+$_SERVER['VSCODE_GIT_ASKPASS_NODE'] => /vscode/bin/linux-x64/441438abd1ac652551dbe4d408dfcec8a499b8bf/node
+$_SERVER['HUGO_ROOT'] => /home/codespace/.hugo
+$_SERVER['GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN'] => preview.app.github.dev
+$_SERVER['NPM_GLOBAL'] => /home/codespace/.npm-global
+$_SERVER['HOME'] => /home/codespace
+$_SERVER['GITHUB_API_URL'] => https://api.github.com
+$_SERVER['LANG'] => C.UTF-8
+$_SERVER['GITHUB_TOKEN'] => ghu_cbotvR7WdnBNYDFhvsGQuE0ZzIs2lg0k6Bih
+$_SERVER['LS_COLORS'] => rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
+$_SERVER['DYNAMIC_INSTALL_ROOT_DIR'] => /opt
+$_SERVER['NVM_SYMLINK_CURRENT'] => true
+$_SERVER['PHP_PATH'] => /usr/local/php/current
+$_SERVER['DEBIAN_FLAVOR'] => focal-scm
+$_SERVER['SDKMAN_VERSION'] => 5.17.0
+$_SERVER['GIT_ASKPASS'] => /vscode/bin/linux-x64/441438abd1ac652551dbe4d408dfcec8a499b8bf/extensions/git/dist/askpass.sh
+$_SERVER['PHP_ROOT'] => /home/codespace/.php
+$_SERVER['ORYX_ENV_TYPE'] => vsonline-present
+$_SERVER['HUGO_DIR'] => /usr/local/hugo/bin
+$_SERVER['DOCKER_BUILDKIT'] => 1
+$_SERVER['GOROOT'] => /usr/local/go
+$_SERVER['INTERNAL_VSCS_TARGET_URL'] => https://westeurope.online.visualstudio.com
+$_SERVER['SHELL_LOGGED_IN'] => true
+$_SERVER['PYTHON_PATH'] => /usr/local/python/current
+$_SERVER['NVM_DIR'] => /usr/local/share/nvm
+$_SERVER['VSCODE_GIT_ASKPASS_EXTRA_ARGS'] => 
+$_SERVER['rvm_bin_path'] => /usr/local/rvm/bin
+$_SERVER['GEM_PATH'] => /usr/local/rvm/gems/ruby-3.1.3:/usr/local/rvm/gems/ruby-3.1.3@global
+$_SERVER['GEM_HOME'] => /usr/local/rvm/gems/ruby-3.1.3
+$_SERVER['GITHUB_CODESPACE_TOKEN'] => ABXDWYKK2ZK4ZETPJW2NL5DEAEJVPANCNFSM4AC7ZTJA
+$_SERVER['LESSCLOSE'] => /usr/bin/lesspipe %s %s
+$_SERVER['NVS_ROOT'] => /usr/local/nvs
+$_SERVER['GITHUB_GRAPHQL_URL'] => https://api.github.com/graphql
+$_SERVER['TERM'] => xterm-256color
+$_SERVER['LESSOPEN'] => | /usr/bin/lesspipe %s
+$_SERVER['USER'] => codespace
+$_SERVER['NODE_ROOT'] => /home/codespace/nvm
+$_SERVER['VSCODE_GIT_IPC_HANDLE'] => /tmp/vscode-git-da2eaf4566.sock
+$_SERVER['PYTHONIOENCODING'] => UTF-8
+$_SERVER['GITHUB_SERVER_URL'] => https://github.com
+$_SERVER['NVS_HOME'] => /usr/local/nvs
+$_SERVER['PIPX_HOME'] => /usr/local/py-utils
+$_SERVER['CONDA_SCRIPT'] => /opt/conda/etc/profile.d/conda.sh
+$_SERVER['MAVEN_HOME'] => /usr/local/sdkman/candidates/maven/current
+$_SERVER['SDKMAN_DIR'] => /usr/local/sdkman
+$_SERVER['SHLVL'] => 2
+$_SERVER['NVM_CD_FLAGS'] => 
+$_SERVER['ORYX_SDK_STORAGE_BASE_URL'] => https://oryx-cdn.microsoft.io
+$_SERVER['GIT_EDITOR'] => code --wait
+$_SERVER['CONDA_DIR'] => /opt/conda
+$_SERVER['PROMPT_DIRTRIM'] => 4
+$_SERVER['SDKMAN_CANDIDATES_API'] => https://api.sdkman.io/2
+$_SERVER['ENABLE_DYNAMIC_INSTALL'] => true
+$_SERVER['MAVEN_ROOT'] => /home/codespace/.maven
+$_SERVER['ORYX_PREFER_USER_INSTALLED_SDKS'] => true
+$_SERVER['JUPYTERLAB_PATH'] => /home/codespace/.local/bin
+$_SERVER['RVM_PATH'] => /usr/local/rvm
+$_SERVER['GITHUB_REPOSITORY'] => LCBC-UiO/noas
+$_SERVER['RAILS_DEVELOPMENT_HOSTS'] => .githubpreview.dev,.preview.app.github.dev,.app.github.dev
+$_SERVER['VSCODE_GIT_ASKPASS_MAIN'] => /vscode/bin/linux-x64/441438abd1ac652551dbe4d408dfcec8a499b8bf/extensions/git/dist/askpass-main.js
+$_SERVER['RUBY_ROOT'] => /home/codespace/.ruby
+$_SERVER['RUBY_HOME'] => /usr/local/rvm/rubies/default
+$_SERVER['BROWSER'] => /vscode/bin/linux-x64/441438abd1ac652551dbe4d408dfcec8a499b8bf/bin/helpers/browser.sh
+$_SERVER['PATH'] => /usr/local/rvm/gems/ruby-3.1.3/bin:/usr/local/rvm/gems/ruby-3.1.3@global/bin:/usr/local/rvm/rubies/ruby-3.1.3/bin:/vscode/bin/linux-x64/441438abd1ac652551dbe4d408dfcec8a499b8bf/bin/remote-cli:/home/codespace/.local/bin:/home/codespace/.dotnet:/home/codespace/nvm/current/bin:/home/codespace/.php/current/bin:/home/codespace/.python/current/bin:/home/codespace/java/current/bin:/home/codespace/.ruby/current/bin:/home/codespace/.local/bin:/usr/local/oryx:/usr/local/go/bin:/go/bin:/usr/local/sdkman/bin:/usr/local/sdkman/candidates/java/current/bin:/usr/local/sdkman/candidates/gradle/current/bin:/usr/local/sdkman/candidates/maven/current/bin:/usr/local/sdkman/candidates/ant/current/bin:/usr/local/rvm/gems/default/bin:/usr/local/rvm/gems/default@global/bin:/usr/local/rvm/rubies/default/bin:/usr/local/share/rbenv/bin:/opt/conda/bin:/usr/local/php/current/bin:/usr/local/python/current/bin:/usr/local/py-utils/bin:/usr/local/nvs:/usr/local/share/nvm/versions/node/v19.7.0/bin:/usr/local/hugo/bin:/usr/local/dotnet/current:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/codespace/.dotnet/tools:/usr/local/rvm/bin
+$_SERVER['CODESPACE_VSCODE_FOLDER'] => /workspaces/noas
+$_SERVER['SDKMAN_PLATFORM'] => linuxx64
+$_SERVER['NVM_BIN'] => /usr/local/share/nvm/versions/node/v19.7.0/bin
+$_SERVER['IRBRC'] => /usr/local/rvm/rubies/ruby-3.1.3/.irbrc
+$_SERVER['VSCDC_FIXED_SECRETS'] => true
+$_SERVER['rvm_path'] => /usr/local/rvm
+$_SERVER['OLDPWD'] => /workspaces/noas/3rdparty
+$_SERVER['GOPATH'] => /go
+$_SERVER['TERM_PROGRAM'] => vscode
+$_SERVER['VSCODE_IPC_HOOK_CLI'] => /tmp/vscode-ipc-689b86c1-f558-46df-946e-e9a12422c29a.sock
+$_SERVER['_'] => ./3rdparty/php/bin/php
+$_SERVER['PHP_SELF'] => 
+$_SERVER['SCRIPT_NAME'] => 
+$_SERVER['SCRIPT_FILENAME'] => 
+$_SERVER['PATH_TRANSLATED'] => 
+$_SERVER['DOCUMENT_ROOT'] => 
+$_SERVER['REQUEST_TIME_FLOAT'] => 1677750450.651
+$_SERVER['REQUEST_TIME'] => 1677750450
+$_SERVER['argv'] => Array
+(
+)
+
+$_SERVER['argc'] => 0
+$_ENV['SHELL'] => /bin/bash
+$_ENV['NUGET_XMLDOC_MODE'] => skip
+$_ENV['COLORTERM'] => truecolor
+$_ENV['CLOUDENV_ENVIRONMENT_ID'] => ee5961a6-303e-4c14-85da-ec77c77bd506
+$_ENV['NVM_INC'] => /usr/local/share/nvm/versions/node/v19.7.0/include/node
+$_ENV['TERM_PROGRAM_VERSION'] => 1.75.1
+$_ENV['GITHUB_USER'] => kasbohm
+$_ENV['rvm_prefix'] => /usr/local
+$_ENV['CODESPACE_NAME'] => kasbohm-animated-spoon-pqvjq5x66rfr5w6
+$_ENV['HOSTNAME'] => codespaces-b7baf4
+$_ENV['RepositoryName'] => noas
+$_ENV['JAVA_ROOT'] => /home/codespace/java
+$_ENV['JAVA_HOME'] => /usr/local/sdkman/candidates/java/current
+$_ENV['DOTNET_ROOT'] => /usr/local/dotnet/current
+$_ENV['CODESPACES'] => true
+$_ENV['PYTHON_ROOT'] => /home/codespace/.python
+$_ENV['GRADLE_HOME'] => /usr/local/sdkman/candidates/gradle/current
+$_ENV['NVS_DIR'] => /usr/local/nvs
+$_ENV['NVS_OS'] => linux
+$_ENV['DOTNET_SKIP_FIRST_TIME_EXPERIENCE'] => 1
+$_ENV['MY_RUBY_HOME'] => /usr/local/rvm/rubies/ruby-3.1.3
+$_ENV['NVS_USE_XZ'] => 1
+$_ENV['SDKMAN_CANDIDATES_DIR'] => /usr/local/sdkman/candidates
+$_ENV['RUBY_VERSION'] => ruby-3.1.3
+$_ENV['PWD'] => /workspaces/noas
+$_ENV['PIPX_BIN_DIR'] => /usr/local/py-utils/bin
+$_ENV['rvm_version'] => 1.29.12 (latest)
+$_ENV['ORYX_DIR'] => /usr/local/oryx
+$_ENV['ContainerVersion'] => 12
+$_ENV['VSCODE_GIT_ASKPASS_NODE'] => /vscode/bin/linux-x64/441438abd1ac652551dbe4d408dfcec8a499b8bf/node
+$_ENV['HUGO_ROOT'] => /home/codespace/.hugo
+$_ENV['GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN'] => preview.app.github.dev
+$_ENV['NPM_GLOBAL'] => /home/codespace/.npm-global
+$_ENV['HOME'] => /home/codespace
+$_ENV['GITHUB_API_URL'] => https://api.github.com
+$_ENV['LANG'] => C.UTF-8
+$_ENV['GITHUB_TOKEN'] => ghu_cbotvR7WdnBNYDFhvsGQuE0ZzIs2lg0k6Bih
+$_ENV['LS_COLORS'] => rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
+$_ENV['DYNAMIC_INSTALL_ROOT_DIR'] => /opt
+$_ENV['NVM_SYMLINK_CURRENT'] => true
+$_ENV['PHP_PATH'] => /usr/local/php/current
+$_ENV['DEBIAN_FLAVOR'] => focal-scm
+$_ENV['SDKMAN_VERSION'] => 5.17.0
+$_ENV['GIT_ASKPASS'] => /vscode/bin/linux-x64/441438abd1ac652551dbe4d408dfcec8a499b8bf/extensions/git/dist/askpass.sh
+$_ENV['PHP_ROOT'] => /home/codespace/.php
+$_ENV['ORYX_ENV_TYPE'] => vsonline-present
+$_ENV['HUGO_DIR'] => /usr/local/hugo/bin
+$_ENV['DOCKER_BUILDKIT'] => 1
+$_ENV['GOROOT'] => /usr/local/go
+$_ENV['INTERNAL_VSCS_TARGET_URL'] => https://westeurope.online.visualstudio.com
+$_ENV['SHELL_LOGGED_IN'] => true
+$_ENV['PYTHON_PATH'] => /usr/local/python/current
+$_ENV['NVM_DIR'] => /usr/local/share/nvm
+$_ENV['VSCODE_GIT_ASKPASS_EXTRA_ARGS'] => 
+$_ENV['rvm_bin_path'] => /usr/local/rvm/bin
+$_ENV['GEM_PATH'] => /usr/local/rvm/gems/ruby-3.1.3:/usr/local/rvm/gems/ruby-3.1.3@global
+$_ENV['GEM_HOME'] => /usr/local/rvm/gems/ruby-3.1.3
+$_ENV['GITHUB_CODESPACE_TOKEN'] => ABXDWYKK2ZK4ZETPJW2NL5DEAEJVPANCNFSM4AC7ZTJA
+$_ENV['LESSCLOSE'] => /usr/bin/lesspipe %s %s
+$_ENV['NVS_ROOT'] => /usr/local/nvs
+$_ENV['GITHUB_GRAPHQL_URL'] => https://api.github.com/graphql
+$_ENV['TERM'] => xterm-256color
+$_ENV['LESSOPEN'] => | /usr/bin/lesspipe %s
+$_ENV['USER'] => codespace
+$_ENV['NODE_ROOT'] => /home/codespace/nvm
+$_ENV['VSCODE_GIT_IPC_HANDLE'] => /tmp/vscode-git-da2eaf4566.sock
+$_ENV['PYTHONIOENCODING'] => UTF-8
+$_ENV['GITHUB_SERVER_URL'] => https://github.com
+$_ENV['NVS_HOME'] => /usr/local/nvs
+$_ENV['PIPX_HOME'] => /usr/local/py-utils
+$_ENV['CONDA_SCRIPT'] => /opt/conda/etc/profile.d/conda.sh
+$_ENV['MAVEN_HOME'] => /usr/local/sdkman/candidates/maven/current
+$_ENV['SDKMAN_DIR'] => /usr/local/sdkman
+$_ENV['SHLVL'] => 2
+$_ENV['NVM_CD_FLAGS'] => 
+$_ENV['ORYX_SDK_STORAGE_BASE_URL'] => https://oryx-cdn.microsoft.io
+$_ENV['GIT_EDITOR'] => code --wait
+$_ENV['CONDA_DIR'] => /opt/conda
+$_ENV['PROMPT_DIRTRIM'] => 4
+$_ENV['SDKMAN_CANDIDATES_API'] => https://api.sdkman.io/2
+$_ENV['ENABLE_DYNAMIC_INSTALL'] => true
+$_ENV['MAVEN_ROOT'] => /home/codespace/.maven
+$_ENV['ORYX_PREFER_USER_INSTALLED_SDKS'] => true
+$_ENV['JUPYTERLAB_PATH'] => /home/codespace/.local/bin
+$_ENV['RVM_PATH'] => /usr/local/rvm
+$_ENV['GITHUB_REPOSITORY'] => LCBC-UiO/noas
+$_ENV['RAILS_DEVELOPMENT_HOSTS'] => .githubpreview.dev,.preview.app.github.dev,.app.github.dev
+$_ENV['VSCODE_GIT_ASKPASS_MAIN'] => /vscode/bin/linux-x64/441438abd1ac652551dbe4d408dfcec8a499b8bf/extensions/git/dist/askpass-main.js
+$_ENV['RUBY_ROOT'] => /home/codespace/.ruby
+$_ENV['RUBY_HOME'] => /usr/local/rvm/rubies/default
+$_ENV['BROWSER'] => /vscode/bin/linux-x64/441438abd1ac652551dbe4d408dfcec8a499b8bf/bin/helpers/browser.sh
+$_ENV['PATH'] => /usr/local/rvm/gems/ruby-3.1.3/bin:/usr/local/rvm/gems/ruby-3.1.3@global/bin:/usr/local/rvm/rubies/ruby-3.1.3/bin:/vscode/bin/linux-x64/441438abd1ac652551dbe4d408dfcec8a499b8bf/bin/remote-cli:/home/codespace/.local/bin:/home/codespace/.dotnet:/home/codespace/nvm/current/bin:/home/codespace/.php/current/bin:/home/codespace/.python/current/bin:/home/codespace/java/current/bin:/home/codespace/.ruby/current/bin:/home/codespace/.local/bin:/usr/local/oryx:/usr/local/go/bin:/go/bin:/usr/local/sdkman/bin:/usr/local/sdkman/candidates/java/current/bin:/usr/local/sdkman/candidates/gradle/current/bin:/usr/local/sdkman/candidates/maven/current/bin:/usr/local/sdkman/candidates/ant/current/bin:/usr/local/rvm/gems/default/bin:/usr/local/rvm/gems/default@global/bin:/usr/local/rvm/rubies/default/bin:/usr/local/share/rbenv/bin:/opt/conda/bin:/usr/local/php/current/bin:/usr/local/python/current/bin:/usr/local/py-utils/bin:/usr/local/nvs:/usr/local/share/nvm/versions/node/v19.7.0/bin:/usr/local/hugo/bin:/usr/local/dotnet/current:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/codespace/.dotnet/tools:/usr/local/rvm/bin
+$_ENV['CODESPACE_VSCODE_FOLDER'] => /workspaces/noas
+$_ENV['SDKMAN_PLATFORM'] => linuxx64
+$_ENV['NVM_BIN'] => /usr/local/share/nvm/versions/node/v19.7.0/bin
+$_ENV['IRBRC'] => /usr/local/rvm/rubies/ruby-3.1.3/.irbrc
+$_ENV['VSCDC_FIXED_SECRETS'] => true
+$_ENV['rvm_path'] => /usr/local/rvm
+$_ENV['OLDPWD'] => /workspaces/noas/3rdparty
+$_ENV['GOPATH'] => /go
+$_ENV['TERM_PROGRAM'] => vscode
+$_ENV['VSCODE_IPC_HOOK_CLI'] => /tmp/vscode-ipc-689b86c1-f558-46df-946e-e9a12422c29a.sock
+$_ENV['_'] => ./3rdparty/php/bin/php
+
+PHP License
+This program is free software; you can redistribute it and/or modify
+it under the terms of the PHP License as published by the PHP Group
+and included in the distribution in the file:  LICENSE
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+If you did not receive a copy of the PHP license, or have any
+questions about PHP licensing, please contact license@php.net.

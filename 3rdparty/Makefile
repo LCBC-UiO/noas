@@ -3,7 +3,7 @@ BASEDIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 .PHONY: _all
 _add: all
 
-modules := 
+modules :=
 
 include make_postgresql.mk
 include make_lighttpd.mk
