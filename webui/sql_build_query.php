@@ -29,9 +29,13 @@ function sql_build_query($dbmeta, $sel) {
       }
       $rs = _get_sql_select_table($t, $sel_cols);
       $r = array_merge($r, $rs);
-    } 
+    }
+
     $rg = _get_sql_select_repeated($dbmeta, $sel_tabs, $sel_cols);
-    $r = array_merge($r, $rg);
+    // if $rg not null, merge $ and $rg
+    if (!is_null($rg)) {
+      $r = array_merge($r, $rg);
+    }
     return join(",\n", $r);
   }
   function _get_sql_join($dbmeta, $sel_tabs) {
@@ -135,7 +139,7 @@ function sql_build_query($dbmeta, $sel) {
       $rgroups[$gid][] = array(
         "col_id" => $t->repeated_group->col_id
         ,"table_id" => $tid
-        ,"cols" => $cols 
+        ,"cols" => $cols
       );
     }
     return($rgroups);
@@ -145,8 +149,8 @@ function sql_build_query($dbmeta, $sel) {
     // generate where conditions; tab0.col=tabn.col
     $sqls = array();
     foreach ($rgroups as $rg) {
-      for ($i=1; $i < count($rg); $i++) { 
-        array_push($sqls, 
+      for ($i=1; $i < count($rg); $i++) {
+        array_push($sqls,
           "AND " . $rg[0 ]["table_id"] . "." . $rg[0 ]["col_id"] .
           " = " . $rg[$i]["table_id"] . "." . $rg[$i]["col_id"]
         );
@@ -170,7 +174,7 @@ function sql_build_query($dbmeta, $sel) {
   // prepare selection
   $sel_tabs = array();
   // "tableid_colid" as in column header (execption core)
-  $sel_cols = array(); 
+  $sel_cols = array();
   // NOTE: instead of sel_tabs and sel_cols,
   //   we could use a map: k:table_id => v:column_ids
   foreach ($sel->{"columns"} as $e) {
@@ -182,13 +186,13 @@ function sql_build_query($dbmeta, $sel) {
   $sql_join   = _get_sql_join($dbmeta, $sel_tabs);
   $sql_where  = _get_sql_where($dbmeta, $sel_tabs, $sel->{"set_op"}, $sel->{"project"});
   $sql_where_repeated = _get_sql_where_repeated($dbmeta, $sel_tabs, $sel_cols);
-  
+
   $sql = "
-SELECT DISTINCT 
+SELECT DISTINCT
 {$sql_select}
 FROM noas_core AS core
 {$sql_join}
-WHERE TRUE AND 
+WHERE TRUE AND
 {$sql_where}
 {$sql_where_repeated}
 ORDER BY core.subject_id
