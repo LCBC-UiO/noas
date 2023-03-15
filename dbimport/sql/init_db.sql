@@ -733,6 +733,10 @@ CREATE VIEW noas_core AS
   LEFT JOIN subjects AS s ON v.subject_id = s.id
   LEFT JOIN projects AS p ON v.project_id = p.id;
 
+-- if visit_age is less than 1, throw an error.
+ALTER VIEW noas_core
+ADD CONSTRAINT noas_core_visit_age_check
+CHECK (visit_age >= 1);
 
 -- Add metadata for core table
 
