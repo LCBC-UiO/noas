@@ -52,6 +52,10 @@ for(pre in core_pre_seq){
 fail_if(length(core_files) > 0, 
         "There are unhandled files in ", core_dir)
 
+
+# update core visits
+invisible(DBI::dbExecute(con, read_file("dbimport/sql/upd_db.sql")))
+
 # import non-core
 ncore_dir <- file.path(getOption("noas")$TABDIR, "non_core")
 table_ids <- list.dirs(ncore_dir, recursive = FALSE, full.names = FALSE)
