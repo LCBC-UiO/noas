@@ -38,7 +38,7 @@ for(pre in core_pre_seq){
   check_tsvs(core_files_cur, core_dir)
 
   for(f in core_files_cur){
-    cat(file.path("core", f), "\n")
+    cli::cli_alert_info(file.path("core", f))
     DBI::dbWriteTable(
       con,
       pre,
@@ -52,12 +52,17 @@ for(pre in core_pre_seq){
 fail_if(length(core_files) > 0, 
         "There are unhandled files in ", core_dir)
 
+
+# update core visits
+invisible(DBI::dbExecute(con, read_file("dbimport/sql/upd_db.sql")))
+
 # import non-core
 ncore_dir <- file.path(getOption("noas")$TABDIR, "non_core")
 table_ids <- list.dirs(ncore_dir, recursive = FALSE, full.names = FALSE)
 if(getOption("noas")$IMPORT_DEBUG == "1") 
   table_ids <- table_ids[order(file.info(file.path(ncore_dir, table_ids))$mtime, decreasing = TRUE)]
 for(table_id in table_ids){
+  cli::cli_inform(sprintf("Importing %s\n", table_ids))
   metadata_j <- NULL
   table_dir_cur <- file.path(ncore_dir, table_id)
   cur_file_list <- list.files(table_dir_cur)
@@ -78,7 +83,7 @@ for(table_id in table_ids){
   check_tsvs(cur_file_list, table_dir_cur)
 
   for(f_tsv in cur_file_list){
-    cat(file.path("non_core", table_id, f_tsv), "\n")
+    cli::cli_alert(file.path("non_core", table_id, f_tsv))
     # read table
     noas_table_data <- read_noas_table(file.path(table_dir_cur, f_tsv))
     # push as temp table to db
@@ -106,9 +111,9 @@ for(table_id in table_ids){
     )
   } # end f_tsv
   if (!is.null(metadata_j)) {
-    cat(file.path("non_core", table_id, "_metadata.json"), "\n")
+    cli::cli_alert_info(file.path("non_core", table_id, "_metadata.json"))
     DBI::dbExecute(
-      con, 
+      con,
       "select import_metadata($1, $2)",
       params = list(
         table_id,
@@ -136,4 +141,4 @@ invisible(DBI::dbCommit(con))
 invisible(DBI::dbDisconnect(con))
 
 # declare ended import
-cat("import complete\n")
+cli::cli_alert_success("import complete")

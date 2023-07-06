@@ -1,7 +1,7 @@
 modules := $(modules) \
 	postgresql
 
-PSQLVER := 10.9
+PSQLVER := 14.8
 
 .PHONY: postgresql_download
 postgresql_download: download/postgresql-${PSQLVER}.tar.gz

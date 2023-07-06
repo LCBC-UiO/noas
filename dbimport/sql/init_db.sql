@@ -10,7 +10,7 @@
  *   noas_table_id    - the id of the tabe in noas (without the noas_ prefix).
  *                        The table will be created automatically.
  *   noas_json        - the json containing the table_type and in some cases 
-                          the repeated group (contents of _noas.json)
+ *                        the repeated group (contents of _noas.json)
  *   metadata_json    - the json containing the metadata (contents of _metadata.json)
  * 
  *
@@ -122,14 +122,6 @@ BEGIN
   RETURN total;
 END;
 $total$ LANGUAGE plpgsql;
-
--- get duration in years - used for age at visit
-CREATE OR REPLACE FUNCTION age_to_decimal_years(age INTERVAL)
-RETURNS NUMERIC AS $$
-BEGIN
-    RETURN (EXTRACT(YEAR FROM age) + EXTRACT(MONTH FROM age) / 12.0 + EXTRACT(DAY FROM age) / 365.25);
-END;
-$$ LANGUAGE plpgsql;
 
 -- add column "noas data source"
 CREATE OR REPLACE FUNCTION _add_noas_ds_col(table_name_in regclass, noas_data_source text)
@@ -636,17 +628,21 @@ CREATE INDEX subjects_idx_shr ON subjects (shareable);
 
 
 -- Create visit table
-
 CREATE TABLE visits (
   subject_id int NOT NULL,
   project_id text,
   wave_code float,
   alt_subj_id text,
-  "date"  date,
+  "date" date,
+  "number" integer ,
+  age numeric,
+  interval_bl float,
+  interval_prev float,
   CONSTRAINT visit_pk PRIMARY KEY(subject_id, wave_code, project_id),
   CONSTRAINT visit_subject_fk FOREIGN KEY (subject_id) REFERENCES subjects(id),
   CONSTRAINT visit_wave_fk FOREIGN KEY (wave_code, project_id) REFERENCES waves(code, project_id)
 );
+
 
 --------------------------------------------------------------------------------
 
@@ -707,36 +703,27 @@ CREATE VIEW noas_core AS
     s.sex AS subject_sex,
     s.shareable AS subject_shareable,
     v.alt_subj_id AS visit_alt_subj_id,
+    v.age AS visit_age,
     v.date AS visit_date,
     v.number AS visit_number,
-    (v.interval_bl/ 60 / 60 / 24 / 365.25) AS visit_interval_bl,
+    v.interval_bl AS visit_interval_bl,
+    v.interval_prev AS visit_interval_prev,
     w.reknr AS wave_reknr,
     w.description AS wave_description,
     w.code AS wave_code,
     p.id AS project_id,
     p.name AS project_name,
     p.code AS project_code,
-    p.description AS project_description,
-    age_to_decimal_years(age(v.date, s.birthdate)) AS visit_age
+    p.description AS project_description
   FROM (
     SELECT 
-      subject_id, 
-      project_id, 
-      wave_code,
-      alt_subj_id,
-      date,
-      ROW_NUMBER() OVER (PARTITION BY subject_id ORDER BY date) AS number,
-      EXTRACT(EPOCH FROM (date::timestamp - LAG(date::timestamp) OVER (PARTITION BY subject_id ORDER BY date))) AS interval_bl
+    *
     FROM visits
   ) AS v
   LEFT JOIN waves AS w ON v.wave_code = w.code AND v.project_id = w.project_id
   LEFT JOIN subjects AS s ON v.subject_id = s.id
   LEFT JOIN projects AS p ON v.project_id = p.id;
 
--- if visit_age is less than 1, throw an error.
-ALTER VIEW noas_core
-ADD CONSTRAINT noas_core_visit_age_check
-CHECK (visit_age >= 1);
 
 -- Add metadata for core table
 
