@@ -32,7 +32,7 @@ function sql_build_query($dbmeta, $sel) {
     }
 
     $rg = _get_sql_select_repeated($dbmeta, $sel_tabs, $sel_cols);
-    // if $rg not null, merge $ and $rg
+    // if $rg not null, merge $r and $rg
     if (!is_null($rg)) {
       $r = array_merge($r, $rg);
     }
@@ -151,7 +151,7 @@ function sql_build_query($dbmeta, $sel) {
     foreach ($rgroups as $rg) {
       for ($i=1; $i < count($rg); $i++) {
         array_push($sqls,
-          "AND " . $rg[0 ]["table_id"] . "." . $rg[0 ]["col_id"] .
+          "OR " . $rg[0 ]["table_id"] . "." . $rg[0 ]["col_id"] .
           " = " . $rg[$i]["table_id"] . "." . $rg[$i]["col_id"]
         );
       }
