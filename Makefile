@@ -36,10 +36,13 @@ PHONY: prepare_offline
 prepare_offline:
 	$(eval TMPDIR := $(shell mktemp -d))
 	DIR=${TMPDIR}/noas
-	git clone ${BASEDIR} ${TMPDIR}/noas && cd ${TMPDIR}/noas && make -C 3rdparty download
-	cd $(TMPDIR)/ && zip -FSr $(basename $(notdir ${TMPDIR}/noas)).zip $(basename $(notdir ${TMPDIR}/noas))
-	mv ${TMPDIR}/noas.zip $(dest).zip
-
+	git clone ${BASEDIR} ${TMPDIR}/noas && \
+		cd ${TMPDIR}/noas && \
+		make -C 3rdparty download
+	cd $(TMPDIR)/ && \
+		zip -FSr $(basename $(notdir ${TMPDIR}/noas)).zip \
+		$(basename $(notdir ${TMPDIR}/noas))
+	@echo "Destination: ${TMPDIR}/noas.zip"
 
 # ------------------------------------------------------------------------------
 

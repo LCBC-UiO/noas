@@ -1,30 +1,23 @@
 on:
   push:
-    branches:
-      - main
-      - master
   pull_request:
     branches:
       - main
-      - master
 
 name: Test make builds
 
 jobs:
   noas-check:
     runs-on: ${{ matrix.config.os }}
-
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
     strategy:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   r: 'release'}
-          - {os: ubuntu-18.04,   r: 'release'}
-          - {os: ubuntu-18.04,   r: '3.5'}
-          - {os: ubuntu-20.04,   r: 'release'}
-          - {os: ubuntu-20.04,   r: 'devel'}
+          - {os: ubuntu-latest,  r: '3.6'}
+          - {os: ubuntu-latest,  r: '4.3'}
+          - {os: ubuntu-20.04,   r: '3.6'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -38,17 +31,23 @@ jobs:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
 
-      - name: Get 3rdparty stuff & build
+      - name: Make 3rdparty
         run: make 3rdparty
 
       - name: Run & Import DB
         run: |
           make run_db &
           P1=$!
-          make run_dbimport &
-          P2=$!
-          wait $P2
 
+          set -e  # Enable error handling
+          make run_dbimport
+          import_status=$?
 
+          wait $P1
 
-
+          if [ $import_status -eq 0 ]; then
+            echo "Data import succeeded."
+          else
+            echo "Data import failed."
+            exit 1
+          fi

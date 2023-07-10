@@ -38,7 +38,17 @@ function sql_build_query($dbmeta, $sel) {
     }
     return join(",\n", $r);
   }
-  function _get_sql_join($dbmeta, $sel_tabs) {
+  function _get_sql_join($dbmeta, $sel_tabs, $set_op) {
+    function getJoinString($set_op) {
+      if ($set_op === "union") {
+          return "LEFT JOIN";
+      } elseif ($set_op === "intersect") {
+          return "LEFT JOIN";
+      } else {
+        return "FULL JOIN";
+      }
+    }
+    $joinString = getJoinString($set_op);
     $r = array();
     foreach ($dbmeta->{"tables"} as $t) {
       $tid = $t->{"id"};
@@ -50,15 +60,15 @@ function sql_build_query($dbmeta, $sel) {
         case "core":
           break;
         case "long":
-          $sql = "LEFT OUTER JOIN noas_{$tid} {$tid} ON core.subject_id={$tid}.subject_id AND core.project_id={$tid}.project_id AND core.wave_code={$tid}.wave_code";
+          $sql = "${joinString} noas_{$tid} {$tid} ON core.subject_id={$tid}.subject_id AND core.project_id={$tid}.project_id AND core.wave_code={$tid}.wave_code";
           array_push($r, $sql);
           break;
         case "repeated":
-          $sql = "LEFT OUTER JOIN noas_{$tid} {$tid} ON core.subject_id={$tid}.subject_id AND core.project_id={$tid}.project_id AND core.wave_code={$tid}.wave_code";
+          $sql = "${joinString} noas_{$tid} {$tid} ON core.subject_id={$tid}.subject_id AND core.project_id={$tid}.project_id AND core.wave_code={$tid}.wave_code";
           array_push($r, $sql);
           break;
         case "cross":
-          $sql = "LEFT OUTER JOIN noas_{$tid} {$tid} ON core.subject_id={$tid}.subject_id";
+          $sql = "${joinString} noas_{$tid} {$tid} ON core.subject_id={$tid}.subject_id";
           array_push($r, $sql);
           break;
         default:
@@ -183,7 +193,7 @@ function sql_build_query($dbmeta, $sel) {
   }
 
   $sql_select = _get_sql_select($dbmeta, $sel_tabs, $sel_cols);
-  $sql_join   = _get_sql_join($dbmeta, $sel_tabs);
+  $sql_join   = _get_sql_join($dbmeta, $sel_tabs, $sel->{"set_op"});
   $sql_where  = _get_sql_where($dbmeta, $sel_tabs, $sel->{"set_op"}, $sel->{"project"});
   $sql_where_repeated = _get_sql_where_repeated($dbmeta, $sel_tabs, $sel_cols);
 

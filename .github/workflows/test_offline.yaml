@@ -1,12 +1,8 @@
 on:
   push:
-    branches:
-      - main
-      - master
   pull_request:
     branches:
       - main
-      - master
 
 name: Test make prepare_offline
 
@@ -20,11 +16,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   r: 'release'}
-          - {os: ubuntu-18.04,   r: 'release'}
-          - {os: ubuntu-18.04,   r: '3.5'}
-          - {os: ubuntu-20.04,   r: 'release'}
-          - {os: ubuntu-20.04,   r: 'devel'}
+          - {os: ubuntu-latest,  r: '3.6'}
+          - {os: ubuntu-latest,  r: '4.3'}
+          - {os: ubuntu-20.04,   r: '3.6'}
 
     steps:
       - uses: actions/checkout@v3
@@ -36,13 +30,5 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
 
       - name: Prepare offline
-        run: make prepare_offline   ./noas
-
-      - name: Run & Import DB
-        run: |
-          make run_db &
-          P1=$!
-          make run_dbimport &
-          P2=$!
-          wait $P2
+        run: make prepare_offline 
 

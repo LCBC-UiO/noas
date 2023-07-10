@@ -1,5 +1,5 @@
 #' Read config file
-#' 
+#'
 #' The data base has a config.txt
 #' file where some settings for the
 #' data base is set. This function
@@ -66,9 +66,9 @@ read_file <- function(path){
 #'
 #' @return data.frame
 read_noas_table <- function(path, ...){
-  read.table(path, header = TRUE, sep = "\t", 
-             comment.char = "", fill = FALSE, 
-             colClasses = "character", 
+  read.table(path, header = TRUE, sep = "\t",
+             comment.char = "", fill = FALSE,
+             colClasses = "character",
              blank.lines.skip	= FALSE,
              check.names = FALSE,
              quote = "", dec = ".",
@@ -77,49 +77,100 @@ read_noas_table <- function(path, ...){
 
 fail_if <- function(expr, ...){
   if(expr){
-    stop(..., call. = FALSE)
+    cli::cli_bullets(...)
+    stop(call. = FALSE)
   }
 }
 
 #' Check if tsv's are NOAS compatible
-#' 
-#' Runs checks on a set of tsv files 
+#'
+#' Runs checks on a set of tsv files
 #' together, to make sure they adhere
 #' to NOAS data standards
-#' 
+#'
 #' Checks run:
 #' \itemize{
 #'   \item{All files end with \code{tsv}}
 #'   \item{All files have same number of columns}
 #'   \item{All files have same column order}
+#'   \item{No data rows with only <NA>}
+#'   \item{No key duplications}
 #' }
 #'
 #' @param tsv_list character vector of tsv files
 #' @param tsv_dir path to containing directory
 check_tsvs <- function(tsv_list, tsv_dir){
   is_tsv <- grepl("tsv$", tsv_list)
-  fail_if(!all(is_tsv), 
-          "Table not ending in 'tsv':\n", 
+  fail_if(!all(is_tsv),
+          "Table not ending in 'tsv':\n",
           paste(tsv_list[!is_tsv], collapse=" ")
   )
   # column names and order match (across all files)
-  file_heads <- lapply(file.path(tsv_dir, tsv_list), function(x){
-    names(read_noas_table(x, nrow = 1))
-  })
+  file_data <- lapply(
+    file.path(tsv_dir, tsv_list),
+    read_noas_table
+  )
+  names(file_data) <- tsv_list
+  file_heads <- lapply(file_data, names)
   names(file_heads) <- tsv_list
   file_ref <- file.path(tsv_dir, tsv_list[1])
   file_head_ref <- names(read_noas_table(file_ref, nrow = 1))
-  for(f in tsv_list[-1]){
-    file_cur <- file.path(tsv_dir, f)
-    file_head <- names(read_noas_table(file_cur, nrow = 1))
-    # Fail on differing column length and name/order
-    fail_if(length(file_head_ref) != length(file_head),
-            "Differing number of columns in files:\n",
-            file_cur, " ", file_ref
-    )
-    fail_if(!all(file_head_ref == file_head),
-            "Files do not have equally named columns:\n",
-            file_cur, " ", file_ref
-    )
+  if(length(tsv_list) > 1){
+    for(f in tsv_list[-1]){
+      file_cur <- file.path(tsv_dir, f)
+      file_head <- names(read_noas_table(file_cur, nrow = 1))
+      # Fail on differing column length and name/order
+      fail_if(length(file_head_ref) != length(file_head),
+              "Differing number of columns in files:\n",
+              file_cur, file_ref
+      )
+      fail_if(!all(file_head_ref == file_head),
+              "Files do not have equally named columns:\n",
+              file_cur, file_ref
+      )
+    }
+    if(basename(tsv_dir) != "core"){
+      dt <- do.call(rbind, file_data)
+      keys <- key_cols(tsv_dir)
+      check_na(dt, keys)
+      check_dup_keys(dt, keys)
+    }
   }
+}
+
+check_na <- function(data, keys){
+  x <- data[,keys*-1]
+  is_na <- apply(x, 1, function(x) all(is.na(x)))
+  idx <- which(is_na)
+  text <- printdf(data[idx,keys])
+  text <- c("Some data have only <NA> rows in non-key columns. These should be deleted from the file.", text)
+  fail_if(any(is_na), text)
+}
+
+check_dup_keys <- function(data, keys){
+  x <- data[, keys]
+  is_na <- duplicated(x)
+  idx <- which(is_na)
+  text <- printdf(x[idx,])
+  text <- c("Duplicated keys in file.", text)
+  fail_if(any(is_na), text)
+}
+
+printdf <- function(data){
+  text <- jsonlite::toJSON(data,
+                           pretty = TRUE,
+                           na = "string",
+                           null = "null")
+  text <- strsplit(text, "\n")[[1]]
+  text <- gsub("\\}", "}}", text)
+  gsub("\\{", "{{", text)
+}
+
+key_cols <- function(dir){
+  type <- jsonlite::read_json(file.path(dir, "_noas.json"))$table_type
+  switch(type,
+         "longitudinal" = 1:3,
+         "cross-sectional" = 1,
+         "repeated" = 1:4
+  )
 }

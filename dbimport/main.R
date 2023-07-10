@@ -33,7 +33,7 @@ core_pre_seq <- c("projects", "waves", "subjects", "visits")
 #   - loop through prefixes (order by sequences needed)
 for(pre in core_pre_seq){
   core_files_cur <- core_files[grep(pre, core_files)]
-  core_files <- setdiff(core_files, core_files_cur) 
+  core_files <- setdiff(core_files, core_files_cur)
 
   check_tsvs(core_files_cur, core_dir)
 
@@ -49,7 +49,7 @@ for(pre in core_pre_seq){
   }
 }
 # error if still something in file list after loop
-fail_if(length(core_files) > 0, 
+fail_if(length(core_files) > 0,
         "There are unhandled files in ", core_dir)
 
 
@@ -59,10 +59,10 @@ invisible(DBI::dbExecute(con, read_file("dbimport/sql/upd_db.sql")))
 # import non-core
 ncore_dir <- file.path(getOption("noas")$TABDIR, "non_core")
 table_ids <- list.dirs(ncore_dir, recursive = FALSE, full.names = FALSE)
-if(getOption("noas")$IMPORT_DEBUG == "1") 
+if(getOption("noas")$IMPORT_DEBUG == "1")
   table_ids <- table_ids[order(file.info(file.path(ncore_dir, table_ids))$mtime, decreasing = TRUE)]
 for(table_id in table_ids){
-  cli::cli_inform(sprintf("Importing %s\n", table_ids))
+  cli::cli_inform(sprintf("Importing %s\n", table_id))
   metadata_j <- NULL
   table_dir_cur <- file.path(ncore_dir, table_id)
   cur_file_list <- list.files(table_dir_cur)
