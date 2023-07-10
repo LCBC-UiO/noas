@@ -1,7 +1,6 @@
 subject_id	project_id	wave_code	a1	a2	a3	a4	a5	a_total_intrusions	a_total	a_total_t	listb	listb_intrusions	5min_free	5min_free_scaled	5min_intrusions	5min_cued	5min_cued_intrusions	30min_free	30min_free_scaled	30min_intrusions	30min_cued	30min_cued_intrusions	recog_hits	recog_fp	recog_forced
 9900068	Proj2	1	4	8	12	12	13	NA	49	NA	6	NA	12	NA	NA	14	NA	12	NA	NA	15	NA	16	0	16
 9900070	Proj1	1	5	9	12	14	15	NA	55	NA	6	NA	11	NA	NA	13	NA	15	NA	NA	14	NA	16	0	16
-9900070	Proj1	2	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
 9900075	Proj1	2	6	10	14	13	14	NA	57	NA	6	NA	13	NA	NA	14	NA	10	NA	NA	14	NA	16	4	16
 9900075	Proj2	1	8	10	13	14	15	NA	60	NA	NA	NA	14	NA	NA	14	NA	13	NA	NA	14	NA	15	0	16
 9900115	Proj1	1	4	7	8	12	11	NA	42	NA	NA	NA	9	NA	NA	7	NA	7	NA	NA	6	NA	12	0	16
