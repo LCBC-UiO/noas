@@ -38,18 +38,16 @@ jobs:
         run: |
           make run_db &
           P1=$!
+
+          set -e  # Enable error handling
           make run_dbimport
           import_status=$?
 
           wait $P1
-          
+
           if [ $import_status -eq 0 ]; then
             echo "Data import succeeded."
           else
             echo "Data import failed."
             exit 1
           fi
-
-
-
-
