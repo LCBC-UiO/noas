@@ -41,9 +41,17 @@ jobs:
         run: |
           make run_db &
           P1=$!
-          make run_dbimport &
-          P2=$!
-          wait $P2
+          make run_dbimport
+          import_status=$?
+
+          wait $P1
+          
+          if [ $import_status -eq 0 ]; then
+            echo "Data import succeeded."
+          else
+            echo "Data import failed."
+            exit 1
+          fi
 
 
 
