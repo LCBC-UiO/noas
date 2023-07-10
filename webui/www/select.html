@@ -164,9 +164,9 @@
     eOptbody.appendChild(eOptcontent);
     eOptcontent.classList = "optcontent container mx-1";
     [
-      { id: "all",       text: "all visits (all n and many missing values)"},
-      { id: "union",     text: "union of non-core datasets"},
-      { id: "intersect", text: "intersection of datasets (few n and few missing values)"},
+      { id: "all",       text: "all visits (max n, many missing values)"},
+      { id: "union",     text: "union of non-core datasets (high n, some msinng values)"},
+      { id: "intersect", text: "intersection of datasets (low n, few missing values)"},
     ].forEach((er,i) => {
       let eLabel = document.createElement("label");
       eOptcontent.appendChild(eLabel);
