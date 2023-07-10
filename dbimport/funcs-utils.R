@@ -77,7 +77,8 @@ read_noas_table <- function(path, ...){
 
 fail_if <- function(expr, ...){
   if(expr){
-    cli::cli_abort(..., call = NULL)
+    cli::cli_bullets(...)
+    stop(call. = FALSE)
   }
 }
 
