@@ -31,6 +31,7 @@ core_files <- list.files(core_dir)
 core_pre_seq <- c("projects", "waves", "subjects", "visits")
 
 #   - loop through prefixes (order by sequences needed)
+cli::cli_h1("Importing core data")
 for(pre in core_pre_seq){
   core_files_cur <- core_files[grep(pre, core_files)]
   core_files <- setdiff(core_files, core_files_cur)
@@ -57,12 +58,13 @@ fail_if(length(core_files) > 0,
 invisible(DBI::dbExecute(con, read_file("dbimport/sql/upd_db.sql")))
 
 # import non-core
+cli::cli_h1("Importing non-core data")
 ncore_dir <- file.path(getOption("noas")$TABDIR, "non_core")
 table_ids <- list.dirs(ncore_dir, recursive = FALSE, full.names = FALSE)
 if(getOption("noas")$IMPORT_DEBUG == "1")
   table_ids <- table_ids[order(file.info(file.path(ncore_dir, table_ids))$mtime, decreasing = TRUE)]
 for(table_id in table_ids){
-  cli::cli_inform(sprintf("Importing %s\n", table_id))
+  cli::cli_h2(table_id)
   metadata_j <- NULL
   table_dir_cur <- file.path(ncore_dir, table_id)
   cur_file_list <- list.files(table_dir_cur)
@@ -77,13 +79,13 @@ for(table_id in table_ids){
   pattern <- glob2rx("^_*tsv$")
   if(any(grepl(pattern, cur_file_list))){
     ignore_files <- cur_file_list[grepl(pattern, cur_file_list)]
-    message(paste("IGNORED: ", ignore_files))
+    cli::cli_alert_warning(paste("ignoring", ignore_files))
     cur_file_list <- setdiff(cur_file_list, ignore_files)
   }
   check_tsvs(cur_file_list, table_dir_cur)
 
   for(f_tsv in cur_file_list){
-    cli::cli_alert(file.path("non_core", table_id, f_tsv))
+    cli::cli_li(file.path("non_core", table_id, f_tsv))
     # read table
     noas_table_data <- read_noas_table(file.path(table_dir_cur, f_tsv))
     # push as temp table to db

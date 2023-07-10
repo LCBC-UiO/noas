@@ -46,7 +46,8 @@ read_config <- function() {
   curr_date <- date()
   cfg <- .set_default(cfg, "IMPORT_LABEL", "unnamed version")
   cfg <- .set_default(cfg, "IMPORT_DATE",  curr_date)
-  cfg <- .set_default(cfg, "IMPORT_ID",  sprintf("undefined (%s)", as.character(curr_date)))
+  cfg <- .set_default(cfg, "IMPORT_ID",
+    sprintf("undefined (%s)", as.character(curr_date)))
   cfg
 }
 
@@ -139,28 +140,34 @@ check_tsvs <- function(tsv_list, tsv_dir){
 }
 
 check_na <- function(data, keys){
-  x <- data[,keys*-1]
+  x <- data[, keys * -1]
   is_na <- apply(x, 1, function(x) all(is.na(x)))
-  idx <- which(is_na)
-  text <- printdf(data[idx,keys])
-  text <- c("Some data have only <NA> rows in non-key columns. These should be deleted from the file.", text)
-  fail_if(any(is_na), text)
+  fail_if(
+    any(is_na),
+    c("Some data have only <NA> rows in non-key columns.",
+    i = "These should be deleted:",
+    printdf(data[which(is_na), keys]))
+  )
 }
 
 check_dup_keys <- function(data, keys){
   x <- data[, keys]
   is_na <- duplicated(x)
-  idx <- which(is_na)
-  text <- printdf(x[idx,])
-  text <- c("Duplicated keys in file.", text)
-  fail_if(any(is_na), text)
+  fail_if(
+    any(is_na),
+    c("Duplicated keys in file.",
+      i = "These must be fixed:",
+      printdf(x[which(is_na), ])
+    )
+  )
 }
 
 printdf <- function(data){
-  text <- jsonlite::toJSON(data,
-                           pretty = TRUE,
-                           na = "string",
-                           null = "null")
+  text <- jsonlite::toJSON(
+    data,
+    pretty = TRUE,
+    na = "string",
+    null = "null")
   text <- strsplit(text, "\n")[[1]]
   text <- gsub("\\}", "}}", text)
   gsub("\\{", "{{", text)
