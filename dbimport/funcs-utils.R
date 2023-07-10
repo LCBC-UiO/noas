@@ -77,7 +77,7 @@ read_noas_table <- function(path, ...){
 
 fail_if <- function(expr, ...){
   if(expr){
-    cli::cli_abort(...)
+    cli::cli_abort(..., call = NULL)
   }
 }
 
@@ -132,6 +132,7 @@ check_tsvs <- function(tsv_list, tsv_dir){
       dt <- do.call(rbind, file_data)
       keys <- key_cols(tsv_dir)
       check_na(dt, keys)
+      check_dup_keys(dt, keys)
     }
   }
 }
@@ -140,20 +141,28 @@ check_na <- function(data, keys){
   x <- data[,keys*-1]
   is_na <- apply(x, 1, function(x) all(is.na(x)))
   idx <- which(is_na)
-  if(any(is_na)) browser()
-  text <- jsonlite::toJSON(data[idx,keys],
-                           pretty = TRUE,
-                           na = "string",
-                           null = "null")
-  text <- strsplit(text, "\n")[[1]]
-  text <- gsub("\\}", "}}", text)
-  text <- gsub("\\{", "{{", text)
+  text <- printdf(data[idx,keys])
   text <- c("Some data have only <NA> rows in non-key columns. These should be deleted from the file.", text)
   fail_if(any(is_na), text)
 }
 
 check_dup_keys <- function(data, keys){
-  browser()
+  x <- data[, keys]
+  is_na <- duplicated(x)
+  idx <- which(is_na)
+  text <- printdf(x[idx,])
+  text <- c("Duplicated keys in file.", text)
+  fail_if(any(is_na), text)
+}
+
+printdf <- function(data){
+  text <- jsonlite::toJSON(data,
+                           pretty = TRUE,
+                           na = "string",
+                           null = "null")
+  text <- strsplit(text, "\n")[[1]]
+  text <- gsub("\\}", "}}", text)
+  gsub("\\{", "{{", text)
 }
 
 key_cols <- function(dir){
