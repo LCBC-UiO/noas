@@ -78,8 +78,7 @@ read_noas_table <- function(path, ...){
 
 fail_if <- function(expr, ...){
   if(expr){
-    cli::cli_bullets(...)
-    stop(call. = FALSE)
+    cli::cli_abort(..., call. = FALSE)
   }
 }
 
@@ -130,18 +129,22 @@ check_tsvs <- function(tsv_list, tsv_dir){
               file_cur, file_ref
       )
     }
-    if(basename(tsv_dir) != "core"){
-      dt <- do.call(rbind, file_data)
-      keys <- key_cols(tsv_dir)
-      check_na(dt, keys)
-      check_dup_keys(dt, keys)
-    }
+  }
+  if(basename(tsv_dir) != "core"){
+    dt <- do.call(rbind, file_data)
+    keys <- key_cols(tsv_dir)
+    check_na(dt, keys)
+    check_dup_keys(dt, keys)
   }
 }
 
 check_na <- function(data, keys){
   x <- data[, keys * -1]
-  is_na <- apply(x, 1, function(x) all(is.na(x)))
+  is_na <- if(is.null(dim(x))){
+    is.na(x)
+  }else{
+    apply(x, 1, function(x) all(is.na(x)))
+  }
   fail_if(
     any(is_na),
     c("Some data have only <NA> rows in non-key columns.",
@@ -161,6 +164,7 @@ check_dup_keys <- function(data, keys){
     )
   )
 }
+
 
 printdf <- function(data){
   text <- jsonlite::toJSON(
@@ -183,7 +187,7 @@ key_cols <- function(dir){
 }
 
 list_folders <- function(directory, sort = FALSE){
-  folders <- list.dirs(directory, recursive = FALSE, full.names = FALSE)
+  folders <- list.dirs(directory, recursive = FALSE, full.names = TRUE)
   if(sort){
     modtimes <- sapply(folders, function(folder) {
       files <- list.files(path = folder, full.names = TRUE)
@@ -194,5 +198,67 @@ list_folders <- function(directory, sort = FALSE){
     })
     folders <- folders[order(modtimes, decreasing = TRUE)]
   }
-  return(folders)
+  return(basename(folders))
+}
+
+import_non_core <- function(table_id, ncore_dir){
+  cli::cli_h3(table_id)
+  metadata_j <- NULL
+  table_dir_cur <- file.path(ncore_dir, table_id)
+  cur_file_list <- list.files(table_dir_cur)
+  fail_if(!"_noas.json" %in% cur_file_list,
+          "There is no _noas.json for table ", table_id)
+  noas_j <- read_file(file.path(table_dir_cur, "_noas.json"))
+  cur_file_list <- setdiff(cur_file_list, "_noas.json")
+  if("_metadata.json" %in% cur_file_list){
+    metadata_j <- read_file(file.path(table_dir_cur, "_metadata.json"))
+    cur_file_list <- setdiff(cur_file_list, "_metadata.json")
+  }
+  pattern <- glob2rx("^_*tsv$")
+  if(any(grepl(pattern, cur_file_list))){
+    ignore_files <- cur_file_list[grepl(pattern, cur_file_list)]
+    cli::cli_alert_warning(paste("ignoring", ignore_files))
+    cur_file_list <- setdiff(cur_file_list, ignore_files)
+  }
+  check_tsvs(cur_file_list, table_dir_cur)
+
+  for(f_tsv in cur_file_list){
+    # read table
+    noas_table_data <- read_noas_table(file.path(table_dir_cur, f_tsv))
+    # push as temp table to db
+    table_id_tmp <- sprintf("tmp_%s", table_id)
+    DBI::dbWriteTable(
+      con,
+      table_id_tmp,
+      noas_table_data,
+      row.name = FALSE
+    )
+    # import table to noas
+    DBI::dbExecute(
+      con,
+      "select import_table($1, $2, $3, $4)",
+      params = list(
+        table_id_tmp,
+        table_id,
+        noas_j,
+        file.path(table_id, f_tsv)
+      )
+    )
+    DBI::dbExecute(
+      con,
+      sprintf("drop table if exists tmp_%s;", table_id)
+    )
+  } # end f_tsv
+  if (!is.null(metadata_j)) {
+    meta <- cli::cli_progress_step("meta-data", spinner = TRUE)
+    DBI::dbExecute(
+      con,
+      "select import_metadata($1, $2)",
+      params = list(
+        table_id,
+        metadata_j
+      )
+    )
+    meta <- cli::cli_progress_update(id = meta)
+  }
 }

@@ -39,7 +39,7 @@ for(pre in core_pre_seq){
   check_tsvs(core_files_cur, core_dir)
 
   for(f in core_files_cur){
-    cli::cli_alert_info(file.path("core", f))
+    cli::cli_progress_step(f)
     DBI::dbWriteTable(
       con,
       pre,
@@ -64,68 +64,9 @@ DEBUG = FALSE
 if(getOption("noas")$IMPORT_DEBUG == "1")
   DEBUG = TRUE
 table_ids <- list_folders(ncore_dir, sort = DEBUG)
-for(table_id in table_ids){
-  cli::cli_h2(table_id)
-  metadata_j <- NULL
-  table_dir_cur <- file.path(ncore_dir, table_id)
-  cur_file_list <- list.files(table_dir_cur)
-  fail_if(!"_noas.json" %in% cur_file_list,
-          "There is no _noas.json for table ", table_id)
-  noas_j <- read_file(file.path(table_dir_cur, "_noas.json"))
-  cur_file_list <- setdiff(cur_file_list, "_noas.json")
-  if("_metadata.json" %in% cur_file_list){
-    metadata_j <- read_file(file.path(table_dir_cur, "_metadata.json"))
-    cur_file_list <- setdiff(cur_file_list, "_metadata.json")
-  }
-  pattern <- glob2rx("^_*tsv$")
-  if(any(grepl(pattern, cur_file_list))){
-    ignore_files <- cur_file_list[grepl(pattern, cur_file_list)]
-    cli::cli_alert_warning(paste("ignoring", ignore_files))
-    cur_file_list <- setdiff(cur_file_list, ignore_files)
-  }
-  check_tsvs(cur_file_list, table_dir_cur)
-
-  for(f_tsv in cur_file_list){
-    cli::cli_li(file.path("non_core", table_id, f_tsv))
-    # read table
-    noas_table_data <- read_noas_table(file.path(table_dir_cur, f_tsv))
-    # push as temp table to db
-    table_id_tmp <- sprintf("tmp_%s", table_id)
-    DBI::dbWriteTable(
-      con,
-      table_id_tmp,
-      noas_table_data,
-      row.name = FALSE
-    )
-    # import table to noas
-    DBI::dbExecute(
-      con,
-      "select import_table($1, $2, $3, $4)",
-      params = list(
-        table_id_tmp,
-        table_id,
-        noas_j,
-        file.path(table_id, f_tsv)
-      )
-    )
-    DBI::dbExecute(
-      con,
-      sprintf("drop table if exists tmp_%s;", table_id)
-    )
-  } # end f_tsv
-  if (!is.null(metadata_j)) {
-    cli::cli_alert_info(file.path("non_core", table_id, "_metadata.json"))
-    DBI::dbExecute(
-      con,
-      "select import_metadata($1, $2)",
-      params = list(
-        table_id,
-        metadata_j
-      )
-    )
-  }
-} # end table_id
-
+k <-  lapply(table_ids,
+             import_non_core,
+             ncore_dir = ncore_dir)
 
 # NOTE: convert these parameters to positional command line arguments?
 invisible(DBI::dbExecute(
@@ -144,4 +85,4 @@ invisible(DBI::dbCommit(con))
 invisible(DBI::dbDisconnect(con))
 
 # declare ended import
-cli::cli_alert_success("import complete")
+cli::cli_h1("import complete")
