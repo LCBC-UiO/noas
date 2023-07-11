@@ -47,6 +47,7 @@ for(pre in core_pre_seq){
       append = TRUE,
       row.name = FALSE
     )
+    cli::cli_progress_done()
   }
 }
 # error if still something in file list after loop
