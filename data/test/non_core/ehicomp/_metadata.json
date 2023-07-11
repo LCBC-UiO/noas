@@ -1,0 +1,13 @@
+{
+  "title": "Edinburgh Handedness Inventory - Component",
+  "category": [
+    "questionnaire"
+  ],
+  "columns": [
+    {
+      "descr": "Handedness score",
+      "id": "sum",
+      "type": "float"
+    }
+  ]
+}
