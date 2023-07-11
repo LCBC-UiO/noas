@@ -115,20 +115,18 @@ check_tsvs <- function(tsv_list, tsv_dir){
   names(file_heads) <- tsv_list
   file_ref <- file.path(tsv_dir, tsv_list[1])
   file_head_ref <- names(read_noas_table(file_ref, nrow = 1))
-  if(length(tsv_list) > 1){
-    for(f in tsv_list[-1]){
-      file_cur <- file.path(tsv_dir, f)
-      file_head <- names(read_noas_table(file_cur, nrow = 1))
-      # Fail on differing column length and name/order
-      fail_if(length(file_head_ref) != length(file_head),
-              "Differing number of columns in files:\n",
-              file_cur, file_ref
-      )
-      fail_if(!all(file_head_ref == file_head),
-              "Files do not have equally named columns:\n",
-              file_cur, file_ref
-      )
-    }
+  for(f in tsv_list[-1]){
+    file_cur <- file.path(tsv_dir, f)
+    file_head <- names(read_noas_table(file_cur, nrow = 1))
+    # Fail on differing column length and name/order
+    fail_if(length(file_head_ref) != length(file_head),
+            "Differing number of columns in files:\n",
+            file_cur, file_ref
+    )
+    fail_if(!all(file_head_ref == file_head),
+            "Files do not have equally named columns:\n",
+            file_cur, file_ref
+    )
   }
   if(basename(tsv_dir) != "core"){
     dt <- do.call(rbind, file_data)
@@ -220,45 +218,48 @@ import_non_core <- function(table_id, ncore_dir){
     cli::cli_alert_warning(paste("ignoring", ignore_files))
     cur_file_list <- setdiff(cur_file_list, ignore_files)
   }
-  check_tsvs(cur_file_list, table_dir_cur)
-
-  for(f_tsv in cur_file_list){
-    # read table
-    noas_table_data <- read_noas_table(file.path(table_dir_cur, f_tsv))
-    # push as temp table to db
-    table_id_tmp <- sprintf("tmp_%s", table_id)
-    DBI::dbWriteTable(
-      con,
-      table_id_tmp,
-      noas_table_data,
-      row.name = FALSE
-    )
-    # import table to noas
-    DBI::dbExecute(
-      con,
-      "select import_table($1, $2, $3, $4)",
-      params = list(
+  if(!length(cur_file_list) > 0){
+    cli::cli_alert_danger("No tsv files to import.")
+  }else{
+    check_tsvs(cur_file_list, table_dir_cur)
+    for(f_tsv in cur_file_list){
+      # read table
+      noas_table_data <- read_noas_table(file.path(table_dir_cur, f_tsv))
+      # push as temp table to db
+      table_id_tmp <- sprintf("tmp_%s", table_id)
+      DBI::dbWriteTable(
+        con,
         table_id_tmp,
-        table_id,
-        noas_j,
-        file.path(table_id, f_tsv)
+        noas_table_data,
+        row.name = FALSE
       )
-    )
-    DBI::dbExecute(
-      con,
-      sprintf("drop table if exists tmp_%s;", table_id)
-    )
-  } # end f_tsv
-  if (!is.null(metadata_j)) {
-    meta <- cli::cli_progress_step("meta-data", spinner = TRUE)
-    DBI::dbExecute(
-      con,
-      "select import_metadata($1, $2)",
-      params = list(
-        table_id,
-        metadata_j
+      # import table to noas
+      DBI::dbExecute(
+        con,
+        "select import_table($1, $2, $3, $4)",
+        params = list(
+          table_id_tmp,
+          table_id,
+          noas_j,
+          file.path(table_id, f_tsv)
+        )
       )
-    )
-    meta <- cli::cli_progress_update(id = meta)
-  }
+      DBI::dbExecute(
+        con,
+        sprintf("drop table if exists tmp_%s;", table_id)
+      )
+    }# end tsv
+    if (!is.null(metadata_j)) {
+      meta <- cli::cli_progress_step("meta-data", spinner = TRUE)
+      DBI::dbExecute(
+        con,
+        "select import_metadata($1, $2)",
+        params = list(
+          table_id,
+          metadata_j
+        )
+      )
+      meta <- cli::cli_progress_update(id = meta)
+    }
+  } # end if
 }
