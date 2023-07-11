@@ -181,3 +181,18 @@ key_cols <- function(dir){
          "repeated" = 1:4
   )
 }
+
+list_folders <- function(directory, sort = FALSE){
+  folders <- list.dirs(directory, recursive = FALSE, full.names = FALSE)
+  if(sort){
+    modtimes <- sapply(folders, function(folder) {
+      files <- list.files(path = folder, full.names = TRUE)
+      ifelse (length(files) > 0,
+        max(file.info(files)$mtime),
+        NA
+      )
+    })
+    folders <- folders[order(modtimes, decreasing = TRUE)]
+  }
+  return(folders)
+}

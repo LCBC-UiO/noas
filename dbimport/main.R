@@ -60,9 +60,10 @@ invisible(DBI::dbExecute(con, read_file("dbimport/sql/upd_db.sql")))
 # import non-core
 cli::cli_h1("Importing non-core data")
 ncore_dir <- file.path(getOption("noas")$TABDIR, "non_core")
-table_ids <- list.dirs(ncore_dir, recursive = FALSE, full.names = FALSE)
+DEBUG = FALSE
 if(getOption("noas")$IMPORT_DEBUG == "1")
-  table_ids <- table_ids[order(file.info(file.path(ncore_dir, table_ids))$mtime, decreasing = TRUE)]
+  DEBUG = TRUE
+table_ids <- list_folders(ncore_dir, sort = DEBUG)
 for(table_id in table_ids){
   cli::cli_h2(table_id)
   metadata_j <- NULL
