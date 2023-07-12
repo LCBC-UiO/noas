@@ -15,12 +15,11 @@
     `make run_dbimport` 
   * Start web UI  
     `make run_webui`
-
 ### Installing on TSD
-  * Outside TSD: run `make prepare_offline [path/to/end/file]`
+  * Outside TSD: run `make prepare_offline`
   * Move the zip file into TSD and sync it to the noas repo on Gitea
 
-### updating
+### Updating
 
   * run `make update` - it will pull changes and it will also place the git hash available for the web UI
 
@@ -30,7 +29,13 @@
   * R
   * git
 
-## Dev
+### Remaining dependencies should be installed by the make process
+
+  * php
+  * postgresql
+  * lighttpd
+  * R-packages
+
 
 ## Supported column types 
 
@@ -39,7 +44,7 @@ These data types are supported as NOAS table columns (in metadata, DB and web UI
   * `text`
   * `float`
   * `integer`
-  * `date`
+  * `date` (%Y.%m.%d)
   * `time` (HH:MM:SS)
   * `boolean`
 

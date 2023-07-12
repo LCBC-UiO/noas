@@ -439,14 +439,8 @@ BEGIN
   -- add repeated group
   IF repeated_grp IS NOT NULL THEN
     INSERT INTO meta_repeated_grps (metatable_id, metacolumn_id, repeated_group) 
-      VALUES (table_name_dst, _4th_col_id, repeated_grp);
-  ELSE
-  -- check if table_name_dst already exists in meta_repeated_grps
-  IF (SELECT COUNT(*) FROM meta_repeated_grps WHERE metatable_id = table_name_dst) = 0 THEN
-    INSERT INTO meta_repeated_grps (metatable_id, metacolumn_id, repeated_group) 
-      VALUES (table_name_dst, _4th_col_id, table_name_dst);  
-  END IF;
-
+      VALUES (table_name_dst, _4th_col_id, repeated_grp)
+    ON CONFLICT DO NOTHING; -- Ignore duplicate key violation
   END IF;
 END;
 $$ LANGUAGE plpgsql;
