@@ -76,9 +76,9 @@ read_noas_table <- function(path, ...){
              ...)
 }
 
-fail_if <- function(expr, ...){
+fail_if <- function(expr, ..., .envir = parent.frame()){
   if(expr){
-    cli::cli_abort(..., call. = FALSE)
+    cli::cli_abort(..., call. = FALSE, .envir = .envir)
   }
 }
 

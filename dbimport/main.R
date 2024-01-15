@@ -21,7 +21,22 @@ con <- DBI::dbConnect(
 invisible(DBI::dbBegin(con))
 
 # initiate DB
-invisible(DBI::dbExecute(con, read_file("dbimport/sql/init_db.sql")))
+cli::cli_h1("Initializing database")
+
+## suppress NOTICE messages
+invisible(DBI::dbExecute(con, "SET client_min_messages = warning;"))
+
+## Delete everything in the database
+invisible(DBI::dbExecute(con, read_file("dbimport/sql/_purge_db.sql")))
+
+## Define functions
+invisible(DBI::dbExecute(con, read_file("dbimport/sql/_functions.sql")))
+
+## Create tables
+invisible(DBI::dbExecute(con, read_file("dbimport/sql/_create_tables.sql")))
+
+## Create NOAS core data table
+invisible(DBI::dbExecute(con, read_file("dbimport/sql/_noas_core.sql")))
 
 # import core
 #   - list files
