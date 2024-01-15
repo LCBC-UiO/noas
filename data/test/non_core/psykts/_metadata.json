@@ -10,7 +10,7 @@
     },
     {
       "id": "date",
-      "type": "date"
+      "type": "timestamp"
     }
   ]
 }
