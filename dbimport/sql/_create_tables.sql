@@ -50,16 +50,16 @@ CREATE TABLE visits (
 );
 
 -- Create trigger to enforce visit age validation
--- CREATE TRIGGER visit_age_validation
--- BEFORE INSERT OR UPDATE ON visits
--- FOR EACH ROW
--- EXECUTE PROCEDURE validate_visit_age();
+CREATE TRIGGER visit_age_validation
+BEFORE INSERT OR UPDATE ON visits
+FOR EACH ROW
+EXECUTE PROCEDURE validate_visit_age();
 
 -- -- Create trigger to enforce visit date validation
--- CREATE TRIGGER visit_date_validation
--- BEFORE INSERT OR UPDATE ON visits
--- FOR EACH ROW
--- EXECUTE PROCEDURE validate_visit_date();
+CREATE TRIGGER visit_date_validation
+BEFORE INSERT OR UPDATE ON visits
+FOR EACH ROW
+EXECUTE PROCEDURE validate_visit_date();
 --------------------------------------------------------------------------------
 
 -- metadata for tables
