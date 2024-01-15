@@ -36,8 +36,8 @@ try {
   $rimport = sel_to_rimport($selection);
   fwrite($pipes[0], $rimport . PHP_EOL);
   fwrite($pipes[0], <<< EOD
-password <- "${password}"
-noas_selection <- '${selstr}'
+password <- "{$password}"
+noas_selection <- '{$selstr}'
 source(sprintf("%s/webui/opt/r_selfenc.R", Sys.getenv("BASEDIR")))
 EOD
   );
