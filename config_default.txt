@@ -9,7 +9,6 @@ DBHOST="localhost"
 DBPORT="3832"
 DBUSER="dbuser"
 DBNAME="lcbcdb"
-DBROUSER="lcbcuser"
 
 # web UI
 WEBSERVERPORT="3880"
