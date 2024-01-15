@@ -1,0 +1,6 @@
+download/*
+build_*
+lighttpd/
+php/
+postgresql/
+r_packages/
