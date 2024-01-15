@@ -9,8 +9,8 @@
       "type": "text"
     },
     {
-      "id": "counter",
-      "type": "integer"
+      "id": "date",
+      "type": "date"
     }
   ]
 }
