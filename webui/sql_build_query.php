@@ -60,15 +60,15 @@ function sql_build_query($dbmeta, $sel) {
         case "core":
           break;
         case "long":
-          $sql = "${joinString} noas_{$tid} {$tid} ON core.subject_id={$tid}.subject_id AND core.project_id={$tid}.project_id AND core.wave_code={$tid}.wave_code";
+          $sql = "{$joinString} noas_{$tid} {$tid} ON core.subject_id={$tid}.subject_id AND core.project_id={$tid}.project_id AND core.wave_code={$tid}.wave_code";
           array_push($r, $sql);
           break;
         case "repeated":
-          $sql = "${joinString} noas_{$tid} {$tid} ON core.subject_id={$tid}.subject_id AND core.project_id={$tid}.project_id AND core.wave_code={$tid}.wave_code";
+          $sql = "{$joinString} noas_{$tid} {$tid} ON core.subject_id={$tid}.subject_id AND core.project_id={$tid}.project_id AND core.wave_code={$tid}.wave_code";
           array_push($r, $sql);
           break;
         case "cross":
-          $sql = "${joinString} noas_{$tid} {$tid} ON core.subject_id={$tid}.subject_id";
+          $sql = "{$joinString} noas_{$tid} {$tid} ON core.subject_id={$tid}.subject_id";
           array_push($r, $sql);
           break;
         default:
@@ -176,7 +176,7 @@ function sql_build_query($dbmeta, $sel) {
       $gid = $rg;
       $tbid = $rgroups[$rg][0]["table_id"];
       $rc = $rgroups[$rg][0]["col_id"];
-      $rcols[] = "${tbid}.${rc} AS ${gid}_${rc}";
+      $rcols[] = "{$tbid}.{$rc} AS {$gid}_{$rc}";
     }
     return($rcols);
   }

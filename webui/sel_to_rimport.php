@@ -19,8 +19,8 @@ $sc
     ,'Connection: close'
   ), collapse='\\r\\n')
   con <- socketConnection(
-    host='${_SERVER['SERVER_NAME']}',
-    port=${_SERVER['SERVER_PORT']},
+    host='{$_SERVER['SERVER_NAME']}',
+    port={$_SERVER['SERVER_PORT']},
     blocking=TRUE,
     server=FALSE,
     open='r+')
