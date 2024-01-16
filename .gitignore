@@ -1,4 +1,4 @@
-db/*
+db/
 config.txt
 singularity/*.simg
 .Rhistory
@@ -6,3 +6,4 @@ singularity/*.simg
 NOAS.Rproj
 .Rproj.user
 **.DS_Store
+!dbimport/sql/*
