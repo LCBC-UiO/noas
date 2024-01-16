@@ -129,7 +129,7 @@
                 <li>Take a picture of the password with your phone or write it down.*</li>
                 <li>Download the .R file.</li>
                 <li>Export the .R file from TSD to your local computer.</li>
-                <li>Load the .R file from R.<br> Example: <code id="codeExportRSource"></code></li>
+                <li>Load the .R file from R.<br/> Example: <code id="codeExportRSource"></code></li>
                 <li>Enter the password from above.</li>
                 <li>Your sensitive data is loaded into R.</li>
               </ol>
@@ -265,7 +265,7 @@
         lcProgressInit("noasTable");
         // make db query
         g_table_data = await getTableData(sel);
-        document.getElementById("noasTable").innerHTML = '<br><br><h4>preparing table...</h4>';
+        document.getElementById("noasTable").innerHTML = '<h4>preparing table...</h4>';
         document.getElementById("spPrj").innerHTML = sel.project;
 
         // show data in table
@@ -281,6 +281,7 @@
           /* replace null elements with empty string */
           downloadDataFormatter: function(data){
             data = JSON.parse(JSON.stringify(data).replace(/null/g, '""'))
+            console.log(data);
             return data
           },
           tooltipsHeader: true,
@@ -373,13 +374,6 @@
       const did = lcGetDataVersionFnStr(sel);
       const dlfilename = `noas_query_${lcGetDateFnStr(Date.parse(g_table_data.date))}_${md5}_${did}.csv`;
       g_table.download("csv", dlfilename, {delimiter:";"});
-    });
-    document.getElementById("btnDlXlsx").addEventListener('click', function() {
-      const sel = getDataSelection();
-      const md5 = lcGetSelHash(sel);
-      const did = lcGetDataVersionFnStr(sel);
-      const dlfilename = `noas_query_${lcGetDateFnStr(Date.parse(g_table_data.date))}_${md5}_${did}.xlsx`;
-      g_table.download("xlsx", dlfilename, {sheetName:`NOAS download ${md5} ${did}`});
     });
     document.getElementById("btnModalEncR").onclick = (e) => {
       document.getElementById("btnDlEncR").classList.remove("hidden");
