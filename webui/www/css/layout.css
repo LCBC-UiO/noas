@@ -1,11 +1,11 @@
 :root {
-  --blue:   #009fe3;
-  --lblue:  #66bfdd;
-  --lgreen: #c6d984;
-  --green:  #94c11e;
+  --blue:   #009fe3c7;
+  --lblue:  #66bfddbe;
+  --lgreen: #c7d984d6;
+  --green:  #93c11ed0;
   --gray:   #636363;
   --lgray:  #b2b2b2;
-  --black:  #444;
+  --black:  #222;
 }
 
 body{
@@ -46,12 +46,12 @@ input {
 
 .btn-primary {
   background-color: var(--green) !important;
+  color: var(--black) !important;
 }
 
 .btn-primary:hover {
   cursor: pointer;
   background-color: var(--lgreen) !important;
-  color: var(--gray);
 }
 
 .flex-even {
@@ -66,6 +66,7 @@ input {
 
 .accordion-button{
   background-color: var(--lblue) !important;
+  color: var(--black) !important;
 }
 
 .accordion-button small{
