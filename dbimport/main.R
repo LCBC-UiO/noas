@@ -24,19 +24,27 @@ invisible(DBI::dbBegin(con))
 cli::cli_h1("Initializing database")
 
 ## suppress NOTICE messages
+cli::cli_alert_info("suppressing NOTICE messages")
 invisible(DBI::dbExecute(con, "SET client_min_messages = warning;"))
 
 ## Delete everything in the database
+cli::cli_alert_info("purging database")
 invisible(DBI::dbExecute(con, read_file("dbimport/sql/_purge_db.sql")))
 
 ## Define functions
+cli::cli_alert_info("defining functions")
 invisible(DBI::dbExecute(con, read_file("dbimport/sql/_functions.sql")))
 
 ## Create tables
+cli::cli_alert_info("creating tables")
 invisible(DBI::dbExecute(con, read_file("dbimport/sql/_create_tables.sql")))
 
 ## Create NOAS core data table
+cli::cli_alert_info("creating core data table")
 invisible(DBI::dbExecute(con, read_file("dbimport/sql/_noas_core.sql")))
+
+# Populate database
+cli::cli_h1("Importing core data")
 
 # import core
 #   - list files
@@ -46,7 +54,6 @@ core_files <- list.files(core_dir)
 core_pre_seq <- c("projects", "waves", "subjects", "visits")
 
 #   - loop through prefixes (order by sequences needed)
-cli::cli_h1("Importing core data")
 for(pre in core_pre_seq){
   core_files_cur <- core_files[grep(pre, core_files)]
   core_files <- setdiff(core_files, core_files_cur)
