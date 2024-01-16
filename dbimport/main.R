@@ -29,19 +29,19 @@ invisible(DBI::dbExecute(con, "SET client_min_messages = warning;"))
 
 ## Delete everything in the database
 cli::cli_alert_info("purging database")
-invisible(DBI::dbExecute(con, read_file("dbimport/sql/_purge_db.sql")))
+invisible(DBI::dbExecute(con, read_file("dbimport/sql/01_purge.sql")))
 
 ## Define functions
 cli::cli_alert_info("defining functions")
-invisible(DBI::dbExecute(con, read_file("dbimport/sql/_functions.sql")))
+invisible(DBI::dbExecute(con, read_file("dbimport/sql/02_funcs.sql")))
 
 ## Create tables
 cli::cli_alert_info("creating tables")
-invisible(DBI::dbExecute(con, read_file("dbimport/sql/_create_tables.sql")))
+invisible(DBI::dbExecute(con, read_file("dbimport/sql/03_table.sql")))
 
 ## Create NOAS core data table
 cli::cli_alert_info("creating core data table")
-invisible(DBI::dbExecute(con, read_file("dbimport/sql/_noas_core.sql")))
+invisible(DBI::dbExecute(con, read_file("dbimport/sql/04_corev.sql")))
 
 # Populate database
 cli::cli_h1("Importing core data")
