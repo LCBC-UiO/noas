@@ -2,8 +2,3 @@ db/
 config.txt
 singularity/*.simg
 .Rhistory
-.Rproj.user$
-NOAS.Rproj
-.Rproj.user
-**.DS_Store
-!dbimport/sql/*

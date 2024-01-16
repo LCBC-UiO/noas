@@ -1,4 +1,4 @@
-download/*
+download/
 build_*
 lighttpd/
 php/
