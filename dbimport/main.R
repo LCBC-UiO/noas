@@ -44,7 +44,8 @@ cli::cli_alert_info("creating core data table")
 invisible(DBI::dbExecute(con, read_file("dbimport/sql/04_corev.sql")))
 
 # Populate database
-cli::cli_h1("Importing core data")
+cli::cli_h1("Populating data base")
+cli::cli_h2("Importing core data")
 
 # import core
 #   - list files
@@ -78,10 +79,12 @@ fail_if(length(core_files) > 0,
 
 
 # update core visits
+calcs <- cli::cli_progress_step("Adding visit variables", spinner = TRUE)
 invisible(DBI::dbExecute(con, read_file("dbimport/sql/upd_db.sql")))
+calcs <- cli::cli_progress_update(id = calcs)
 
 # import non-core
-cli::cli_h1("Importing non-core data")
+cli::cli_h2("Importing non-core data")
 ncore_dir <- file.path(getOption("noas")$TABDIR, "non_core")
 DEBUG = FALSE
 if(getOption("noas")$IMPORT_DEBUG == "1")
