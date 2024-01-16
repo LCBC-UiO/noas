@@ -128,7 +128,12 @@ function sql_build_query($dbmeta, $sel) {
       if (!array_key_exists($tid, $sel_tabs)) {
         continue;
       }
+      // if t is not an array, it cannot have repeated group
+      if (!is_array($t)) {
+        continue;
+      }
       // has repeated_goup?
+      echo get_class($t);
       if (!array_key_exists("repeated_group", $t)) {
         continue;
       }
@@ -154,6 +159,7 @@ function sql_build_query($dbmeta, $sel) {
     }
     return($rgroups);
   }
+
   function _get_sql_where_repeated($dbmeta, $sel_tabs, $sel_cols) {
     $rgroups = _get_repeated_groups($dbmeta, $sel_tabs, $sel_cols);
     // generate where conditions; tab0.col=tabn.col
@@ -171,7 +177,7 @@ function sql_build_query($dbmeta, $sel) {
 
   function _get_sql_select_repeated($dbmeta, $sel_tabs, $sel_cols) {
     $rgroups = _get_repeated_groups($dbmeta, $sel_tabs, $sel_cols);
-
+    $rcols = [];
     foreach (array_keys($rgroups) as $rg){
       $gid = $rg;
       $tbid = $rgroups[$rg][0]["table_id"];
