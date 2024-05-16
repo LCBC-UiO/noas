@@ -10,14 +10,14 @@
         //     "version": "7.4",
         //     "extensionsExtra": "xdebug redis"
         // }
-	}
+	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// This can be used to network with other containers or the host.
 	// "forwardPorts": [5000, 5432],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "make",
+	"postCreateCommand": "make"
 
 	// Configure tool-specific properties.
 	// "customizations": {},
