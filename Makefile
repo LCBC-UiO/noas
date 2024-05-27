@@ -79,6 +79,7 @@ run_db: ${DBDATADIR}/postgresql.conf
 dberase:
 	3rdparty/postgresql/bin/pg_ctl -D ${DBDATADIR} stop || true
 	$(RM) -r ${DBDATADIR}
+	@rm -f /tmp/.s.PGSQL.$(DBPORT).lock
 
 .PHONY: distclean
 distclean: clean
@@ -120,6 +121,7 @@ dbstart: ${DBDATADIR}/postgresql.conf
 .PHONY: dbstop
 dbstop:
 	3rdparty/postgresql/bin/pg_ctl -D ${DBDATADIR} stop
+	@rm -f /tmp/.s.PGSQL.$(DBPORT).lock
 
 .PHONY: 3rdparty
 3rdparty: $(websrcs)
