@@ -34,20 +34,14 @@ jobs:
       - name: Make 3rdparty
         run: make 3rdparty
 
-      - name: Run & Import DB
+      - name: Start DB
         run: |
           make run_db &
           P1=$!
-
-          set -e  # Enable error handling
-          make run_dbimport
-          import_status=$?
-
+          sleep 30
           wait $P1
 
-          if [ $import_status -eq 0 ]; then
-            echo "Data import succeeded."
-          else
-            echo "Data import failed."
-            exit 1
-          fi
+      - name: Run & Import DB
+        run: |
+          set -e  # Enable error handling
+          make run_dbimport
