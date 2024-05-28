@@ -20,4 +20,3 @@ download: $(addsuffix _download, $(modules))
 .PHONY: clean
 clean: $(addsuffix _clean, $(modules))
 	$(MAKE) -f make_rpacs.mk clean
-
