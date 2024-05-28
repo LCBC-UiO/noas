@@ -96,7 +96,7 @@ function checkSelection(sel_cols) {
       r_ungrouped.push(t.id);
     }
   });
-  const max_repeated = 2;
+  const max_repeated = 1;
   if (Object.keys(r_goups).length + r_ungrouped.length > max_repeated) {
     const msg = [`You selected more than ${max_repeated} tables with timeseries data. NOAS will try to process your query but might fail due to the number of resulting rows. Here is a list of the problematic tables in your selection:`];
     let count = 1;
@@ -128,7 +128,7 @@ async function loadTable() {
 
     // show data in table
     g_table = new Tabulator("#noasTable", {
-      layout: "fitDataFill", 
+      layout: "fitDataFill",
       pagination: "local",
       paginationSize: 25,
       columns: getColDef(g_table_data.column_def),
@@ -147,7 +147,7 @@ async function loadTable() {
     });
     // load "import to r" code
     document.getElementById("codeImportR").innerHTML = await (async function() {
-      r = await fetch("./php/r_import.php", { 
+      r = await fetch("./php/r_import.php", {
         method: "POST",
         headers: {
           'Content-Type': 'application/json'

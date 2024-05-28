@@ -129,12 +129,13 @@ function sql_build_query($dbmeta, $sel) {
         continue;
       }
       // if t is not an array, it cannot have repeated group
-      if (!is_array($t)) {
-        continue;
-      }
+      // IKA: I think this allways skips/continues, as class is never array?
+      //   if (!is_array($t)) {
+      //     continue;
+      //   }
       // has repeated_goup?
-      echo get_class($t);
-      if (!array_key_exists("repeated_group", $t)) {
+      // echo get_class($t);
+      if (!property_exists($t, "repeated_group")) {
         continue;
       }
       // init result?
@@ -163,15 +164,30 @@ function sql_build_query($dbmeta, $sel) {
   function _get_sql_where_repeated($dbmeta, $sel_tabs, $sel_cols) {
     $rgroups = _get_repeated_groups($dbmeta, $sel_tabs, $sel_cols);
     // generate where conditions; tab0.col=tabn.col
+    // IKA: Add WHERE condition AND (... OR ... IS NULL)
+    // This fixes cross join issue. Should probably be done in the JOINS, but when code 
+    // is structured like it is, easier to do it here. 
+    // Probably breaks something else ¯\_(ツ)_/¯
     $sqls = array();
     foreach ($rgroups as $rg) {
+      if (count(array_values($rg)) <= 1) {
+        continue;
+      }
+      array_push($sqls, " AND (");
       for ($i=1; $i < count($rg); $i++) {
         array_push($sqls,
-          "OR " . $rg[0 ]["table_id"] . "." . $rg[0 ]["col_id"] .
+          $rg[0 ]["table_id"] . "." . $rg[0 ]["col_id"] .
           " = " . $rg[$i]["table_id"] . "." . $rg[$i]["col_id"]
         );
-      }
-    }
+      };
+      // Does this break anything, maybe union/intersection selection option? TODO: test
+      for ($i=0; $i < count($rg); $i++) {
+        array_push($sqls,
+        " OR " . $rg[$i]["table_id"] . "." . $rg[$i]["col_id"] . " IS NULL "
+      );
+      };
+      array_push($sqls,")");
+    };
     return join("\n", $sqls);
   }
 
@@ -213,6 +229,7 @@ WHERE TRUE AND
 {$sql_where_repeated}
 ORDER BY core.subject_id
 ";
+//   error_log($sql);
   return $sql;
 }
 
