@@ -16,7 +16,7 @@ jobs:
       matrix:
         config:
           - {os: ubuntu-latest,  r: '3.6'}
-          - {os: ubuntu-latest,  r: '4.3'}
+        #   - {os: ubuntu-latest,  r: '4.3'} # RPostgreSQL issue
           - {os: ubuntu-20.04,   r: '3.6'}
 
     env:
