@@ -528,7 +528,7 @@ $$ LANGUAGE plpgsql;
 CREATE FUNCTION validate_visit_date() RETURNS TRIGGER AS $$
 BEGIN
   IF NEW."date" = (SELECT birthdate FROM subjects WHERE id = NEW.subject_id) THEN
-    RAISE EXCEPTION 'Visit date cannot be the same as subject birthdate';
+    RAISE EXCEPTION 'Visit date cannot be the same as subject birthdate. subject_id: %, birthdate: %, visit date: %', NEW.subject_id, (SELECT birthdate FROM subjects WHERE id = NEW.subject_id), NEW.date;
   END IF;
   RETURN NEW;
 END;
@@ -538,11 +538,10 @@ $$ LANGUAGE plpgsql;
 -- Create trigger function to validate visit age
 CREATE FUNCTION validate_visit_age() RETURNS TRIGGER AS $$
 BEGIN
-  IF NEW.age < 3 THEN
-    RAISE EXCEPTION 'Visit age cannot be less than 3';
-  END IF;
-  RETURN NEW;
+    IF NEW.age < 3 THEN
+        RAISE EXCEPTION 'Visit age cannot be less than 3. subject_id: %, birthdate: %, visit date: %', NEW.subject_id, (SELECT birthdate FROM subjects WHERE id = NEW.subject_id), NEW.date;
+    END IF;
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 
