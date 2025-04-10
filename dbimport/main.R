@@ -1,21 +1,25 @@
 #!/usr/bin/env Rscript
 source('dbimport/funcs-utils.R')
 
-# set global R options
+# Set global R options (excluding 'noas' config)
 options(
   stringsAsFactors = FALSE,
-  warn = 2, # error on warnings
-  noas = read_config()
+  warn = 2 # error on warnings
 )
 
-# connect to DB
+# Connect to DB using environment variables
+# Ensure .env file provides: DBHOST, DBPORT, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD
 con <- DBI::dbConnect(
-  RPostgreSQL::'PostgreSQL'(), #":memory:",
-  user   = getOption("noas")$DBUSER,
-  port   = getOption("noas")$DBPORT,
-  dbname = getOption("noas")$DBNAME,
-  host   = getOption("noas")$DBHOST
+  RPostgreSQL::'PostgreSQL'(),
+  user     = Sys.getenv("POSTGRES_USER", "dbuser"), # Default matches original
+  password = Sys.getenv("POSTGRES_PASSWORD", ""),   # Default empty, but required!
+  port     = Sys.getenv("DBPORT", "5432"),        # Default standard pg port
+  dbname   = Sys.getenv("POSTGRES_DB", "lcbcdb"),   # Default matches original
+  host     = Sys.getenv("DBHOST", "localhost")     # Default localhost
 )
+
+# Load import-specific config after connection
+import_config <- read_config()
 
 # start atomic transaction, changes in this con won't be visible until the commit
 invisible(DBI::dbBegin(con))
@@ -48,35 +52,65 @@ cli::cli_h1("Populating data base")
 cli::cli_h2("Importing core data")
 
 # import core
-#   - list files
-core_dir <- file.path(getOption("noas")$TABDIR, "core")
-core_files <- list.files(core_dir)
-
+core_dir <- file.path(import_config$TABDIR, "core") # Should be /data/core
 core_pre_seq <- c("projects", "waves", "subjects", "visits")
+processed_files <- c() # Keep track of processed files
+is_debug <- Sys.getenv("NOAS_IMPORT_DEBUG", "0") == "1"
+
+if(is_debug) {
+  cli::cli_alert_info("DEBUG: Core directory path: {.path {core_dir}}")
+  # Evaluate list.files outside the cli string to avoid parsing issues
+  all_files_debug <- list.files(core_dir)
+  cli::cli_alert_info("DEBUG: Listing all files in core_dir directly: {.file {all_files_debug}}")
+  project_pattern_debug = '^projects.*\\.tsv$'
+  project_files_debug <- list.files(core_dir, pattern=project_pattern_debug)
+  cli::cli_alert_info("DEBUG: Testing pattern {.val {project_pattern_debug}} directly: {.file {project_files_debug}}")
+}
 
 #   - loop through prefixes (order by sequences needed)
 for(pre in core_pre_seq){
-  core_files_cur <- core_files[grep(pre, core_files)]
-  core_files <- setdiff(core_files, core_files_cur)
+  # Construct pattern: starts with prefix, followed by anything, ends with .tsv
+  pattern <- sprintf("^%s.*\\.tsv$", pre)
+  if(is_debug) cli::cli_alert_info("DEBUG: Searching for pattern {.val {pattern}} in {.path {core_dir}}")
+  
+  # List files matching the specific pattern for this prefix
+  core_files_cur <- list.files(core_dir, pattern = pattern, full.names = FALSE) # Get just filenames
 
-  check_tsvs(core_files_cur, core_dir)
-
-  for(f in core_files_cur){
-    cli::cli_progress_step(f)
-    DBI::dbWriteTable(
-      con,
-      pre,
-      read_noas_table(file.path(core_dir, f)),
-      append = TRUE,
-      row.name = FALSE
-    )
-    cli::cli_progress_done()
-  }
+  if(is_debug) cli::cli_alert_info("DEBUG: Found files for pattern {.val {pattern}}: {.file {core_files_cur}}")
+  
+  # Filter out any files already processed by a previous prefix (unlikely but safe)
+  core_files_cur <- setdiff(core_files_cur, processed_files)
+  
+  # Add currently found files to the processed list
+  processed_files <- c(processed_files, core_files_cur)
+  
+  # Call check_tsvs only if files were found for this prefix
+  if (length(core_files_cur) > 0) {
+    check_tsvs(core_files_cur, core_dir) # Pass only filenames
+    
+    # Process the found files
+    for(f in core_files_cur){
+      cli::cli_progress_step(f)
+      DBI::dbWriteTable(
+        con,
+        pre, # Use the prefix as the table name
+        read_noas_table(file.path(core_dir, f)), # Construct full path here
+        append = TRUE,
+        row.name = FALSE
+      )
+      cli::cli_progress_done()
+    }
+  } # No need for an else here, check_tsvs handles empty list logging if debug is on
 }
-# error if still something in file list after loop
-fail_if(length(core_files) > 0,
-        "There are unhandled files in ", core_dir)
 
+# Check for unprocessed TSV files in the core directory after the loop
+all_core_tsvs <- list.files(core_dir, pattern = "\\.tsv$", full.names = FALSE)
+unprocessed_files <- setdiff(all_core_tsvs, processed_files)
+
+fail_if(length(unprocessed_files) > 0,
+        c("There are unhandled TSV files in {.path {core_dir}}:",
+          paste(unprocessed_files, collapse=", "))
+)
 
 # update core visits
 calcs <- cli::cli_progress_step("Adding visit variables", spinner = TRUE)
@@ -85,9 +119,9 @@ calcs <- cli::cli_progress_update(id = calcs)
 
 # import non-core
 cli::cli_h2("Importing non-core data")
-ncore_dir <- file.path(getOption("noas")$TABDIR, "non_core")
+ncore_dir <- file.path(import_config$TABDIR, "non_core")
 DEBUG = FALSE
-if(getOption("noas")$IMPORT_DEBUG == "1")
+if(import_config$IMPORT_DEBUG == "1")
   DEBUG = TRUE
 table_ids <- list_folders(ncore_dir, sort = DEBUG)
 k <-  lapply(table_ids,
@@ -99,9 +133,9 @@ invisible(DBI::dbExecute(
   con,
   "INSERT INTO versions (id, label, ts, import_completed) VALUES ($1, $2, $3, TRUE)",
   params = list(
-    getOption("noas")$IMPORT_ID,
-    getOption("noas")$IMPORT_LABEL,
-    getOption("noas")$IMPORT_DATE
+    import_config$IMPORT_ID,
+    import_config$IMPORT_LABEL,
+    import_config$IMPORT_DATE
   ))
 )
 
